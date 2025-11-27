@@ -1,0 +1,37 @@
+✔ Controller
+
+    Receives the request (req.body)
+
+    Calls the service
+
+    Sends response
+
+
+
+✔ Service (Business Logic Layer)
+
+    Validates data
+
+    Applies rules
+
+    Calls repository
+
+    NEVER touches the DB directly
+
+
+
+✔ Repository (Data Access Layer)
+
+    Directly interacts with MongoDB using models
+
+    No business logic here
+
+    Only CRUD operations
+
+
+
+✔ Model
+
+    Mongoose schema
+
+    Object shape definitions

@@ -1,0 +1,37 @@
+/project-root
+  ├── /controllers
+  │   ├── UserController.js- [PascalCase]
+  │   └── ProductController.js
+  ├── /models
+  │   ├── User.js [PascalCase]
+  │   └── Product.js
+  ├── /routes   [lowerCase]
+  │   ├── users.js
+  │   └── products.js
+  ├── /services [PascalCase]
+  │   ├── UserService.js
+  │   └── ProductService.js
+  ├── /middlewares
+  │   ├── authMiddleware.js [camelCase]
+  │   └── loggerMiddleware.js
+  ├── /utils
+  │   ├── dateUtils.js
+  │   └── stringHelpers.js
+  ├── /config
+  │   ├── databaseConfig.js
+  │   └── serverConfig.js
+  ├── /tests
+  │   ├── userController.test.js
+  │   └── productService.spec.js
+  ├── app.js
+  ├── server.js
+  └── .
+  
+
+Repository pattern is given by:=IRSCR
+
+I=INTERFACE
+R=REPOSITORY
+S=SERVICE
+C=CONTROLLER
+R=ROUTER
