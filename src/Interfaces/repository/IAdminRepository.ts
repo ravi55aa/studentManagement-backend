@@ -1,8 +1,10 @@
+import { IAddress } from "../../Models/addressModel"
 import { IUser } from "../../Models/userModel"
+import { BaseRepository } from "../../Repository/BaseRepository"
 
-export interface IUserRepository{
-    
+export interface IUserRepository extends BaseRepository<IUser> {
     findByEmail(email:string) : Promise <IUser|null>,
+    //create(address:Partial<IAddress>):Promise<IAddress>
 
-    createUser(userData:IUser):Promise<IUser>
+    addAddress(address:IAddress):Promise<IAddress>
 }

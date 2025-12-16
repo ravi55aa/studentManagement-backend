@@ -65,6 +65,36 @@ export enum CategoryMessage {
 }
 
 /**
+ * Category management related messages
+ */
+export enum DocumentMessage {
+  // Error messages
+    DocumentExists = "Document already exists",
+    DocumentNotFound = "Document not found",
+
+    // Success messages
+    DocumentAdded = "New Document created",
+    DocumentUpdated = "Document updated",
+    DocumentListed = "Document has been listed",
+    DocumentUnlisted = "Document has been unlisted",
+}
+
+
+/**
+ * Address  related messages
+ */
+export enum AddressMessage {
+  // Error messages
+    AddressExists = "Address already exists",
+    AddressNotFound = "Address not found",
+
+    // Success messages
+    AddressAdded = "New Address created",
+    AddressUpdated = "Address updated",
+    AddressListed = "Address has been listed",
+}
+
+/**
  * Course management and enrollment related messages
  */
 export enum CourseMessage {

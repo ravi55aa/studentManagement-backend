@@ -1,17 +1,29 @@
+import { FilterQuery } from "mongoose";
 import { IUserRepository } from "../Interfaces/repository/IAdminRepository";
-import userModel, { IUser } from "../Models/userModel";
+import { addressModel, adminModel } from "../Models";
+import { IAddress } from "../Models/addressModel";
+import { IUser } from "../Models/userModel";
+import { BaseRepository } from "./BaseRepository";
 
 
 
-class userRepository implements IUserRepository{
-    
-    public async findByEmail(email: string): Promise<IUser | null> {
-        return userModel.findOne({email}).exec();
+export class UserRepository 
+    extends BaseRepository<IUser>
+    implements IUserRepository
+    {
+
+    constructor(){
+        super(adminModel);
     }
 
-    async createUser(userData: IUser): Promise<IUser> {
-        const newUser=new userModel({userData});
-        await newUser.save();
-        return newUser; 
+
+    public async findByEmail(email:string){
+        return this.model.findOne({email});
+    }
+
+    public async addAddress(addressData: IAddress): Promise<IAddress> {
+        const newUserAddress=new addressModel(addressData);
+        await newUserAddress.save();
+        return newUserAddress; 
     }
 }

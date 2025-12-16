@@ -1,8 +1,50 @@
 import {z} from "zod";
 
-export const RegisterUserSchema = z.object({
-    name: z.string().min(3, "Name must be at least 3 characters"),
-    email: z.string().email("Invalid email format"),
-    phone: z.string().min(10, "Phone must be 10 digits"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-});
+export const registerUserSchema = z
+    .object({
+        name: z.string().min(2, "Name too short"),
+        email: z.string().email("Invalid email"),
+        password: z
+            .string()
+            .min(6, "Password must be 6+ characters")
+            .max(8, "Password must not be greater tha 8 characters"),
+        reEnter: z.string(),
+        profile: z.any().optional(),
+        phone: z.string().regex(/^[6-9]\d{9}$/, "Enter valid 10 digits number"),
+
+        zip: z.string().regex(/^[1-9][0-9]{5}$/, "Enter valid 6-digits ZIP code "),
+
+        street: z
+            .string()
+            .min(3, "Street name must be at least 3 characters")
+            .max(50, "Street name is too long"),
+
+        city: z
+            .string()
+            .min(3, "City name must be at least 3 characters")
+            .max(30, "City name is too long"),
+
+        state: z
+            .string()
+            .min(3, "State name must be at least 3 characters")
+            .max(20, "State name is too long"),
+
+        country: z
+            .string()
+            .min(3, "Country name must be at least 3 characters")
+            .max(20, "Country name is too long"),
+    })
+    .refine((data) => data.password === data.reEnter, {
+        message: "Passwords do not match",
+        path: ["confirmPassword"],
+    });
+
+
+
+export const signInSchema=z.object({
+        email: z.string().email("Invalid email"),
+        password: z
+        .string()
+        .min(6, "Password must be 6+ characters")
+        .max(8, "Password must not be greater tha 8 characters"),
+    })

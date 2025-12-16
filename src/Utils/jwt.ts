@@ -1,27 +1,36 @@
-import { sign,verify,JwtPayload, JsonWebTokenError } from "jsonwebtoken";
+import { sign,verify,JwtPayload } from "jsonwebtoken";
 
 import env from "../Config/env.config";
+import { Types } from "mongoose";
+import { decode } from "punycode";
+import { IUser } from "../Models/userModel";
+import { TGeneratesTokens } from "../types";
 
-interface JwtUserPayload {
-    userId: string;
-    email?: string;
-    role?: string;
+
+export interface IJwtPayload  {
+    userId: Types.ObjectId|null;
+    tenantId?: string|null|Types.ObjectId;
+    role?: string|null;
+} //update types, keep only necessary one;
+
+
+export const generateAccessToken=(user:IJwtPayload)=>{
+        return sign( user, env.JWT_ACCESS_TOKEN_SECRET,{
+            expiresIn:env.JWT_TOKEN_EXPIRES_IN
+        });
 }
 
-export const generateAccessToken=(user:JwtUserPayload):string=>{
-    return sign( user, env.JWT_ACCESS_TOKEN_SECRET,{
-        expiresIn:2*60 //1h , env.JWT_TOKEN_EXPIRES_IN 
-    });
-}
 
-export const generateRefreshToken=(user:JwtUserPayload):string=>{
-    return sign( user, env.JWT_REFRESH_TOKEN_SECRET,{
-        expiresIn:env.JWT_TOKEN_EXPIRES_IN
-    });
+export const generateRefreshToken = 
+    (user:IJwtPayload):string=>{
+        return sign( user, env.JWT_REFRESH_TOKEN_SECRET,{
+            expiresIn:env.JWT_REFRESH_TOKEN_EXPIRES_IN
+        });
 }
 
 
-export const verifyToken=(token:string,secret:string):JwtPayload | null =>{
+export const verifyToken =
+        (token:string,secret:string):JwtPayload=>{
     try{
         const decoded=verify(token,secret) as JwtPayload;
 
@@ -29,24 +38,40 @@ export const verifyToken=(token:string,secret:string):JwtPayload | null =>{
         
     } catch(error:any){
         console.error('Invalid token',error,{cause:error?.message});
-        return null
+        throw new Error("Invalid token");
     }
 }
 
 
-export const refreshAccessToken=(refreshToken:string,user:JwtUserPayload):string|null=>{ 
-    const decoded=verifyToken(refreshToken,env.JWT_REFRESH_TOKEN_SECRET);
+export const refreshAccessToken = 
+    (refreshToken:string):string=>{ 
+        const decoded=verifyToken(refreshToken,env.JWT_REFRESH_TOKEN_SECRET);
 
+        const user:IJwtPayload={
+            userId:decoded.userId,
+            tenantId: decoded.tenantId,
+            role: decoded.role,
+        }
 
-    if(!decoded) {
-        console.error('Refresh token invalid');
-        return null;
-    }
+        if(!decoded) {
+            console.error('Refresh token invalid',decoded);
+            return decoded;
+        }
 
-    return generateAccessToken(user); 
+        return generateAccessToken(user); 
 }
 
+export const jwtTokensGenerator=(userCred:IUser):TGeneratesTokens=>{
+        const jwtData:IJwtPayload=
+                { userId:userCred._id,tenantId:null,role:"admin"}
 
+        const token=
+            generateAccessToken(jwtData);
+        const refreshToken=
+            generateRefreshToken(jwtData);
+
+        return {token,refreshToken};
+    }
 
 
 

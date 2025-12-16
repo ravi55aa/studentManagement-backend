@@ -1,0 +1,34 @@
+Shared DB + tenantId filter
+
+From JWT token
+{ userId, tenantId }
+
+
+
+Multi_tenant Flow
+------------------
+STEP 1 — User Registers (Admin Signup)
+
+    This is the first user of the school.
+    They are the tenant owner.
+
+        They provide:
+
+            Admin name
+
+            Admin email
+
+            Admin phone
+
+            Admin password
+
+    👉 At this point, school does NOT exist yet.
+    👉 Only the admin user is created.
+
+    Backend steps:
+        1.Create Admin user
+        2.Generate JWT containing:
+            userId,
+            role: "admin",
+            tenantId: null (because school not created yet)
+        3.Login the admin and redirect to Create School page

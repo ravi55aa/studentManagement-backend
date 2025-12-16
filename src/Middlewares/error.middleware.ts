@@ -9,7 +9,7 @@ const handleErrorsMiddleware=(err:Error,req:Request,res:Response,next:NextFuncti
     
     if(req.statusCode==401){
         return res.status(401).json(
-            {description:"UnAuthorised",
+            {description:"Un_Authorized",
                 error:err,
                 message:err.message
             });
