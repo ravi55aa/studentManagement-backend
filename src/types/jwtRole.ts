@@ -1,0 +1,1 @@
+export type JwtROle="admin"|"school"|"teacher"|"student";

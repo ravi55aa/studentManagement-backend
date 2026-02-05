@@ -10,7 +10,10 @@ import { IResponse }
     from "../Interfaces/IResponse";
 import { IAddress } 
     from "../Models/addressModel";
-import { IDocument } from "../Models/documentModel";
+import { IDocument } 
+    from "../Models/documentModel";
+import { ISchool } 
+    from "../Models/schoolModel";
 
 
 
@@ -51,9 +54,10 @@ export const handleResponseBody =
     export const validateResponseBody=
     (payload:string)
     :IResponse<typeof payload|null>=>{
+
         return {
                 success: true, 
-                message: "School created successfully",
+                message: payload ?"School created successfully" :"School Already exist" ,
                 data:payload,
                 error: null
             };
@@ -63,7 +67,7 @@ export const handleResponseBody =
 
 
     export const handleSchoolRB=
-    (address:IAddress):IResponse<IAddress>=>{
+    (address:IAddress|null):IResponse<IAddress|null>=>{
         return {
             success:true,
             data:address,
@@ -100,12 +104,12 @@ export const handleDocRespBody
 
 //* FPRB = forgot-Password-Response-Body
 export class FPRB{
-    static handleVerifyEmailResBody(isVerified:boolean|null):IResponse<boolean|null>{
+    static handleVerifyEmailResBody(document:IUser|ISchool|null):IResponse<IUser|ISchool|null>{
         return  {
-            success:isVerified?true:false,
-            data:isVerified,
+            success:document?true:false,
+            data:document,
             error:null,
-            message:DocumentMessage.DocumentAdded
+            message:"Email Verified successfully"
         }
     }
 }

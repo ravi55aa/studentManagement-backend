@@ -1,33 +1,30 @@
 import { ISchool } from "../../Models/schoolModel";
 import { IAddress } from "../../Models/addressModel";
-import { FilterQuery } from "mongoose";
-
+import { Request,Response } from "express";
+import { serviceReturnType } from "../../Constants/interfaces";
 
 
 
 
 export interface ISchoolService {
 
-    createSchool(
-        adminId: string | undefined,
-        metaData: Partial<ISchool>
-    ): Promise<ISchool>;
+    createSchool(req:Request,res:Response
+        ) : Promise<ISchool>;
 
-    addAddress(address: Partial<IAddress>): Promise<IAddress>;
+    addAddress(req:Request,res:Response
+        ): Promise<IAddress>;
 
-    getSchool(
-        query: FilterQuery<Partial<ISchool>>
-    ): Promise<ISchool | null>;
+    getSchool(req:Request,res:Response
+        ): Promise<ISchool | null>;
 
-    // 👉 NEW: UPDATE SCHOOL
-    updateSchool(
-        schoolId: string,
-        updateData: Partial<ISchool>
-    ): Promise<ISchool|null>;
+    getSchoolAllData(req:Request,res:Response
+        ):Promise<serviceReturnType>;
+    
+    updateSchoolMeta(req:Request,res:Response)
+    :Promise<serviceReturnType>
 
-    // 👉 NEW: DELETE SCHOOL
-    deleteSchool(
-        schoolId: string
-    ): Promise<{ message: string }>;
+    //  NEW: DELETE SCHOOL
+    deleteSchool(schoolId: string
+        ): Promise<{ message: string }>;
 }
 

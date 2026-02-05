@@ -45,12 +45,30 @@ export class SchoolRepository
         schoolId: string,
         updateData: Partial<ISchool>
     ): Promise<ISchool | null> {
+        try{
+            if (!schoolId) {
+                throw new Error("School ID is required");
+            }
 
-        return await schoolModel.findByIdAndUpdate(
-            schoolId,
-            { $set: updateData },
-            { new: true } //retunrs updated doc 
-        ).exec();
+            const updatedSchool = await schoolModel
+            .findByIdAndUpdate(
+                schoolId,
+                { $set: updateData },
+                { new: true } // return updated document
+            )
+            .exec();
+
+            if (!updatedSchool) {
+            throw new Error("School not found");
+            }
+
+            return updatedSchool;
+        } catch(error){
+            console.error("❌ updateSchool error:", error);
+
+            // rethrow so controller / global error handler can handle it
+            throw new Error("Failed to update school");
+        }
     }
 
 

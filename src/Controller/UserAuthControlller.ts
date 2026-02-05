@@ -14,6 +14,7 @@ import { AuthUserDTO }
     from "../dto/userAuth.dto";
 import { handleResponseBody } 
     from "../Utils/responseBody";
+import logger from "../Utils/logger";
 
 
 
@@ -29,11 +30,14 @@ export class UserAuthController{
 
     public async register(req:Request, res:Response,next:NextFunction):Promise<void> {
         try{
-            
+
             const {userSchema,addressSchema}=AuthUserDTO.register(req);
 
             const newUser=
             await this.authService.register(userSchema,addressSchema);
+            if(!newUser){
+                throw new Error("Cant register new user");
+            }
 
 
             //jwt *********
@@ -67,12 +71,13 @@ export class UserAuthController{
     public async signIn(req:Request,res:Response,next:NextFunction):Promise<void>{
         try{
             const signInUser:IUser|null=
-                await this.authService.signIn(req.body);
+                await this.authService.signIn(req,res);
 
                 const responseBody:IResponse<IUser|null>=handleResponseBody(signInUser,res,req);
 
-                
+
             let status=signInUser?StatusCodes.OK:StatusCodes.NOT_FOUND;
+            
             res
             .status(status)
             .json(responseBody);

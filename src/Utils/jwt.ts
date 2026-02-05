@@ -1,17 +1,26 @@
-import { sign,verify,JwtPayload } from "jsonwebtoken";
+import { sign,verify,JwtPayload } 
+    from "jsonwebtoken";
 
-import env from "../Config/env.config";
-import { Types } from "mongoose";
-import { decode } from "punycode";
-import { IUser } from "../Models/userModel";
-import { TGeneratesTokens } from "../types";
+import { env } from "../Config";
+import { Types } 
+    from "mongoose";
+import { IUser } 
+    from "../Models/userModel";
+import { TGeneratesTokens } 
+    from "../types";
+import { JwtROle } 
+    from "../types/jwtRole";
+import {Request,Response} 
+    from "express";
+
 
 
 export interface IJwtPayload  {
-    userId: Types.ObjectId|null;
+    userId: string|Types.ObjectId|null;
     tenantId?: string|null|Types.ObjectId;
-    role?: string|null;
+    role?: JwtROle;
 } //update types, keep only necessary one;
+
 
 
 export const generateAccessToken=(user:IJwtPayload)=>{
@@ -19,6 +28,7 @@ export const generateAccessToken=(user:IJwtPayload)=>{
             expiresIn:env.JWT_TOKEN_EXPIRES_IN
         });
 }
+
 
 
 export const generateRefreshToken = 
@@ -29,28 +39,30 @@ export const generateRefreshToken =
 }
 
 
+
 export const verifyToken =
-        (token:string,secret:string):JwtPayload=>{
+        (token:string,secret:string):JwtPayload|null=>{
     try{
+        if(!token) return null;
         const decoded=verify(token,secret) as JwtPayload;
 
         return decoded;
-        
+
     } catch(error:any){
-        console.error('Invalid token',error,{cause:error?.message});
-        throw new Error("Invalid token");
+        return null;
     }
 }
 
 
+
 export const refreshAccessToken = 
-    (refreshToken:string):string=>{ 
+    (refreshToken:string):string|null=>{ 
         const decoded=verifyToken(refreshToken,env.JWT_REFRESH_TOKEN_SECRET);
 
         const user:IJwtPayload={
-            userId:decoded.userId,
-            tenantId: decoded.tenantId,
-            role: decoded.role,
+            userId:decoded?.userId,
+            tenantId: decoded?.tenantId,
+            role: decoded?.role,
         }
 
         if(!decoded) {
@@ -60,6 +72,8 @@ export const refreshAccessToken =
 
         return generateAccessToken(user); 
 }
+
+
 
 export const jwtTokensGenerator=(userCred:IUser):TGeneratesTokens=>{
         const jwtData:IJwtPayload=
@@ -75,6 +89,58 @@ export const jwtTokensGenerator=(userCred:IUser):TGeneratesTokens=>{
 
 
 
+export const jwtTokensGeneratorForAll=(payload:IJwtPayload):TGeneratesTokens=>{
 
+        const token=
+            generateAccessToken(payload);
+        const refreshToken=
+            generateRefreshToken(payload);
+
+        return {token,refreshToken};
+    }
+
+
+
+export const handleJwtTokensGenerator = 
+        (payload:IJwtPayload,req:Request,res:Response):void=>
+            {
+            const {token,refreshToken} = jwtTokensGeneratorForAll(payload);
+
+            res.cookie("token",token,
+                {httpOnly:true,maxAge:10 * 60 * 1000,path:"/"}
+            );
+
+            req.session.refreshToken=refreshToken;
+}
+
+
+export const handleTokenVerification=(req:Request,res:Response)=>{
+    let token=req.cookies.token;
+
+    let decoded=verifyToken(token,env.JWT_ACCESS_TOKEN_SECRET);
+
+    if(decoded==null){
+        const refreshToken=req.session.refreshToken;
+
+        if (!refreshToken) {
+            throw new Error("Your session has ended, Kindly re-login @jwt");
+        }
+
+        token=refreshAccessToken(refreshToken!);
+
+        res.cookie("token",token,
+            {httpOnly:true,maxAge:10 * 60 * 1000,path:"/"}
+        );
+
+        decoded=verifyToken(token,env.JWT_ACCESS_TOKEN_SECRET);
+
+        if (!decoded) {
+            throw new Error("AUTH_ERROR: Token refresh failed");
+        }
+    }
+
+
+    return decoded;
+}
 
 

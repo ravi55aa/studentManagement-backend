@@ -10,39 +10,39 @@ export const authMiddleware =
 
         const token = req.cookies.token; //expired token back-listing
         
-        try {
-            const decoded = 
-                verifyToken(token, env.JWT_ACCESS_TOKEN_SECRET);
-            req.user = decoded;
-
-            return next();
-
-        } catch (err) {
-            console.log("Access token expired or invalid");
-        }
+        let decoded = 
+            verifyToken(token, env.JWT_ACCESS_TOKEN_SECRET);
+        req.user = decoded||{};
+            
+        if(decoded) return next();
 
 
 
         const refreshToken = req.session.refreshToken;
+        // console.log("session id:", req.sessionID);
+        // console.log("refresh token:", req.session.refreshToken);
+        // console.log("full session:", req.session);
+
         if (!refreshToken) {
-        throw new Error("No refresh token, user not authenticated");
+            throw new Error("Your session has ended, kindly re-login @authMiddleware");
         }
 
 
 
-        const newToken = await refreshAccessToken(refreshToken);
-        if (!newToken) throw new Error("Refresh token invalid");
+        const newToken = refreshAccessToken(refreshToken);
+        if (!newToken) throw new Error("Can't generate new token from rToken");
+        
         res.cookie("token", newToken, {
         httpOnly: true,
-        maxAge: 2 * 60 * 1000, 
+        maxAge: 2 * 60 * 1000,  //can't set the env.token.expiryTime;
         });
 
 
 
-        const decoded = verifyToken(newToken, env.JWT_ACCESS_TOKEN_SECRET);
-        req.user = decoded;
+        decoded = verifyToken(newToken, env.JWT_ACCESS_TOKEN_SECRET);
+        req.user = decoded||{};
         
-        console.log("NewTokenGenerated🆕🎫")
+        console.log("NewTokenGenerated🆕🎫");
         next();
 
 

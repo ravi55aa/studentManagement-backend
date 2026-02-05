@@ -1,9 +1,11 @@
 import { model,Schema,Document} from "mongoose";
 
+
+
 export interface IAddress extends Document {
     userId?: Schema.Types.ObjectId|undefined|string;   
     tenantId?:Schema.Types.ObjectId|string|undefined;
-    userType?: "admin" | "teacher" | "student"|"school";
+    userType?: "Admin" | "Teacher" | "Student"|"School"|"Center";
     street: string;
     city: string;
     state: string;
@@ -13,15 +15,16 @@ export interface IAddress extends Document {
 
 
 
-
 export const AddressSchema = new Schema<IAddress>(
     {
         userId: { type: Schema.Types.ObjectId, required: false, refPath: "userType" },
-        tenantId: { type: Schema.Types.ObjectId, required: false, refPath: "school" },
+        
+        tenantId: { type: Schema.Types.ObjectId, required: false, refPath: "School" },
+
         userType: {
         type: String,
         required: false,
-        enum: ["admin", "teacher", "student","school"],
+        enum: ["Admin", "Teacher", "Student","School","Center"],
         },
 
         street: { type: String, required: true },
@@ -32,6 +35,8 @@ export const AddressSchema = new Schema<IAddress>(
     },
     { timestamps: true }
 );
+
+
 
 const AddressModel = model<IAddress>("Address", AddressSchema);
 

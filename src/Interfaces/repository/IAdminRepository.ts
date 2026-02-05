@@ -6,5 +6,5 @@ export interface IUserRepository extends BaseRepository<IUser> {
     findByEmail(email:string) : Promise <IUser|null>,
     //create(address:Partial<IAddress>):Promise<IAddress>
 
-    addAddress(address:IAddress):Promise<IAddress>
+    addAddress(address:Partial<IAddress>):Promise<IAddress>
 }

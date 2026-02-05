@@ -50,5 +50,5 @@ const adminSchema = new Schema<IUser>(
     { timestamps: true }
 );
 
-let userModel = model<IUser>("admin", adminSchema);
+let userModel = model<IUser>("Admin", adminSchema);
 export default userModel;

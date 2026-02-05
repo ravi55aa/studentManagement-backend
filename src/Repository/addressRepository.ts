@@ -1,3 +1,4 @@
+import { FilterQuery } from "mongoose";
 import { IAddressRepository } 
     from "../Interfaces/repository/IAddressRepository";
 import { addressModel } 
@@ -8,8 +9,6 @@ import { BaseRepository }
     from "./BaseRepository";
 
 
-
-
 export class AddressRepository 
 extends BaseRepository<IAddress>
 implements IAddressRepository {
@@ -18,5 +17,21 @@ implements IAddressRepository {
         super(addressModel);
     }
 
-    
+    async updateAddress(
+        query: FilterQuery<Partial<IAddress>>, 
+        data: Partial<IAddress>): Promise<IAddress|null> {
+        try{
+            return await addressModel.findOneAndUpdate(query, { $set: data },
+            {
+                new: true,          // return updated document
+                runValidators: true // enforce schema validation
+            }
+            ).lean<IAddress>();
+        }catch (error) {
+            throw new Error(
+            `AddressRepository.updateAddress failed: ${(error as Error).message}`
+            );
+        }
+    }
+
 }

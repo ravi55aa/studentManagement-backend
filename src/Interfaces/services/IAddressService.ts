@@ -1,6 +1,7 @@
 import { FilterQuery } from "mongoose"
 import { IAddress } from "../../Models/addressModel"
-
+import { Response,Request } from "express"
+import { serviceReturnType } from "../../Constants/interfaces"
 
 export interface IAddressService{
     getSchoolAddress(id:string|undefined):Promise<IAddress|null>
@@ -11,10 +12,10 @@ export interface IAddressService{
     //userId=paramId
     //tenantId=schoolId
 
-    createAddress(address:Partial<IAddress>):Promise<IAddress>
+    createAddress(address:Partial<IAddress>):Promise<IAddress|null>
+    
+    updateAddress(req:Request,res:Response):Promise<serviceReturnType>
+    
+    // deleteAddress(req:Request ,res:Response):Promise<serviceReturnType>
 }
 
-
-    // updateAddress(address:IAddress):Promise<IAddress>
-
-    // deleteAddress(address:IAddress):Promise<IAddress>

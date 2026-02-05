@@ -45,3 +45,135 @@ export const schoolAddressValidateSchema =
                 .min(3, "Country name must be at least 3 characters")
                 .max(20, "Country name is too long"),
     })
+
+
+
+export const schoolAcademicYearSchema = z.object({
+    code: z
+        .string()
+        .min(2, "Code is required")
+        .max(10, "Code is too long")
+        .regex(/^[A-Z0-9]+$/, "Code must be uppercase (A–Z, 0–9)"),
+
+    startDate: z
+        .string()
+        .refine(
+        (val) => !Number.isNaN(Date.parse(val)),
+        "Invalid start date"
+        ),
+
+    endDate: z
+        .string()
+        .refine(
+        (val) => !Number.isNaN(Date.parse(val)),
+        "Invalid end date"
+        ),
+
+    status: z
+        .enum(["active", "inactive"])
+    .optional(),
+
+  tenantId: z.string().optional(), // injected from JWT 
+  adminId: z.string().optional(),  // same here 
+})
+.refine(
+    (data) =>
+        new Date(data.endDate) > new Date(data.startDate),
+    {
+        message: "End date must be after start date",
+        path: ["endDate"],
+    }
+);
+
+
+
+
+/* ---------- School Academic Subjects ---------- */
+const isObjectId = (val: string) =>
+    /^[0-9a-fA-F]{24}$/.test(val);
+
+export const schoolSubjectSchema = z
+    .object({
+        name: z
+        .string()
+        .min(3, "Subject name must be at least 3 characters")
+        .trim(),
+
+        code: z
+        .string()
+        .min(2, "Code is required")
+        .regex(/^[A-Z0-9-_]+$/, "Code must be uppercase")
+        .transform((val) => val.toUpperCase()),
+
+        className: z
+        .string()
+        .min(1, "Class is required")
+        .trim(),
+
+        type: z.enum(
+        ["theory", "practical", "both"],
+        { message: "Subject type is required" }
+        ),
+
+        maxMarks: z
+        .number({
+            message: "Max marks is required",
+        })
+        .min(1, "Max marks must be greater than 0"),
+
+        passMarks: z
+        .number()
+        .min(0, "Pass marks cannot be negative")
+        .optional(),
+
+        credits: z
+        .number()
+        .min(0, "Credits cannot be negative")
+        .optional(),
+
+        department: z
+        .string()
+        .optional()
+        .transform((v) => v?.trim()),
+
+        level: z
+        .enum(
+            ["primary", "secondary", "higher-secondary", "degree"],
+            { message: "Invalid level" }
+        )
+        .optional(),
+
+        academicYear: z
+        .string()
+        .refine(isObjectId, "Invalid academic year ID"),
+
+        batchesToFollow: z
+        .array(
+            z.string().refine(String, "Invalid batch ID")
+        )
+        .min(1, "Select at least one batch"),
+
+        description: z
+        .string()
+        .min(10, "Description must be at least 10 characters")
+        .trim(),
+
+        // Backend stores file URLs, NOT files
+        referenceBooks: z
+        .array(z.string().url("Invalid file URL"))
+        .optional(),
+
+        status: z
+        .enum(["active", "inactive"])
+        .default("active"),
+    })
+    .refine(
+        (data) =>
+        data.passMarks === undefined ||
+        data.passMarks <= data.maxMarks,
+        {
+        message: "Pass marks cannot exceed max marks",
+        path: ["passMarks"],
+        }
+    );
+

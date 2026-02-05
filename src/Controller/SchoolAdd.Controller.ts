@@ -11,10 +11,12 @@ import { ISchool }
     from "../Models/schoolModel";
 import {  handleSchoolRB, handleSchoolResBody, validateResponseBody } 
     from "../Utils/responseBody";
-import { SchoolDTO } from "../dto/schoolDTO";
-import { AddressDTO } from "../dto/addressDTO";
-import { IAddress } from "../Models/addressModel";
-
+import { SchoolDTO } 
+    from "../dto/schoolDTO";
+import { AddressDTO } 
+    from "../dto/addressDTO";
+import { IAddress } 
+    from "../Models/addressModel";
 
 
 
@@ -29,12 +31,9 @@ export class SchoolController {
     //*create
     public async createSchool(req: Request, res: Response, next: NextFunction) {
         try {
-            const schoolData:Partial<ISchool> = SchoolDTO.createSchool(req.body);
-            
-            const adminId:string|undefined = req.user?.userId;  //JWT middleware attaches 
 
             const createdSchool = 
-            await this.schoolService.createSchool(adminId, schoolData);
+            await this.schoolService.createSchool(req,res);
 
             const responseBody: IResponse<string|null> = validateResponseBody(createdSchool.id);
             res
@@ -46,12 +45,10 @@ export class SchoolController {
         }
     }
 
-
     public async addAddress(req:Request,res:Response,next:NextFunction){
         try{
-            
-            const extractedDtoAdd:Partial<IAddress>=AddressDTO.handleAddress(req);
-            const dbStoredAdd=await this.schoolService.addAddress(extractedDtoAdd);
+        
+            const dbStoredAdd=await this.schoolService.addAddress(req,res);
 
             const responseBody=handleSchoolRB(dbStoredAdd);
             
@@ -60,40 +57,65 @@ export class SchoolController {
         } catch(err:any){
             next(err);
         }
-    } 
+    }
 
-    public async updateAddress(req:Request,res:Response,next:NextFunction){
-        try{
-            const extractedDtoAdd:Partial<IAddress>=AddressDTO.handleAddress(req);
-            const dbStoredAdd=await this.schoolService.addAddress(extractedDtoAdd);
+    //*update
+    public async updateSchoolMeta(req: Request, res: Response, next: NextFunction) {
+        try {
 
-            const responseBody=handleSchoolRB(dbStoredAdd);
+            console.log("req.body",req.body,"\nreq.file",req.file,"\n req.files",req.files)
+
+            const {status,resBody} = 
+                await this.schoolService.updateSchoolMeta(req,res);
             
-            res.status(StatusCodes.CREATED).json(responseBody)
+            res
+                .status(status)
+                .json(resBody);
 
-        } catch(err:any){
+        } catch (err) {
             next(err);
         }
-    } 
+    }
 
 
-    //*Read
+    //*Read 
     public async getSchool(req: Request, res: Response, next: NextFunction) {
         try {
-            const query = SchoolDTO.getSchool(req);
 
-            const isSchool = 
-            await this.schoolService.getSchool(query);
+            const isSchool:ISchool|null = 
+            await this.schoolService.getSchool(req,res);
 
             const responseBody: IResponse<string|null> =handleSchoolResBody(isSchool);
             
-            const status=isSchool ? StatusCodes.OK :StatusCodes.NOT_FOUND
+            
             res
-                .status(status)
+                .status(isSchool ? StatusCodes.OK :StatusCodes.NOT_FOUND)
                 .json(responseBody);
 
         } catch (err) {
             next(err);
         }
     }
+
+    //META+DOCUMENTS+ADDRESS = MDA
+    public async getSchoolData_MDA(req: Request, res: Response, next: NextFunction)
+        :Promise<void>{
+        try {
+            const {status,resBody} = 
+            await this.schoolService.getSchoolAllData(req,res);
+            
+            res
+                .status(status)
+                .json(resBody);
+
+        } catch (err) {
+            next(err);
+        }
+    }
+
+
+    public async updateSchool(req:Request,res:Response):Promise<void>{}
+
+    public async deleteSchool(req:Request,res:Response):Promise<void>{}
+
 }

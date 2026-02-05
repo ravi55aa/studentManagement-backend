@@ -1,6 +1,19 @@
-import {IDocument} from "../../Models/documentModel"
+import { FilterQuery } from "mongoose"
+import {IDocument, IUploadedDoc} from "../../Models/documentModel"
+import { BaseRepository } from "../../Repository/BaseRepository"
 
 
-export interface IDocumentRepository{
-    uploadDocuments(data:IDocument):Promise<IDocument|null>
+export interface IDocumentRepository extends BaseRepository<IDocument>{
+        uploadDocuments(data:IDocument):Promise<IDocument|null>
+
+        updateDocuments(query:FilterQuery<Partial<IDocument>>,data:IUploadedDoc[]) : Promise<Partial<IDocument>|null> 
+
+        updateNEWUploadDocuments(query:FilterQuery<Partial<IDocument>>,data:IUploadedDoc[])  : Promise<Partial<IDocument>|null> 
+
+        deleteDocument( query: FilterQuery<Partial<IDocument>> )
+        : Promise<IDocument | null>
+
+        deleteADocumentFile( filter: FilterQuery<Partial<IDocument>>,
+                pullQuery: FilterQuery<Partial<IDocument>>)
+                : Promise<IDocument | null>
 }

@@ -1,6 +1,7 @@
 import { BaseRepository } from "./BaseRepository";
-import documentModel ,{ IDocument } from "../Models/documentModel";
+import documentModel ,{ IDocument, IUploadedDoc } from "../Models/documentModel";
 import { IDocumentRepository } from "../Interfaces/repository/IDocument.interface";
+import { FilterQuery } from "mongoose";
 
 
 
@@ -24,4 +25,84 @@ export class DocumentRepository
             await newDoc.save();
             return newDoc;
         }
+
+
+        public async updateDocuments(query:FilterQuery<Partial<IDocument>>,data:IUploadedDoc[]) 
+        : Promise<Partial<IDocument>|null> 
+        {
+            try{
+            return await documentModel.findOneAndUpdate(
+                query,
+                { $set: data },
+                {
+                new: true,
+                runValidators: true
+                }
+            )
+            .lean<IDocument>();
+            } catch (error) {
+                throw new Error(
+                `Failed to update document: ${(error as Error).message}`
+                );
+            }
+        }
+
+        public async updateNEWUploadDocuments(query:FilterQuery<Partial<IDocument>>,data:IUploadedDoc[]) 
+        : Promise<Partial<IDocument>|null> 
+        {
+            try{
+            return await documentModel.findOneAndUpdate(
+                query,
+                    { $push: 
+                        { docs:{$each :data} } 
+                    },
+                {
+                    upsert:true
+                }
+            )
+            .lean<IDocument>();
+            } catch (error) {
+                throw new Error(
+                `Failed to update document: ${(error as Error).message}`
+                );
+            }
+        }
+
+
+        public async deleteDocument(
+        query: FilterQuery<Partial<IDocument>>
+        ): Promise<IDocument | null> {
+            try {
+                return await documentModel
+                .findOneAndDelete(query)
+                .lean<IDocument>();
+            } catch (error) {
+                throw new Error(
+                `Failed to delete document: ${(error as Error).message}`
+                );
+            }
+        }
+
+
+        public async deleteADocumentFile(
+        filter: FilterQuery<Partial<IDocument>>,
+        pullQuery: FilterQuery<Partial<IDocument>>
+        ): Promise<IDocument | null> {
+            
+            try 
+            {    
+                return await documentModel
+                            .updateOne
+                            ( filter,{ $pull: pullQuery })
+                            .lean<IDocument>();
+            } 
+            catch (error) 
+            {
+                throw new Error(
+                `Failed to delete document: ${(error as Error).message}`
+                );
+            }
+        }
+
+        
     }

@@ -15,7 +15,7 @@ const schoolMeta = new mongoose.Schema<ISchool>(
         {
         userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "admin",
+        ref: "Admin",
         required: true,
         },
 
@@ -59,4 +59,4 @@ const schoolMeta = new mongoose.Schema<ISchool>(
 );
 
 
-export default mongoose.model("school",schoolMeta );
+export default mongoose.model("School",schoolMeta );

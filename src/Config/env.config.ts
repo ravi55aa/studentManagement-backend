@@ -23,6 +23,10 @@ const env:any={
     GOOGLE_CLIENT_ID:process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET:process.env.GOOGLE_CLIENT_SECRET,
 
+    
+    NODEMAIL_MAIL:process.env.NODEMAIL_MAIL,
+    NODEMAIL_MAIL_PASS:process.env.NODEMAIL_MAIL_PASS,
+
 
     //*CLOUDINARY
     CLOUD_NAME:process.env.CLOUD_NAME,

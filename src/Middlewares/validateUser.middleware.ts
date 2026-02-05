@@ -33,5 +33,18 @@ export const validateData=(schema:ZodSchema)=>(req:Request,res:Response,next:Nex
         }
     }
 
+export const handleValidationOF = <T extends object>(
+    schema: ZodSchema<T>,
+    formData: T,
+    res:Response
+) => {
+        try{
+            const result = schema.safeParse(formData);
+        } catch(err:any){
+            handleValidationErrors(err,res);
+        }
+
+};
+
 
 

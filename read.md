@@ -1,8 +1,33 @@
-week-1 task:
-------------
-1.understand and implement repository
+**2/2/2026**
 
-2.code jwt+auth+code
+1.I wrote an code for the change school profile(i.e meta), 
 
-3.integrate ci/cd + docker
+- End point = /school/update/meta/:id
+- method = patch
+- This will update the meta profile data by following the repo architecture
 
+
+2.Wrote code for the PasswordReset
+
+- A reusable code for student ,teacher and school.
+- EndPoint = /password/reset/:id
+- method = patch 
+
+
+**3/2/2026**
+1.Clear some of the errors, and tested password reset;
+
+2. Started Adding Teacher module
+
+- Updated model for teacher
+- updated {controller, service, repo} layers
+
+
+
+**4/2/2026**
+
+*1.Updated teacher Model*
+    - separated "teacher" into two models "teacherBIO" & "Teacher"
+    - updated code of the controller and updated DTO 
+    - updated route and create two separate end points 
+        for "teacher" and "teacherBio"

@@ -1,8 +1,13 @@
-import { IUser } from "../../Models/userModel";
-import { IAddress } from "../../Models/addressModel";
+import { IUser } 
+    from "../../Models/userModel";
+import { IAddress } 
+    from "../../Models/addressModel";
+import { Request,Response } 
+    from "express";
+
 
 export interface IUserAuthService {
-    register(useData: Partial<IUser>,address:Partial<IAddress>): Promise<IUser>;
+    register(useData: Partial<IUser>,address:Partial<IAddress>): Promise<IUser|null>;
 
-    signIn(userData:Partial<IUser>):Promise<IUser|null>
+    signIn(req:Request,res:Response):Promise<IUser|null>
 }

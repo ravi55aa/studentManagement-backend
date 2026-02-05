@@ -3,12 +3,16 @@ import { IUserAuthService }
     from "../Interfaces/services/IAdminAuthService"
 import { IUserRepository } 
     from "../Interfaces/repository/IAdminRepository";
-import userModel, { IUser } 
+import { IUser } 
     from "../Models/userModel";
 import {IAddress} 
     from "../Models/addressModel";
-import { AddressFormatter, UserValidator } from "../Constants/userValidator";
-
+import { AddressFormatter, UserValidator } 
+    from "../Constants/userValidator";
+import { Request,Response } 
+    from "express";
+import { handleJwtTokensGenerator, IJwtPayload} 
+    from "../Utils/jwt";
 
 
 export class UserAuthService implements IUserAuthService {
@@ -23,12 +27,15 @@ export class UserAuthService implements IUserAuthService {
         await UserValidator.ensureUserIsTaken(this.userRepository,userData.email);
 
         const createUser = await this.userRepository.create(userData);
+        if(!createUser){
+            throw new Error("Cant create the user");
+        }
 
         await this.userRepository.addAddress(
             {
                 ...AddressFormatter.toPlain(address),
                 userId:createUser._id,
-                userType:"admin"
+                userType:"Admin"
             }
         );
         return createUser;
@@ -36,9 +43,23 @@ export class UserAuthService implements IUserAuthService {
 
 
 
-    async signIn(userData:IUser){
+    async signIn(req:Request,res:Response){
         try{
+
+            const userData:IUser=req.body;
+
             const isUser:IUser|null= await this.userRepository.findOne({email:userData.email,password:userData.password});
+
+            //jwt ****
+            if(isUser){
+                const payload:IJwtPayload=
+                {   userId:isUser?._id!,
+                    role:"admin",
+                    tenantId:null
+                }
+
+                handleJwtTokensGenerator(payload,req,res);
+            }
             
             return isUser;
         } catch(err:any){
@@ -46,6 +67,7 @@ export class UserAuthService implements IUserAuthService {
             throw new Error(err);
         }
     }
+
 }
 
 

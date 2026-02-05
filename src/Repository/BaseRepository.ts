@@ -1,5 +1,5 @@
 
-import { Document,FilterQuery,Model } from "mongoose";
+import { Document,FilterQuery,Model, Types } from "mongoose";
 
 
 
@@ -32,13 +32,30 @@ export class BaseRepository
         }
 
 
+        //*UPDATE
+        public async updateById(
+            id: string,
+            updateData: Partial<T>
+        ): Promise<T | null> {
+
+            if (!Types.ObjectId.isValid(id)) {
+            return null;
+            }
+
+            return this.model.findByIdAndUpdate(
+            id,
+            { $set: updateData },
+            { new: true }
+            ).lean<T>();
+        }
+
+
 
         //**Create */
         public async create(data: Partial<T>)
-        : Promise<T> {
+        : Promise<T|null> {
             const newUser = 
                 await this.model.create(data);
             return newUser;
         }
-
 }

@@ -3,21 +3,17 @@ import mongoose, { Document } from "mongoose";
 
 
 
-
-
-
-
 //*sub Schema
 
 export interface IUploadedDoc {
     url: string;
-    publicId: string;
+    fileName: string;
 }
 
 const uploadedDocSchema = new mongoose.Schema<IUploadedDoc>(
     {
         url: { type: String, required: true },
-        publicId: { type: String, required: true },
+        fileName: { type: String, required: true },
     },
     { _id: false }
 );
@@ -25,16 +21,10 @@ const uploadedDocSchema = new mongoose.Schema<IUploadedDoc>(
 
 
 
-
-
-
-
-//*main Schema
-
 export interface IDocument extends Document {
-    tenantId?: mongoose.Types.ObjectId|string|undefined;
-    userId?: mongoose.Types.ObjectId|string|undefined;
-    role?: string|null;
+    tenantId?: mongoose.Types.ObjectId|String|undefined;
+    userId?: mongoose.Types.ObjectId|String|undefined;
+    role?: String|null;
     docs: IUploadedDoc[];
 }
 
@@ -42,17 +32,17 @@ const documentSchema = new mongoose.Schema<IDocument>(
         {
         tenantId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "school",
+        ref: "School",
         required: false,
         },
         userId:{
             type: mongoose.Schema.Types.ObjectId,
-            ref: "school",
-            required: false,
+            refPath: "role",
+            required: true,
         },
         role:{
             type:String,
-            enum:["school","teacher","student","admin"],
+            enum:["School","Teacher","Student","Admin"],
             required:true,
             trim:true
         },
@@ -66,4 +56,4 @@ const documentSchema = new mongoose.Schema<IDocument>(
 );
 
 
-export default mongoose.model<IDocument>("documents",documentSchema );
+export default mongoose.model<IDocument>("Documents",documentSchema );
