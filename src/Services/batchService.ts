@@ -10,6 +10,7 @@ import { BatchDto } from "../dto/batchDto";
 import { BatchResponseBody } from "../Utils/ResponseBody/batch.response";
 import { IBatchRepository } from "../Interfaces/repository/IBatchRepository";
 import { IBatchService } from "../Interfaces/services/IBatchService";
+import { idToObjectId } from "../Repository/forgotPassword.Repository";
 
 
 export class BatchService implements IBatchService {
@@ -26,7 +27,6 @@ export class BatchService implements IBatchService {
     async createBatch(req:Request,res:Response):Promise<serviceReturnType> {
 
         const dto:Partial<IBatches> = BatchDto.handleNewBatchDto(req,res);
-
 
         const newBatchDoc:IBatches|null=await this.batchRepo.addBatch(dto);
 

@@ -15,7 +15,8 @@ import {
     schoolRouter,addressRouter,
     documentsRouter,
     resetPassword,
-    teacherRouter
+    teacherRouter,
+    notificationRouter
     } from "./Routes/index"; 
 
 
@@ -43,6 +44,7 @@ app.use("/address",addressRouter);
 app.use("/documents",documentsRouter);
 app.use("/password",resetPassword);
 app.use("/teacher",teacherRouter);
+app.use("/notification",notificationRouter);
 
 
 app.use((req, res) => {

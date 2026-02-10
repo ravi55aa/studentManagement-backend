@@ -8,7 +8,7 @@ import { idToObjectId } from "../Repository/forgotPassword.Repository";
 export class BatchDto {
 
     static handleNewBatchDto(req: Request,res:Response): Partial<IBatches> {
-        console.log("@batchDto req.body",req.body);
+        
 
     const {
         name,
@@ -25,7 +25,7 @@ export class BatchDto {
     const newBatchDto: Partial<IBatches> = {
         name,
         code,
-        center:idToObjectId(center),
+        center:center,
         status:isActive?"active":"inActive",
         schedule: {
             startTime:startDate,endTime:endDate

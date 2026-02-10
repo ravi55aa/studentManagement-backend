@@ -1,4 +1,5 @@
-import { string, z } from "zod";
+import {  z } from "zod";
+import { Gender_types } from "../types/enum";
 
 /* ----------------------------------------
 `ENUMS (keep in sync with backend)
@@ -72,4 +73,55 @@ export const createTeacherSchema = z.object({
     dateOfJoining: z.coerce.date(),
 
     dateOfLeaving: z.coerce.date().nullable().optional(),
+});
+
+
+export const teacherBioFormSchema = z.object({
+    firstName: z
+        .string()
+        .min(2, "First name must be at least 2 characters")
+        .max(50, "First name is too long")
+        .optional(),
+
+    lastName: z
+        .string()
+        .min(1, "Last name must be at least 1 character")
+        .max(50, "Last name is too long")
+        .optional()
+        .nullable(),
+
+    email: z
+        .string()
+        .email("Enter a valid email address")
+        .optional()
+        .nullable(),
+
+    phone: z
+        .string()
+        .regex(/^[6-9]\d{9}$/, "Enter a valid phone number")
+        .optional()
+        .nullable(),
+
+    qualification: z
+        .string()
+        .min(3, "Qualification is Required")
+        .max(100, "Qualification is too long")
+        .optional()
+        .nullable(),
+
+    dateOfBirth: z
+        .coerce
+        .date()
+        .optional(),
+
+    experience: 
+        z.coerce.number()
+        .min(1, "Min 1 year of experience is required")
+        .max(50, "Experience seems invalid")
+        .optional(),
+
+    gender: z.enum(
+            ["male", "female", "other"],
+            { message: "Gender is required" }
+            ).optional(),
 });

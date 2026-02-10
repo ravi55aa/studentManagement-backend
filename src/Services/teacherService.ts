@@ -6,10 +6,11 @@ import { teacherModel } from "../Models";
 import { TeacherDTO, TeacherValidation } from "../dto/teacherDto";
 import { serviceReturnType } from "../Constants/interfaces";
 import { ITeacherRepo } from "../Interfaces/repository/ITeacherRepo";
-import { IResponse } from "../Interfaces/IResponse";
 import { ITeacherService } from "../Interfaces/services/ITeacherService";
 import { TeacherResponseBody } from "../Utils/ResponseBody/teacher.responseBody";
-
+import { IGetAllTeachers } from "../Interfaces/Other/getAllTeachers";
+import { handleValidationOF } from "../Middlewares/validateUser.middleware";
+import { teacherBioFormSchema } from "../Validators/teacher";
 
 export class TeacherService implements ITeacherService{
 
@@ -28,8 +29,9 @@ export class TeacherService implements ITeacherService{
         ): Promise<serviceReturnType> {
 
             //VALIDATION
-            TeacherValidation.teacherBio(req,res);
-
+            const dataToValidate = TeacherValidation.teacherBio(req,res);
+            //handleValidationOF(teacherBioFormSchema,dataToValidate,req);
+            
             //DTO
             const data=TeacherDTO.createBio(req,res);
             
@@ -38,14 +40,14 @@ export class TeacherService implements ITeacherService{
                     email: data.email,
                     phone: data.phone,
                 });
-
+                
                 if (exists) {
                     throw new Error("Class teacher already Exist with the provided credentials");
                 }
             }
             
             const newTeacher:ITeacherBio | null=await this.teacherRepo.create(data);
-
+            
             const {status,resBody}=TeacherResponseBody.createTeacher<ITeacherBio>(newTeacher);
             
         return {status,resBody};
@@ -58,7 +60,7 @@ export class TeacherService implements ITeacherService{
 
         TeacherValidation.teacher(req,res);
         
-        const data=TeacherDTO.create(req);
+        const data=await TeacherDTO.create(req);
         
         if (data.classTeacherOf && data.academicYearId) {
             const exists = await this.teacherRepo.findOne({
@@ -66,6 +68,8 @@ export class TeacherService implements ITeacherService{
                 academicYearId: data.academicYearId,
                 employmentStatus: "active",
             });
+
+            await this.teacherRepo.softDelete({_id:data.teacherId!});
 
             if (exists) {
                 throw new Error("Class teacher already assigned for this batch");
@@ -78,6 +82,18 @@ export class TeacherService implements ITeacherService{
         
         return {status,resBody};
     }
+
+
+    public async getAllTeacher ()
+    : Promise<serviceReturnType> {
+
+        const allTeachers:IGetAllTeachers|null=await this.teacherRepo.getAllTeachers();
+
+        const {status,resBody}=TeacherResponseBody.getAllTeachers(allTeachers);
+        
+        return {status,resBody};
+    }
+
 
     /* ----------------------------------------
         UPDATE TEACHER

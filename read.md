@@ -31,3 +31,11 @@
     - updated code of the controller and updated DTO 
     - updated route and create two separate end points 
         for "teacher" and "teacherBio"
+
+
+**6-2-2026**
+completed adding teachers
+Cleared the error, like adding batches and subject
+Only one teacher allowed to per class
+Also giving errors while inserting documents and profile
+update the employedId code. given function 

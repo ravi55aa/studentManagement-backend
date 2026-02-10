@@ -411,7 +411,7 @@ export class DocumentsDto{
         static handleDtoOfDoc(req:Request):Partial<IDocument>{
 
                 const files=req.files as Express.Multer.File[];
-                const docs = files.map((f) => ({
+                const docs = files?.map((f) => ({
                     url: f.path,
                     fileName: f.filename,
                 }));

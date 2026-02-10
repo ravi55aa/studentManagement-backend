@@ -27,10 +27,10 @@ export enum EDepartment {
     MATHEMATICS = "mathematics",
     SCIENCE = "science",
     ENGLISH = "english",
-    SOCIAL_SCIENCE = "social_science",
+    SOCIAL_SCIENCE = "social science",
     LANGUAGES = "languages",
-    COMPUTER_SCIENCE = "computer_science",
-    PHYSICAL_EDUCATION = "physical_education",
+    COMPUTER_SCIENCE = "computer science",
+    PHYSICAL_EDUCATION = "physical education",
     ARTS = "arts",
 }
 

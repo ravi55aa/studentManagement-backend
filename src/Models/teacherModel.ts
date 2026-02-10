@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, ObjectId } from "mongoose";
+import mongoose, { Schema, Document, ObjectId, Types } from "mongoose";
 import {
     EmploymentStatus,
     TeacherDesignation,
@@ -6,7 +6,7 @@ import {
 } from "../types/enum";
 import { IAcademicSubject } from "./academicYear";
 import { Gender_types } from "../types/enum";
-import { IUpload_document } from "./courses.model";
+import { IUploadedDoc } from "./documentModel";
 
 
 export interface ITeacherBio extends Document {
@@ -19,7 +19,7 @@ export interface ITeacherBio extends Document {
     profilePhoto: String | null;
     experience: Number | null;
     gender: Gender_types;
-    documents:IUpload_document[];
+    documents:IUploadedDoc[];
     tenantId:ObjectId|null;
 }
 
@@ -104,10 +104,10 @@ export const teacherBioModel = mongoose.model<ITeacherBio>('TeacherBio', Teacher
  */
 
 export interface ITeacher  {
-    teacherId: ObjectId|null;
-    academicYearId: ObjectId | null;
+    teacherId: Types.ObjectId|null;
+    academicYearId: Types.ObjectId | null;
     employeeId: String | null;
-    classTeacherOf: ObjectId | null;
+    classTeacherOf: Types.ObjectId | null;
     employmentStatus: EmploymentStatus | null;
     assignedSubjects: IAcademicSubject[];
     designation: TeacherDesignation | null;
@@ -123,7 +123,8 @@ const TeacherSchema: Schema = new Schema({
     teacherId: { 
         type: Schema.Types.ObjectId, 
         ref: "TeacherBio",
-        required:true
+        required:false,
+        default:null
     },
 
     academicYearId: { type: Schema.Types.ObjectId, ref: "AcademicYear" },
@@ -150,10 +151,10 @@ const TeacherSchema: Schema = new Schema({
             "mathematics",
             "science",
             "english",
-            "social_science",
+            "social science",
             "languages",
-            "computer_science",
-            "physical_education",
+            "computer science",
+            "physical education",
             "arts",
         ],
     },

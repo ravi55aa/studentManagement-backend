@@ -20,7 +20,7 @@ import { idToObjectId } from "../Repository/forgotPassword.Repository";
             } = req.body;
             
             const {tenantId}= SchoolAcademicYearDto.getTenantId(req,res);
-            console.log("@addressDTO tenantId",tenantId);
+            
 
             return {
                 city,

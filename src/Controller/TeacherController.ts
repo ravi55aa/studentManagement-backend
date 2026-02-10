@@ -26,6 +26,20 @@ export class TeacherController {
         }
     }
 
+
+    public async getAllTeachers(req: Request, res: Response, next: NextFunction) {
+        try {
+            
+            const {status,resBody} = 
+            await this.teacherService.getAllTeacher();
+
+            return res.status(status).json(resBody);
+
+        } catch (err) {
+            next(err);
+        }
+    }
+
     public async createTeacher(req: Request, res: Response, next: NextFunction) {
         try {
             

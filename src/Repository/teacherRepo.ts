@@ -3,6 +3,8 @@ import { teacherModel } from "../Models";
 import { ITeacher, ITeacherBio, teacherBioModel } from "../Models/teacherModel"; 
 import { BaseRepository } from "./BaseRepository";
 import { ITeacherRepo } from "../Interfaces/repository/ITeacherRepo";
+import logger from "../Utils/logger";
+import { IGetAllTeachers } from "../Interfaces/Other/getAllTeachers";
 
 export class TeacherRepository 
     extends BaseRepository<ITeacherBio> 
@@ -20,20 +22,31 @@ export class TeacherRepository
     public async createProfessional(data: Partial<ITeacher>)
     : Promise<ITeacher|null> 
     {
-        const teacher = new teacherModel(data);
-        await teacher.save();
+        try{
+            const teacher = new teacherModel(data);
+            await teacher.save();
 
-        return teacher.toObject();
+            return teacher.toObject();
+        } catch(err){
+            logger.error(err);
+            throw new Error(`Cannot create the teacher Error:${err}`)
+        }
     }
+
 
     static async create(
         data: Partial<ITeacher>
     ): Promise<ITeacher> {
-
-        const teacher = await teacherModel.create(data);
-
-        return teacher.toObject();
+        try{
+            const teacher = await teacherModel.create(data);
+    
+            return teacher.toObject();
+        } catch(err){
+            logger.error(err);
+            throw new Error(`Cannot create the teacher Error:${err}`)
+        }
     }
+
 
 
     /* ----------------------------------------
@@ -55,6 +68,7 @@ export class TeacherRepository
         .lean<ITeacher>();
     }
 
+
     /* ----------------------------------------
         FIND ONE (GENERIC)
     ---------------------------------------- */
@@ -64,6 +78,8 @@ export class TeacherRepository
 
         return teacherModel.findOne(query).lean<ITeacher>();
     }
+
+
 
     /* ----------------------------------------
         FIND MANY
@@ -80,20 +96,18 @@ export class TeacherRepository
         .lean<ITeacher[]>();
     }
 
+
+
     /* ----------------------------------------
         SOFT DELETE
     ---------------------------------------- */
 
     public async softDelete(
-        teacherId: string
+        query: FilterQuery<Partial<ITeacher>>
     ): Promise<boolean> {
 
-        if (!Types.ObjectId.isValid(teacherId)) {
-        return false;
-        }
-
         const result = await teacherModel.findByIdAndUpdate(
-        teacherId,
+        query,
         {
             $set: {
             employmentStatus: "terminated",
@@ -104,6 +118,8 @@ export class TeacherRepository
 
         return !!result;
     }
+
+
 
     /* ----------------------------------------
         ASSIGN SUBJECTS
@@ -124,6 +140,8 @@ export class TeacherRepository
         ).lean<ITeacher>();
     }
 
+
+
     /* ----------------------------------------
         REMOVE SUBJECT
     ---------------------------------------- */
@@ -142,4 +160,23 @@ export class TeacherRepository
         { new: true }
         ).lean<ITeacher>();
     }
+
+
+    public async getAllTeachers (): Promise<IGetAllTeachers>{
+        try{
+            const a= await teacherBioModel.find({},{tenantId:0,_id:0}).lean<ITeacherBio[]>();
+    
+            const b=await teacherModel.find({},{_id:0,}).lean<ITeacher[]>();
+            
+            const result:IGetAllTeachers={
+                teacherBio:a,
+                teachersSchoolData:b
+            }
+            return result
+
+        } catch(err){
+            logger.error(`Error: ${err}`);
+            throw new Error(`Cant fetch Teachers, ${err}`);
+        }
     }
+}

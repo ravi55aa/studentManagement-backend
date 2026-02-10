@@ -1,6 +1,7 @@
-import { FilterQuery } from "mongoose";
+import { FilterQuery, ObjectId } from "mongoose";
 import { ITeacher, ITeacherBio } from "../../Models/teacherModel";
 import { BaseRepository } from "../../Repository/BaseRepository";
+import { IGetAllTeachers } from "../Other/getAllTeachers";
 
 export interface ITeacherRepo extends BaseRepository<ITeacherBio>{
 
@@ -9,8 +10,10 @@ export interface ITeacherRepo extends BaseRepository<ITeacherBio>{
     ):Promise<ITeacher | null>
 
     softDelete(
-        teacherId: string
+        query: FilterQuery<Partial<ITeacher>>
     ): Promise<boolean>
+
+    getAllTeachers (): Promise<IGetAllTeachers>
 
     assignSubjects(
             teacherId: string,

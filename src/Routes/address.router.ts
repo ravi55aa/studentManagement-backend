@@ -22,10 +22,6 @@ router.put("/edit/:id",
     (req,res,next)=>addController.updateAddress(req,res,next)
 );
 
-// router.delete("/delete/:id",
-//     authMiddleware,
-//     (req,res,next)=>addController.deleteAddress(req,res,next)
-// );
 
 
 export default router;
