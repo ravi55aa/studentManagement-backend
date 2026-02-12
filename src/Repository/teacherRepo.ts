@@ -140,6 +140,22 @@ export class TeacherRepository
         ).lean<ITeacher>();
     }
 
+    public async assignClass(
+        teacherId: string,
+        batchId: string,
+    ): Promise<ITeacher | null> {
+
+        return teacherModel.findByIdAndUpdate(
+        teacherId,
+        {
+            $set: {
+            classTeacherOf: batchId,
+            },
+        },
+        { new: true }
+        ).lean<ITeacher>();
+    }
+
 
 
     /* ----------------------------------------

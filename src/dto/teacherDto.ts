@@ -93,6 +93,14 @@ export class TeacherDTO {
     static update(data:Partial<ITeacher>): Partial<ITeacher> {
         return data;
     }
+
+
+    static assignClass(req:Request): {teacherId:string,batchId:string }{
+        const {teacherId}=req.params;
+        const {batchId}=req.body
+
+        return {teacherId:teacherId!,batchId:batchId};
+    }
 }
 
 
@@ -139,6 +147,14 @@ export class TeacherValidation {
             dateOfJoining: data.dateOfJoining!,
             centerId: data.centerId!
         };
+
+        //MOVE THIS DB-CODE into repository
+        const year=await academicYearModel.findOne({code:data.academicYearId});
+        teacherData.academicYearId=year?._id;
+
+        const batch=await batchModel.findOne({code:data.classTeacherOf});
+        teacherData.academicYearId=batch?._id;
+
 
         handleValidationOF(createTeacherSchema,
             teacherData,res);

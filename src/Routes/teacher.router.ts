@@ -25,15 +25,16 @@ router.post(
 
 
 router.get(
-    "/read",
+    "/all",
     authMiddleware,
     (req,res,next)=>
         teacherController.getAllTeachers(req,res,next));
 
 
+router.patch("/assignToBatch/:id",
+    authMiddleware,
+    (req,res,next)=>teacherController.assignClassToTeacher(req,res,next));
 
-//* Using the SAME route with DIFFERENT HTTP METHODS is best 
-//* But ONLY when the action represents the SAME RESOURCE
 
 
 router.route("/:id")
@@ -43,6 +44,9 @@ router.route("/:id")
         (req,res,next)=>teacherController.createTeacher(req,res,next))
     .post(authMiddleware,
         (req,res,next)=>teacherController.createTeacher(req,res,next));
+
+
+
 
 export default router;
 

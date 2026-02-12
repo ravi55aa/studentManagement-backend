@@ -6,7 +6,6 @@ import { IAddress } from "../Models/addressModel";
 import { handleTokenVerification } from "../Utils/jwt";
 
 import { SchoolAcademicYearDto } from "./schoolDTO";
-import { idToObjectId } from "../Repository/forgotPassword.Repository";
 
 
     export class AddressDTO{
@@ -33,6 +32,8 @@ import { idToObjectId } from "../Repository/forgotPassword.Repository";
                 userType:"School"
             };
         }
+
+
 
         static updateAddress(req:Request,res:Response)
             :Partial<IAddress>{

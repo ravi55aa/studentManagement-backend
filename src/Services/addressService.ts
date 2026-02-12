@@ -10,7 +10,6 @@ import { serviceReturnType } from "../Constants/interfaces";
 import { IResponse } from "../Interfaces/IResponse";
 import { AddressDTO } from "../dto/addressDTO";
 import {Request,Response} from "express";
-import { addressModel } from "../Models";
 
 
 
@@ -32,7 +31,6 @@ export class AddressService implements IAddressService{
     }
     
     async createAddress(address:Partial<IAddress>){
-        //dto + validation
         return await this.addressRepository.create(address);
     }
 
@@ -57,20 +55,4 @@ export class AddressService implements IAddressService{
         
         return {status,resBody};
     }
-
-    // public async deleteAddress(req: Request, res: Response): Promise<serviceReturnType> {
-    //     const query=AddressDTO.updateAddress(req,res);
-    //     const data=await this.addressRepository.deleteOne(query);
-        
-    //     //TODO:- update to ResponseBody();
-    //     const status=data?200:409;
-    //     const resBody={
-    //         success:data?true:false,
-    //         error:data?null:"Something is error",
-    //         message:data?"Deleted successfully":"Cant delete",
-    //         data:data?data:null
-    //     }
-
-    //     return {status,resBody}
-    // }
 }

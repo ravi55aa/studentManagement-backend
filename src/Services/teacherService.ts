@@ -9,8 +9,8 @@ import { ITeacherRepo } from "../Interfaces/repository/ITeacherRepo";
 import { ITeacherService } from "../Interfaces/services/ITeacherService";
 import { TeacherResponseBody } from "../Utils/ResponseBody/teacher.responseBody";
 import { IGetAllTeachers } from "../Interfaces/Other/getAllTeachers";
-import { handleValidationOF } from "../Middlewares/validateUser.middleware";
-import { teacherBioFormSchema } from "../Validators/teacher";
+import { ApiResponse } from "../Constants/apiResponse";
+
 
 export class TeacherService implements ITeacherService{
 
@@ -28,11 +28,10 @@ export class TeacherService implements ITeacherService{
             req:Request,res:Response
         ): Promise<serviceReturnType> {
 
-            //VALIDATION
-            const dataToValidate = TeacherValidation.teacherBio(req,res);
-            //handleValidationOF(teacherBioFormSchema,dataToValidate,req);
             
-            //DTO
+            const dataToValidate = TeacherValidation.teacherBio(req,res);
+            
+            
             const data=TeacherDTO.createBio(req,res);
             
             if (data.email && data.phone) {
@@ -84,13 +83,33 @@ export class TeacherService implements ITeacherService{
     }
 
 
-    public async getAllTeacher ()
+    public async getAllTeachers ()
     : Promise<serviceReturnType> {
 
         const allTeachers:IGetAllTeachers|null=await this.teacherRepo.getAllTeachers();
 
+        let {teacherBio}=allTeachers;
+        
+        if(teacherBio.length<=0){
+            const{status,resBody} = ApiResponse.notFound("No Teachers Found, Kindly add teacher");
+
+            return {status,resBody}
+        } 
+
         const {status,resBody}=TeacherResponseBody.getAllTeachers(allTeachers);
         
+        return {status,resBody};
+    }
+
+
+
+    public async assignClassToTeacher(req: Request): Promise<serviceReturnType> {
+        const dto=TeacherDTO.assignClass(req);
+
+        const upTeacher=await this.teacherRepo.assignClass(dto.teacherId,dto.batchId);
+
+        const {status,resBody}=TeacherResponseBody.createTeacher<ITeacher>(upTeacher);
+
         return {status,resBody};
     }
 
@@ -133,6 +152,9 @@ export class TeacherService implements ITeacherService{
 
         return updated;
     }
+
+
+
 
     /* ----------------------------------------
         DELETE TEACHER (SOFT DELETE)

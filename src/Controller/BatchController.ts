@@ -36,6 +36,9 @@ export class BatchController{
             next(err);
         }
     }
+
+
+
     async getASchoolBatch(req:Request,res:Response,next:NextFunction){
         try{
 
@@ -46,6 +49,8 @@ export class BatchController{
             next(err);
         }
     }
+
+
     async editASchoolBatch(req:Request,res:Response,next:NextFunction){
         try{
 
@@ -56,6 +61,7 @@ export class BatchController{
             next(err);
         }
     }
+
 
     async deleteASchoolBatch(req:Request,res:Response,next:NextFunction){
         try{

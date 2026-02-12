@@ -11,7 +11,11 @@ export interface ITeacherService{
     : Promise<serviceReturnType>
     
 
-    getAllTeacher()
+    getAllTeachers()
+    : Promise<serviceReturnType> 
+
+
+    assignClassToTeacher(req:Request)
     : Promise<serviceReturnType> 
 
 }

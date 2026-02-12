@@ -20,6 +20,11 @@ export interface ITeacherRepo extends BaseRepository<ITeacherBio>{
             subjectIds: string[]
         ): Promise<ITeacher | null>
 
+    assignClass(
+            teacherId: string,
+            batchId: string,
+        ): Promise<ITeacher | null>
+
     removeSubject(
             teacherId: string,
             subjectId: string

@@ -79,7 +79,7 @@ const TeacherBioSchema: Schema = new Schema(
         documents : [
             {
                 fileName:{type:String,required:true}, 
-                fileUrl:{type:String,required:true}
+                url:{type:String,required:true}
             }],
         tenantId : {
             type:Schema.Types.ObjectId, 
