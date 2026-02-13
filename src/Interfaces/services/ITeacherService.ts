@@ -9,10 +9,18 @@ export interface ITeacherService{
 
     createTeacherBio(req:Request,res:Response)
     : Promise<serviceReturnType>
+
+    updateTeacherBio(
+            teacherId: string,
+            req: Request)
+    : Promise<serviceReturnType>
     
 
     getAllTeachers()
-    : Promise<serviceReturnType> 
+    : Promise<serviceReturnType>
+    
+    getTeacherById( teacherId: string)
+    : Promise<serviceReturnType>
 
 
     assignClassToTeacher(req:Request)

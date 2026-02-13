@@ -33,6 +33,38 @@ export class TeacherDTO {
         return returnUpdated;
     }
 
+    static updateBio(req:Request):Partial<ITeacherBio>{
+
+        const data: Partial<ITeacherBio> = req.body;
+
+        const { docs, profile } = this.handleDocuments(req);
+
+        const returnUpdated: Partial<ITeacherBio> = {
+            ...(data.firstName && { firstName: data.firstName }),
+            ...(data.lastName && { lastName: data.lastName }),
+            ...(data.email && { email: data.email }),
+            ...(data.phone && { phone: data.phone }),
+            ...(data.qualification && { qualification: data.qualification }),
+            ...(data.gender && { gender: data.gender }),
+
+            ...(data.experience !== undefined && {
+            experience: Number(data.experience),
+            }),
+
+            ...(data.dateOfBirth && {
+            dateOfBirth: new Date(data.dateOfBirth),
+            }),
+
+            ...(profile && { profilePhoto: profile }),
+
+            ...(docs && docs.length > 0 && {
+            documents: docs,
+            }),
+        };
+
+        return returnUpdated;
+    }
+
     static handleDocuments(req:Request){
         
         const files = req.files as {

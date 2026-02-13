@@ -10,6 +10,8 @@ import { ITeacherService } from "../Interfaces/services/ITeacherService";
 import { TeacherResponseBody } from "../Utils/ResponseBody/teacher.responseBody";
 import { IGetAllTeachers } from "../Interfaces/Other/getAllTeachers";
 import { ApiResponse } from "../Constants/apiResponse";
+import { TeacherType } from "../types/teacher.types";
+import logger from "../Utils/logger";
 
 
 export class TeacherService implements ITeacherService{
@@ -29,8 +31,7 @@ export class TeacherService implements ITeacherService{
         ): Promise<serviceReturnType> {
 
             
-            const dataToValidate = TeacherValidation.teacherBio(req,res);
-            
+            const dataToValidate = TeacherValidation.teacherBio(req,res);            
             
             const data=TeacherDTO.createBio(req,res);
             
@@ -101,6 +102,79 @@ export class TeacherService implements ITeacherService{
         return {status,resBody};
     }
 
+    public async getTeacherById(
+        teacherId: string
+        ): Promise<serviceReturnType> {
+
+        if (!teacherId) {
+            const { status, resBody } = ApiResponse.badRequest(
+            "Teacher ID is required"
+            );
+            return { status, resBody };
+        }
+
+        const teacherBio = await this.teacherRepo.findById(teacherId);
+        const teacher = await this.teacherRepo.getTeacherById(teacherId);
+        
+
+        if (!teacherBio || !teacher) {
+            const { status, resBody } = ApiResponse.notFound(
+            "Teacher not found"
+            );
+            return { status, resBody };
+        }
+
+        const combineTeacher:TeacherType={
+            teacher:teacher,
+            teacherBio:teacherBio
+        }
+
+        const { status, resBody } =
+            TeacherResponseBody.createTeacher(combineTeacher);
+
+        return { status, resBody };
+    }
+
+    public async updateTeacherBio(
+        teacherId: string,
+        req: Request
+        ): Promise<serviceReturnType> {
+
+        try {
+            if (!Types.ObjectId.isValid(teacherId)) {
+            return ApiResponse.badRequest("Invalid Teacher ID");
+            }
+            
+            /* ------EXTRACT BODY---------  */
+            const existingTeacher =
+            await this.teacherRepo.findById(teacherId);
+
+            if (!existingTeacher) {
+            return ApiResponse.notFound("Teacher not found");
+            }
+
+            const updatePayload=TeacherDTO.updateBio(req);
+
+            const updated =
+            await this.teacherRepo.updateBioById(
+                teacherId,
+                updatePayload
+            );
+
+            if (!updated) {
+            return ApiResponse.failure("Failed to update teacher");
+            }
+
+            return ApiResponse.success(
+            updated,
+            "Teacher bio updated successfully"
+            );
+
+        } catch (error) {
+            logger.error(error);
+            return ApiResponse.failure("Something went wrong");
+        }
+    }
 
 
     public async assignClassToTeacher(req: Request): Promise<serviceReturnType> {

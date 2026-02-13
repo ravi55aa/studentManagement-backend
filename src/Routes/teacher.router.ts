@@ -17,6 +17,17 @@ router.post(
     (req,res,next)=>
         teacherController.createTeacherBio(req,res,next));
 
+router.patch(
+    "/bio/update/:id",
+    authMiddleware,
+    uploadCloud.fields([
+    { name: "profile", maxCount: 1 },
+    { name: "docs", maxCount: 10 },
+    ]),
+    (req,res,next)=>
+        teacherController.createTeacher(req,res,next));
+
+
 router.post(
     "/create/:id",
     authMiddleware,
@@ -38,6 +49,7 @@ router.patch("/assignToBatch/:id",
 
 
 router.route("/:id")
+    .get(authMiddleware,(req,res,next)=>teacherController.getTeacherById(req,res,next))
     .patch(authMiddleware,
         (req,res,next)=>teacherController.createTeacher(req,res,next))
     .delete(authMiddleware,

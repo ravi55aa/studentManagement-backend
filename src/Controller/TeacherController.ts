@@ -38,6 +38,32 @@ export class TeacherController {
         }
     }
 
+    public async updateTeacherBio(
+    req: Request,
+    res: Response,
+    next: NextFunction
+    ): Promise<void> {
+    try {
+        const { id } = req.params;
+
+        if (!id) {
+            res.status(400).json({
+                success: false,
+                message: "Teacher ID is required",
+            });
+            return;
+        }
+
+        const { status, resBody } =
+        await this.teacherService.updateTeacherBio(id, req);
+
+        res.status(status).json(resBody);
+    } catch (error) {
+        next(error);
+    }
+    }
+
+
     public async getAllTeachers(
         req: Request,
         res: Response,
@@ -52,6 +78,23 @@ export class TeacherController {
         next(error);
         }
     }
+
+    public async getTeacherById(
+    req: Request,
+    res: Response,
+    next: NextFunction
+    ) {
+    try {
+        const { id } = req.params;
+
+        const result = await this.teacherService.getTeacherById(id!);
+
+        return res.status(result.status).json(result.resBody);
+    } catch (err) {
+        next(err);
+    }
+    }
+
 
     public async assignClassToTeacher(
         req: Request,

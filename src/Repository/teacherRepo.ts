@@ -15,9 +15,7 @@ export class TeacherRepository
             super(teacherBioModel)
         }
 
-    /* ----------------------------------------
-        CREATE
-    ---------------------------------------- */
+    /* --------CREATE----------- */
 
     public async createProfessional(data: Partial<ITeacher>)
     : Promise<ITeacher|null> 
@@ -49,9 +47,7 @@ export class TeacherRepository
 
 
 
-    /* ----------------------------------------
-        FIND BY ID
-    ---------------------------------------- */
+    /* ----------    FIND BY ID   ------------ */
     static async findById(
         teacherId: string
     ): Promise<ITeacher | null> {
@@ -60,18 +56,29 @@ export class TeacherRepository
         return null;
         }
 
-        return teacherModel.findById(teacherId)
+        return await teacherModel.findById(teacherId)
         .populate("classTeacherOf")
         .populate("assignedSubjects")
         .populate("academicYearId")
         .populate("centerId")
         .lean<ITeacher>();
     }
+    
+
+    public async getTeacherById(
+    teacherId: string
+    ):Promise<ITeacher|null> {
+    return await teacherModel.findOne({teacherId:teacherId})
+        .populate("centerId", "name")
+        .populate("academicYearId", "year code")
+        .populate("classTeacherOf", "name code")
+        .populate("assignedSubjects", "name code")
+        .lean();
+    }
 
 
-    /* ----------------------------------------
-        FIND ONE (GENERIC)
-    ---------------------------------------- */
+
+    /* ------------- FIND ONE (GENERIC) ----------------*/
     static async findOne(
         query: FilterQuery<Partial<ITeacher>>
     ): Promise<ITeacher | null> {
@@ -81,9 +88,7 @@ export class TeacherRepository
 
 
 
-    /* ----------------------------------------
-        FIND MANY
-    ---------------------------------------- */
+    /* -------------FIND MANY-----------------*/
     static async findMany(
         query:FilterQuery<Partial<ITeacher>>
     ): Promise<ITeacher[]> {
@@ -98,9 +103,7 @@ export class TeacherRepository
 
 
 
-    /* ----------------------------------------
-        SOFT DELETE
-    ---------------------------------------- */
+    /* -----------SOFT DELETE------------- */
 
     public async softDelete(
         query: FilterQuery<Partial<ITeacher>>
@@ -157,6 +160,24 @@ export class TeacherRepository
     }
 
 
+    /*-------UPDATE------ */
+    
+    public async updateBioById(
+    teacherId: string,
+    data: Partial<ITeacherBio>
+    ): Promise<ITeacherBio | null> {
+        
+        if (!Types.ObjectId.isValid(teacherId)) {
+            return null;
+        }
+
+        return teacherBioModel.findByIdAndUpdate(
+            teacherId,
+            { $set: data },
+            { new: true }
+        ).lean<ITeacherBio>();
+    }
+
 
     /* ----------------------------------------
         REMOVE SUBJECT
@@ -180,7 +201,7 @@ export class TeacherRepository
 
     public async getAllTeachers (): Promise<IGetAllTeachers>{
         try{
-            const a= await teacherBioModel.find({},{tenantId:0,_id:0}).lean<ITeacherBio[]>();
+            const a= await teacherBioModel.find({},{tenantId:0}).lean<ITeacherBio[]>();
     
             const b=await teacherModel.find({},{_id:0,}).lean<ITeacher[]>();
             
