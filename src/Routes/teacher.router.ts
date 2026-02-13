@@ -41,6 +41,12 @@ router.get(
     (req,res,next)=>
         teacherController.getAllTeachers(req,res,next));
 
+router.get(
+    "/all/unAssigned",
+    authMiddleware,
+    (req,res,next)=>
+        teacherController.getAllUnAssignedTeachers(req,res,next));
+
 
 router.patch("/assignToBatch/:id",
     authMiddleware,

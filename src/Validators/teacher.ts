@@ -1,9 +1,7 @@
 import {  z } from "zod";
 import { Gender_types } from "../types/enum";
 
-/* ----------------------------------------
-`ENUMS (keep in sync with backend)
----------------------------------------- */
+/* -------`ENUMS (keep in sync with backend)--- */
 
 const employmentStatusEnum = z.enum([
     "active",
@@ -31,16 +29,12 @@ const departmentEnum = z.enum([
     "arts",
 ]);
 
-/* ----------------------------------------
-    OBJECT ID VALIDATION
----------------------------------------- */
+/* ----------OBJECT ID VALIDATION------------- */
 
 const isObjectId = (val: string) =>
     /^[0-9a-fA-F]{24}$/.test(val);
 
-/* ----------------------------------------
-    CREATE TEACHER SCHEMA
----------------------------------------- */
+/* -------------CREATE TEACHER SCHEMA------------- */
 
 export const createTeacherSchema = z.object({
     teacherId: z.string()

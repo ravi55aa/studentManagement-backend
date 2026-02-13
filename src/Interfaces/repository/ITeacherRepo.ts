@@ -43,4 +43,8 @@ export interface ITeacherRepo extends BaseRepository<ITeacherBio>{
         teacherId: string,
         data: Partial<ITeacherBio>
         ): Promise<ITeacherBio | null>
+
+
+        getUnassignedTeachers()
+        : Promise<ITeacherBio[]>
 }

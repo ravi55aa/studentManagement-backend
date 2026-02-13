@@ -5,6 +5,7 @@ import { BaseRepository } from "./BaseRepository";
 import { ITeacherRepo } from "../Interfaces/repository/ITeacherRepo";
 import logger from "../Utils/logger";
 import { IGetAllTeachers } from "../Interfaces/Other/getAllTeachers";
+import { batchModel } from "../Models/batchModel";
 
 export class TeacherRepository 
     extends BaseRepository<ITeacherBio> 
@@ -176,6 +177,22 @@ export class TeacherRepository
             { $set: data },
             { new: true }
         ).lean<ITeacherBio>();
+    }
+
+
+    public async getUnassignedTeachers(): Promise<ITeacherBio[]> {
+    
+            const assignedTeacherIds = await batchModel
+                .find({ classTeacherId: { $ne: null } })
+                .distinct("classTeacherId");
+    
+            const unassignedTeachers = await teacherBioModel
+                .find({
+                _id: { $nin: assignedTeacherIds }
+                })
+                .lean<ITeacherBio[]>();
+    
+            return unassignedTeachers;
     }
 
 

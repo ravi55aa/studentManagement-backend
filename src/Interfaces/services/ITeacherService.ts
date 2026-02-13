@@ -22,6 +22,8 @@ export interface ITeacherService{
     getTeacherById( teacherId: string)
     : Promise<serviceReturnType>
 
+    getUnassignedTeachers()
+    : Promise<serviceReturnType>
 
     assignClassToTeacher(req:Request)
     : Promise<serviceReturnType> 

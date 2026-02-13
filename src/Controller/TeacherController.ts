@@ -79,6 +79,22 @@ export class TeacherController {
         }
     }
 
+    public async getAllUnAssignedTeachers(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> {
+        try {
+        const { status, resBody } =
+            await this.teacherService.getUnassignedTeachers();
+
+        res.status(status).json(resBody);
+        } catch (error) {
+        next(error);
+        }
+    }
+
+
     public async getTeacherById(
     req: Request,
     res: Response,

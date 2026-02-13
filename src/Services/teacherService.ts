@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 
 import {Request,Response} from "express";
-import { ITeacher, ITeacherBio } from "../Models/teacherModel";
+import { ITeacher, ITeacherBio, teacherBioModel } from "../Models/teacherModel";
 import { teacherModel } from "../Models";
 import { TeacherDTO, TeacherValidation } from "../dto/teacherDto";
 import { serviceReturnType } from "../Constants/interfaces";
@@ -12,6 +12,7 @@ import { IGetAllTeachers } from "../Interfaces/Other/getAllTeachers";
 import { ApiResponse } from "../Constants/apiResponse";
 import { TeacherType } from "../types/teacher.types";
 import logger from "../Utils/logger";
+import { batchModel } from "../Models/batchModel";
 
 
 export class TeacherService implements ITeacherService{
@@ -226,11 +227,26 @@ export class TeacherService implements ITeacherService{
     }
 
 
+    public async getUnassignedTeachers(): Promise<serviceReturnType> {
+
+            const teachers =
+                await this.teacherRepo.getUnassignedTeachers();
+
+            if (!teachers.length) {
+                return ApiResponse.notFound(
+                "No unassigned teachers found"
+                );
+            }
+
+            return ApiResponse.success(
+                teachers,
+                "Unassigned teachers fetched successfully"
+            );
+    }
 
 
-    /* ----------------------------------------
-        DELETE TEACHER (SOFT DELETE)
-  ---------------------------------------- */
+
+    /* ---------DELETE TEACHER (SOFT DELETE)---------- */
     static async deleteTeacher(
         teacherId: string
     ): Promise<void> {
