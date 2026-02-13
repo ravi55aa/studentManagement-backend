@@ -54,9 +54,6 @@ export const createTeacherSchema = z.object({
         .string()
         .min(3, "Employee ID is required"),
 
-    classTeacherOf: z.string()
-        .refine(isObjectId, "Invalid batch ID"),
-
     employmentStatus: employmentStatusEnum.optional(), // default handled in backend
 
     assignedSubjects: z

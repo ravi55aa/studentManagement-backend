@@ -107,7 +107,6 @@ export interface ITeacher  {
     teacherId: Types.ObjectId|null;
     academicYearId: Types.ObjectId | null;
     employeeId: String | null;
-    classTeacherOf: Types.ObjectId | null;
     employmentStatus: EmploymentStatus | null;
     assignedSubjects: IAcademicSubject[];
     designation: TeacherDesignation | null;
@@ -129,7 +128,6 @@ const TeacherSchema: Schema = new Schema({
 
     academicYearId: { type: Schema.Types.ObjectId, ref: "AcademicYear" },
     employeeId: { type: String, required: true, unique: true },
-    classTeacherOf: { type:Schema.Types.ObjectId, ref:"Batches" ,required: true },
 
     employmentStatus: {
         type: String,

@@ -62,9 +62,8 @@ export class TeacherService implements ITeacherService{
         
         const data=await TeacherDTO.create(req);
         
-        if (data.classTeacherOf && data.academicYearId) {
+        if (data.academicYearId) {
             const exists = await this.teacherRepo.findOne({
-                classTeacherOf: data.classTeacherOf,
                 academicYearId: data.academicYearId,
                 employmentStatus: "active",
             });
@@ -201,10 +200,9 @@ export class TeacherService implements ITeacherService{
         }
 
     // Prevent reassignment conflict
-    if (updateData.classTeacherOf && updateData.academicYearId) {
+    if (updateData.academicYearId) {
         const exists = await teacherModel.findOne({
             _id: { $ne: teacherId },
-            classTeacherOf: updateData.classTeacherOf,
             academicYearId: updateData.academicYearId,
             employmentStatus: "active",
         });

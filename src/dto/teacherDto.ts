@@ -91,7 +91,6 @@ export class TeacherDTO {
             teacherId:new mongoose.Types.ObjectId(id!),
             academicYearId: data.academicYearId!,
             employeeId: data.employeeId!,
-            classTeacherOf: data.classTeacherOf!,
             employmentStatus: data.employmentStatus! ,
             assignedSubjects: data.assignedSubjects ?? [],
             designation: data.designation!,
@@ -101,13 +100,10 @@ export class TeacherDTO {
             centerId: data.centerId!
         };
         
-        const batch = await batchModel.findOne({code:dto.classTeacherOf!});
-        dto.classTeacherOf =batch?._id!;
         const yearDoc = await academicYearModel.findOne({code:dto.academicYearId!});
 
 
         dto.academicYearId = yearDoc?._id!;
-        dto.classTeacherOf = batch?._id!;
 
         const subjectToFollowArray=[];
             for(let code of data.assignedSubjects!){

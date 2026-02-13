@@ -3,7 +3,6 @@ import { ITeacher, ITeacherBio } from "../../Models/teacherModel";
 import { BaseRepository } from "../../Repository/BaseRepository";
 import { IGetAllTeachers } from "../Other/getAllTeachers";
 
-
 export interface ITeacherRepo extends BaseRepository<ITeacherBio>{
 
         createProfessional(
