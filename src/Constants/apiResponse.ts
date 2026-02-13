@@ -34,4 +34,16 @@ export class ApiResponse {
         },
         };
     }
+
+    static badRequest(message = "Bad Request") {
+    return {
+        status: 400,
+        resBody: {
+        success: false,
+        data: null,
+        error: "BAD_REQUEST",
+        message,
+        },
+    };
+    }
 }
