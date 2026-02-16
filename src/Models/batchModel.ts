@@ -68,7 +68,7 @@ const batchSchema = new Schema<IBatches>(
 
         batchCounselor: {
         type: Types.ObjectId,
-        ref: "User",
+        ref: "TeacherBio",
         default: null,
         },
 

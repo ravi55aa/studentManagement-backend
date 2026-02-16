@@ -18,6 +18,7 @@ export class BatchDto {
         academicYear,
         startDate,
         endDate,
+        counselor
     } = req.body;
 
     const decodedToken=handleTokenVerification(req,res);
@@ -33,18 +34,19 @@ export class BatchDto {
         academicYear:decodedToken?.tenantId, 
         //later updated the one active year
 
-        batchCounselor:decodedToken?.userId, 
+        batchCounselor:counselor ?? null,
         adminId: decodedToken?.userId,
-        //when add teacher updated this neatly
 
         tenantId: decodedToken?.tenantId,
-    };
+    }; 
+    
 
     return newBatchDto;
     }
 
 
-    static handleGetAllBatchesDto(req:Request,res:Response):FilterQuery<Partial<IBatches>>{
+    static handleGetAllBatchesDto(req:Request,res:Response)
+    :FilterQuery<Partial<IBatches>>{
 
         const decodedToken=handleTokenVerification(req,res);
 

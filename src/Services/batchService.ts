@@ -10,7 +10,7 @@ import { BatchDto } from "../dto/batchDto";
 import { BatchResponseBody } from "../Utils/ResponseBody/batch.response";
 import { IBatchRepository } from "../Interfaces/repository/IBatchRepository";
 import { IBatchService } from "../Interfaces/services/IBatchService";
-import { idToObjectId } from "../Repository/forgotPassword.Repository";
+import { ApiResponse } from "../Constants/apiResponse";
 
 
 export class BatchService implements IBatchService {
@@ -22,18 +22,38 @@ export class BatchService implements IBatchService {
     }
 
 
+    async createBatch( req: Request, res: Response)
+    : Promise<serviceReturnType> {
 
-    //!check batch already exist {prop:name};
-    async createBatch(req:Request,res:Response):Promise<serviceReturnType> {
+        const dto: Partial<IBatches> =
+            BatchDto.handleNewBatchDto(req, res);
 
-        const dto:Partial<IBatches> = BatchDto.handleNewBatchDto(req,res);
+        const existing =
+            await this.batchRepo.findOne({
+            tenantId: dto.tenantId,
+            name: dto.name,
+            code: dto.code,
+            });
 
-        const newBatchDoc:IBatches|null=await this.batchRepo.addBatch(dto);
+        if (existing) {
+            return ApiResponse.badRequest(
+            "Batch already exists with same name and code"
+            );
+        }
 
+        const newBatchDoc: IBatches | null =
+            await this.batchRepo.addBatch(dto);
 
-        const {status,resBody} = BatchResponseBody.createBatch(newBatchDoc);
+        if (!newBatchDoc) {
+            return ApiResponse.failure(
+            "Failed to create batch"
+            );
+        }
 
-        return {status,resBody};
+        const { status, resBody } =
+            BatchResponseBody.createBatch(newBatchDoc);
+
+        return { status, resBody };
     }
 
 
@@ -57,7 +77,6 @@ export class BatchService implements IBatchService {
     }
 
 
-
     async getAllBatches(req:Request,res:Response):Promise<serviceReturnType>{
         const query= BatchDto.handleGetAllBatchesDto(req,res);
 
@@ -76,7 +95,6 @@ export class BatchService implements IBatchService {
     }
 
 
-
     async updateABatch(req:Request,res:Response):Promise<serviceReturnType>{
 
         const {id} =  req.params
@@ -92,7 +110,6 @@ export class BatchService implements IBatchService {
         
         return {status,resBody};
     }
-
 
 
     async deleteBatch(req:Request,res:Response):Promise<serviceReturnType>{
@@ -113,8 +130,61 @@ export class BatchService implements IBatchService {
         return {status,resBody};
     }
 
-    
 
+    public async assignClassTeacher(
+        batchId: string,
+        teacherId: string
+        ): Promise<serviceReturnType> {
+
+        if (!batchId || !teacherId) {
+            return ApiResponse.badRequest("Invalid ID");
+        }
+
+        // Check batch exists
+        const batch =
+            await this.batchRepo.findById(batchId);
+
+        if (!batch) {
+            return ApiResponse.notFound("Batch not found");
+        }
+
+        // Check batch already has teacher
+        if (batch.batchCounselor) {
+            return ApiResponse.badRequest(
+            "Batch already has a class teacher"
+            );
+        }
+
+        //  Check teacher already assigned somewhere
+        const teacherAlreadyAssigned =
+            await this.batchRepo.findByTeacherId(
+            teacherId
+            );
+
+        if (teacherAlreadyAssigned) {
+            return ApiResponse.badRequest(
+            "Teacher is already assigned to another batch"
+            );
+        }
+
+        //  Assign
+        const updated =
+            await this.batchRepo.assignTeacher(
+            batchId,
+            teacherId
+            );
+
+        if (!updated) {
+            return ApiResponse.failure(
+            "Failed to assign teacher"
+            );
+        }
+
+        return ApiResponse.success(
+            updated,
+            "Teacher assigned successfully"
+        );
+    }
 
 
     //**📌 Relationship / Business Logic

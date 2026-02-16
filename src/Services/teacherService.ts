@@ -12,7 +12,6 @@ import { IGetAllTeachers } from "../Interfaces/Other/getAllTeachers";
 import { ApiResponse } from "../Constants/apiResponse";
 import { TeacherType } from "../types/teacher.types";
 import logger from "../Utils/logger";
-import { batchModel } from "../Models/batchModel";
 
 
 export class TeacherService implements ITeacherService{

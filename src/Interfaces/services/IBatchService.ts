@@ -18,6 +18,8 @@ export interface IBatchService{
 
     //**📌 Relationship / Business Logic
 
+    assignClassTeacher(batchId: string,teacherId: string):Promise<serviceReturnType>
+
     assignAdminToCenter():any
 
     removeAdminFromCenter():any
