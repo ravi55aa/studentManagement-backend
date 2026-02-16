@@ -1,64 +1,98 @@
 import {Request,Response} from "express";
 
-import { teacherModel } from "../Models";
-import { notificationModel } from "../Models/notificaitonModel";
 
-import { useNotificationModel } from "../Models/notificationUser.Model";
+import { userNotificationModel } from "../Models/notificationUser.Model";
+
 import { 
     INotificationService, 
     NotificationPayload, 
     INotificationSender } from "../Interfaces/services/INotificatoin";
+
 import { handleValidationOF } from "../Middlewares/validateUser.middleware";
 import { NotificationPayloadSchema } from "../Validators/notifications";
 import { INotificationRepo } from "../Interfaces/repository/INotificationRepo";
+import { Server } from "socket.io";
+import { INotification } from "../Models/notificaitonModel";
+import { getIO } from "../Config/socket.config";
 
 
 
 /**
     from  -> one writer (Admin | Teacher)
-    to    -> many listeners (Teacher | School | Center | Batch | Student)
+    to    -> one listeners (Teacher | Student)
 
-    Admin   -> Teacher | School | Center
-    Teacher -> Batch | Student
+    Admin   -> Teacher  
+    Teacher -> Student
 */
 
 
 
 export class NotificationService implements INotificationService {
+
     constructor(
-        private sender: INotificationSender,
-        private userNotificationService: UserNotificationService,
-        private notificationRepo: INotificationRepo
+        private notificationRepo: INotificationRepo,
+        private userNotificationService: UserNotificationService
     ) {}
 
-    async addNotification(req:Request,res:Response): Promise<boolean>{
-        
+    async addNotification(
+        req: Request,
+        res: Response
+    ): Promise<boolean> {
 
-        const payload=ExtractFieldsHelper.addNotification(req);
+        const payload: NotificationPayload =
+        ExtractFieldsHelper.addNotification(req);
+
         handleValidationOF(NotificationPayloadSchema,payload,res);
 
-        //? dtoMapping:, "payload" acting as dto;
+        //  Enforce domain rules
+        this.validatePermission(payload);
 
-        await this.sender.send(payload);
+        // Save main notification
+        const notification =
+        await this.notificationRepo.addNotification(payload);
 
-        //Move to Repo, db-logic
-        const notification = await this.notificationRepo.addNotification(payload);
-
-        if(!notification){
-            throw new Error("Cannot create Notifications");
+        if (!notification) {
+        throw new Error("Failed to create notification");
         }
-    
-        // 2️ Fan-out to users
+
+        // Distribute (DB + Socket)
         await this.userNotificationService.distribute(
-        notification._id.toString(),
+        notification,
         payload.recipients
         );
 
         return true;
     }
+
+    private validatePermission(
+        payload: NotificationPayload
+    ) {
+
+        for (const r of payload.recipients) {
+
+        if (
+            payload.sender.model === "Admin" &&
+            r.model !== "Teacher"
+        ) {
+            throw new Error(
+            "Admin can only notify Teachers"
+            );
+        }
+
+        if (
+            payload.sender.model === "Teacher" &&
+            r.model !== "Student"
+        ) {
+            throw new Error(
+            "Teacher can only notify Students"
+            );
+        }
+        }
+    }
 }
 
 
+//DTO
 export class ExtractFieldsHelper {
     static addNotification(req:Request){
         const {
@@ -100,7 +134,7 @@ export class ExtractFieldsHelper {
 
 
 
-//LSP AND O'TH HELPER + USING THE Polymorphism with method Overriding
+
 export class TeacherNotificationSender implements 
     INotificationSender {
     async send(payload: NotificationPayload): Promise<void> {
@@ -111,7 +145,7 @@ export class TeacherNotificationSender implements
                         throw new Error(
                             'Teacher cannot notify this target'
                         );
-                    }
+                }
         }
         }
 }
@@ -121,53 +155,49 @@ export class AdminNotificationSender implements INotificationSender {
     async send(payload: NotificationPayload): Promise<void> {
         // Admin → Teacher | School | Center only
         for (const r of payload.recipients) {
-        if (!['Teacher', 'School', 'Center'].includes(r.model)) {
-            throw new Error('Admin cannot notify this target');
-        }
+            if (!['Teacher', 'School', 'Center'].includes(r.model)) {
+                throw new Error('Admin cannot notify this target');
+            }
         }
     }
 }
 
 export class UserNotificationService {
 
+  constructor(private io: Server) {} // socket instance injected
+
     async distribute(
-        notificationId: string,
+        notification: INotification,
         recipients: NotificationPayload['recipients']
     ) {
-        const bulkOps = [];
+        const io=getIO();
+
+        const bulkDocs: any[] = [];
 
         for (const r of recipients) {
-        const userIds = await this.resolveUsers(r.model, r.ids);
-
-        for (const user of userIds) {
-            bulkOps.push({
-            userId: user.id,
-            userModel: user.model,
-            notificationId,
-            });
+            for (const userId of r.ids) {
+                //  Save for in-app persistence
+                bulkDocs.push({
+                    userId,userModel: r.model,
+                    notificationId: notification._id,
+                    isRead: false,
+                });
+                
+                //  Emit real-time notification
+                io.to(`${r.model}-${userId}`).emit(
+                    "notification:new",
+                    notification
+                );
+            }
         }
-        }
 
-        await useNotificationModel.insertMany(bulkOps);
+        if (bulkDocs.length) {
+            await userNotificationModel.insertMany(bulkDocs);
+        }
     }
-
-    private async resolveUsers(model: string, ids: string[]) {
-        // Example: Center → Teachers + Students
-        if (model === 'Center') {
-        const teachers = await teacherModel.find({ centerId: { $in: ids } });
-        //const students = await student.find({ centerId: { $in: ids } });
-
-        return [
-            ...teachers.map(t => ({ id: t._id, model: 'Teacher' })),
-            //...students.map(s => ({ id: s._id, model: 'Student' })),
-        ];
-        }
-
-        // Default: direct users
-        return ids.map(id => ({ id, model }));
-    }
-
 }
+
+
 
 
 

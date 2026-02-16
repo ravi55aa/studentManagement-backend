@@ -1,13 +1,12 @@
 /// <reference path="./types/express/index.d.ts" />
 
 import express from "express";
-import { Response,Request } from "express";
 const app=express();
 
 import cookieParser from "cookie-parser";
 import handleErrorsMiddleware from "./Middlewares/error.middleware";
 
-import {env,sessionConfig,connectDB} from "./Config/index";
+import {sessionConfig,connectDB} from "./Config/index";
 import cors from "cors";
 
 import {
@@ -56,6 +55,4 @@ app.use((req, res) => {
 
 app.use(handleErrorsMiddleware); 
 
-app.listen(env.PORT,()=>{
-    console.log(`http://localhost:${env.PORT}`);
-});
+export default app;

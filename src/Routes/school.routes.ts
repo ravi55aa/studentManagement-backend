@@ -118,7 +118,7 @@ router.delete("/centers/:id",
     );
 
 
-/************** BATCHES  **************/
+/*--------------- BATCHES  ---------------*/
 router.post("/batches/add",
     authMiddleware,
     (req,res,next)=>batchController.addNewBatch(req,res,next));
@@ -136,6 +136,11 @@ router.get("/batches/:id",
 router.put("/batches/edit/:id",
         authMiddleware,
         (req,res,next)=>batchController.editASchoolBatch(req,res,next)
+    );
+    
+router.patch("/batch/assign-teacher/:id",
+        authMiddleware,
+        (req,res,next)=>batchController.assignClassTeacher(req,res,next)
     );
 
 router.delete("/batches/:id",

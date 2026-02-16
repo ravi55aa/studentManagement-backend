@@ -82,11 +82,10 @@ export class SchoolController {
     public async getSchool(req: Request, res: Response, next: NextFunction) {
         try {
 
-            const isSchool:ISchool|null = 
-            await this.schoolService.getSchool(req,res);
+            const isSchool:ISchool|null 
+                = await this.schoolService.getSchool(req,res);
 
-            const responseBody: IResponse<string|null> =handleSchoolResBody(isSchool);
-            
+            const responseBody: IResponse<ISchool|null> = handleSchoolResBody(isSchool);
             
             res
                 .status(isSchool ? StatusCodes.OK :StatusCodes.NOT_FOUND)

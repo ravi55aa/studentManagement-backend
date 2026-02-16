@@ -13,7 +13,6 @@ export interface IUserNotification extends Document {
   notificationId: ObjectId;
 
   isRead: boolean;
-  readAt?: Date;
 
   createdAt: Date;
 }
@@ -23,12 +22,11 @@ const UserNotificationSchema = new Schema(
     userId: {
       type: Schema.Types.ObjectId,
       required: true,
-      refPath: 'userModel',
     },
 
     userModel: {
       type: String,
-      enum: ['Teacher', 'Student', 'Admin'],
+      enum: ['Teacher', 'Student'],
       required: true,
     },
 
@@ -43,17 +41,13 @@ const UserNotificationSchema = new Schema(
       default: false,
     },
 
-    readAt: {
-      type: Date,
-    },
   },
   {
     timestamps: true,
-    versionKey: false,
   }
 );
 
-export const useNotificationModel = mongoose.model<IUserNotification>(
+export const userNotificationModel = mongoose.model<IUserNotification>(
   'UserNotification',
   UserNotificationSchema
 );

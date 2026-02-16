@@ -180,19 +180,20 @@ export class TeacherRepository
     }
 
 
-    public async getUnassignedTeachers(): Promise<ITeacherBio[]> {
-    
-            const assignedTeacherIds = await batchModel
-                .find({ classTeacherId: { $ne: null } })
-                .distinct("classTeacherId");
-    
-            const unassignedTeachers = await teacherBioModel
-                .find({
-                _id: { $nin: assignedTeacherIds }
-                })
-                .lean<ITeacherBio[]>();
-    
-            return unassignedTeachers;
+    public async getUnassignedTeachers() : Promise<ITeacherBio[]> 
+    {
+        const assignedTeacherIds = 
+        await batchModel
+            .find({ batchCounselor : { $ne: null } })
+            .distinct("batchCounselor");
+
+        const unassignedTeachers = await teacherBioModel
+            .find({
+            _id: { $nin: assignedTeacherIds }
+            })
+            .lean<ITeacherBio[]>();
+
+        return unassignedTeachers;
     }
 
 

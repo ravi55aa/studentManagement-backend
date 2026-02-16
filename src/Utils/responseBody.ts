@@ -79,12 +79,12 @@ export const handleResponseBody =
 
 
 
-    export const handleSchoolResBody=(serviceResp:any)=>{
+    export const handleSchoolResBody=(school:ISchool|null)=>{
         return {
             success:true,
-            data:serviceResp,
-            error:serviceResp ?null:AuthMessage.InvalidCredentials,
-            message:serviceResp ?AuthMessage.UserLoggedIn:  AuthMessage.InvalidCredentials
+            data:school,
+            error:school ?null:AuthMessage.InvalidCredentials,
+            message:school ?AuthMessage.UserLoggedIn:  AuthMessage.InvalidCredentials
         }
     }
 

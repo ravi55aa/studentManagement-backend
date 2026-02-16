@@ -2,13 +2,6 @@ import { z } from 'zod';
 
 export const SenderModelEnum = z.enum(['Admin', 'Teacher']);
 
-export const RecipientModelEnum = z.enum([
-    'Teacher',
-    'Student',
-    'Center',
-    'School',
-    'Batch',
-]);
 
 export const NotificationPayloadSchema = z.object({
 
@@ -26,13 +19,6 @@ export const NotificationPayloadSchema = z.object({
         model: SenderModelEnum,
         id: z.string().min(1, 'sender id is required'),
     }),
-
-    recipients: z
-        .array(
-        z.object({
-            model: RecipientModelEnum,
-            ids: z.array(z.string().min(1)).min(1, 'ids cannot be empty'),
-        })
-        )
-        .min(1, 'at least one recipient is required'),
+    
 });
+
