@@ -167,23 +167,19 @@ const teacherSer=new TeacherService(teacherRepo);
 export const teacherController=new TeacherController(teacherSer);
 
 
+
 /**
  * Notification
  */
-
-
-
-import {NotificationService, TeacherNotificationSender, UserNotificationService } 
+import {NotificationService, UserNotificationService } 
     from "./Services/notificationService";
 import { NotificationController } 
     from "./Controller/NotificatoinController";
 import { NotificationRepo } from "./Repository/notificationRepo";
     
 
-    
-    const teacherNotificationSender=new TeacherNotificationSender();
-    const userNotificationService=new UserNotificationService();
-    const teacherNotificationRepo=new NotificationRepo();
+const userNotificationService=new UserNotificationService();
+const NotifyRepo=new NotificationRepo();
 
-const notificationSer= new NotificationService(teacherNotificationSender,userNotificationService,teacherNotificationRepo);
+const notificationSer= new NotificationService(NotifyRepo,userNotificationService);
 export const notificationController=new NotificationController(notificationSer);

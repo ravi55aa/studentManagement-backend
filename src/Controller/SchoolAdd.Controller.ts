@@ -11,12 +11,6 @@ import { ISchool }
     from "../Models/schoolModel";
 import {  handleSchoolRB, handleSchoolResBody, validateResponseBody } 
     from "../Utils/responseBody";
-import { SchoolDTO } 
-    from "../dto/schoolDTO";
-import { AddressDTO } 
-    from "../dto/addressDTO";
-import { IAddress } 
-    from "../Models/addressModel";
 
 
 

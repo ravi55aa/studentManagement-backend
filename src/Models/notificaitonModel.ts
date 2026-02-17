@@ -1,10 +1,19 @@
-import mongoose, { Document, ObjectId, Schema } from 'mongoose';
+import mongoose, { Document, ObjectId, Schema, Types } from 'mongoose';
 
 export enum NotificationType {
-    SYSTEM = 'system',
-    USER = 'user',
-    ALERT = 'alert',
+    GENERAL = "GENERAL",
+    ALERT = "ALERT",
+    REMINDER = "REMINDER",
+    ASSIGNMENT = "ASSIGNMENT",
+    EXAM = "EXAM",
+    EVENT = "EVENT",
+    RESULT = "RESULT",
+    ANNOUNCEMENT = "ANNOUNCEMENT",
+    CLASS_UPDATE = "CLASS_UPDATE",
+    ATTENDANCE = "ATTENDANCE",
+    SYSTEM = "SYSTEM",
 }
+
 
 export enum NotificationStatus {
     PENDING = 'pending',
@@ -15,7 +24,7 @@ export enum NotificationStatus {
 
 export interface ISender {
     model:String,
-    id:ObjectId
+    id:String
 }
 
 export interface iRecipients {

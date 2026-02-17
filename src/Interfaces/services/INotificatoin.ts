@@ -1,8 +1,6 @@
 import {Request,Response} from "express";
 
 
-type TRecipients = 'Teacher' | 'Student' | 'Center' | 'School' | 'Batch';
-
 export interface NotificationPayload {
     type: string;
     title: string;
@@ -11,16 +9,10 @@ export interface NotificationPayload {
     attachmentUrl?: string|undefined;
 
     sender: {
-        model: 'Admin' | 'Teacher';
+        model: string;
         id: string;
-    };
-
-    recipients: {
-        model: TRecipients;
-        ids: string[];
-    }[];
+    }
 }
-
 
 
 export interface INotificationSender {

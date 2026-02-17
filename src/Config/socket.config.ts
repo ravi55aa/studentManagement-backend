@@ -1,18 +1,18 @@
 import { Server } from "socket.io";
 import { Server as HttpServer } from "http";
 
-let io: Server;
+let io:Server;
 
 export const initSocket = (server: HttpServer) => {
 
     io = new Server(server, {
-        cors: {
-        origin: "*", // change in production
+    cors: {
+        origin: "http://localhost:5173",
         methods: ["GET", "POST"],
+        credentials:true
         },
     });
 
-    
     io.on("connection", (socket) => {
 
         console.log("User connected:", socket.id);
@@ -20,9 +20,9 @@ export const initSocket = (server: HttpServer) => {
         const { userId, role } = socket.handshake.auth;
 
         if (!userId || !role) {
-        console.log("Invalid socket auth");
-        socket.disconnect();
-        return;
+            console.log("Invalid socket auth");
+            socket.disconnect();
+            return;
         }
 
         // Join unique room

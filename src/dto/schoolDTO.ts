@@ -121,6 +121,7 @@ export class SchoolAcademicYearDto{
             const dtoData={
                 adminId:decoded.userId,
                 tenantId:decoded.tenantId,
+                role:decoded.role,
             }
 
             return dtoData;

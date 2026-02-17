@@ -6,7 +6,8 @@ import { userNotificationModel } from "../Models/notificationUser.Model";
 import { 
     INotificationService, 
     NotificationPayload, 
-    INotificationSender } from "../Interfaces/services/INotificatoin";
+    INotificationSender, 
+    } from "../Interfaces/services/INotificatoin";
 
 import { handleValidationOF } from "../Middlewares/validateUser.middleware";
 import { NotificationPayloadSchema } from "../Validators/notifications";
@@ -14,6 +15,10 @@ import { INotificationRepo } from "../Interfaces/repository/INotificationRepo";
 import { Server } from "socket.io";
 import { INotification } from "../Models/notificaitonModel";
 import { getIO } from "../Config/socket.config";
+import { Types } from "mongoose";
+import { teacherModel } from "../Models";
+import { SchoolAcademicYearDto } from "../dto/schoolDTO";
+
 
 
 
@@ -39,69 +44,86 @@ export class NotificationService implements INotificationService {
         res: Response
     ): Promise<boolean> {
 
-        const payload: NotificationPayload =
-        ExtractFieldsHelper.addNotification(req);
+        const payload: NotificationPayload 
+            = ExtractFieldsHelper.addNotification(req,res);
 
-        handleValidationOF(NotificationPayloadSchema,payload,res);
+        handleValidationOF(
+        NotificationPayloadSchema,
+        payload,
+        res
+        );
 
-        //  Enforce domain rules
-        this.validatePermission(payload);
+        //  Validate sender role only
+        this.validateSender(payload.sender.model);
 
-        // Save main notification
-        const notification =
-        await this.notificationRepo.addNotification(payload);
+        //  Save main notification
+        const notification 
+            = await this.notificationRepo.addNotification(payload);
 
         if (!notification) {
         throw new Error("Failed to create notification");
         }
 
-        // Distribute (DB + Socket)
+        //  Resolve recipients internally
+        const recipients 
+            = await this.resolveRecipients(payload.sender.model);
+
+        //  Distribute (DB + Socket)
         await this.userNotificationService.distribute(
         notification,
-        payload.recipients
+        recipients
         );
 
         return true;
     }
 
-    private validatePermission(
-        payload: NotificationPayload
-    ) {
+    private validateSender(model: string) {
 
-        for (const r of payload.recipients) {
+        if (!["Admin", "Teacher"].includes(model)) {
+        throw new Error("Invalid sender role");
+        }
+    }
 
-        if (
-            payload.sender.model === "Admin" &&
-            r.model !== "Teacher"
-        ) {
-            throw new Error(
-            "Admin can only notify Teachers"
-            );
+    private async resolveRecipients(senderModel: string) {
+
+        if (senderModel === "Admin") {
+        const teachers = await teacherModel
+            .find({})
+            .select("_id")
+            .lean();
+
+        return teachers.map((t) => ({
+            userId: t._id,
+            userModel: "Teacher",
+        }));
         }
 
-        if (
-            payload.sender.model === "Teacher" &&
-            r.model !== "Student"
-        ) {
-            throw new Error(
-            "Teacher can only notify Students"
-            );
-        }
-        }
+        // if (senderModel === "Teacher") {
+        // const students = await studentModel
+        //     .find({})
+        //     .select("_id")
+        //     .lean();
+
+        // return students.map((s) => ({
+        //     userId: s._id,
+        //     userModel: "Student",
+        // }));
+        // }
+
+        return [];
     }
 }
 
 
+
 //DTO
 export class ExtractFieldsHelper {
-    static addNotification(req:Request){
+    static addNotification(req:Request,res:Response){
         const {
             type,title,
             message,link,attachmentUrl,
-            sender,recipients
+            
         }:Partial<NotificationPayload>=req.body;
-
-        const param=req.params;
 
         const fields= Object.keys(req.body);
         
@@ -114,16 +136,18 @@ export class ExtractFieldsHelper {
             }
         }
 
+        const decodedToken=SchoolAcademicYearDto.getTenantId(req,res);
+
         const updateSender={
-            model:sender?.model!,
-            id:param.id!
+            model: "Admin", //late update to 'decodedToken.role'
+            id:decodedToken.adminId 
         }
 
         const payload:NotificationPayload = {
-            type:type!,title:title!,
+            type:type!,
+            title:title!,
             message:message!,
             sender:updateSender!,
-            recipients:recipients!,
             link,
             attachmentUrl
         }
@@ -139,63 +163,66 @@ export class TeacherNotificationSender implements
     INotificationSender {
     async send(payload: NotificationPayload): Promise<void> {
             // Teacher → Batch | Student only
-            for (const r of payload.recipients) {
-                if (!['Batch', 'Student'].includes(r.model)) 
-                    {
-                        throw new Error(
-                            'Teacher cannot notify this target'
-                        );
-                }
+            if (payload.sender.model !== "Teacher") {
+            throw new Error("Invalid sender type for AdminNotificationSender");
         }
-        }
+    }
 }
-
 
 export class AdminNotificationSender implements INotificationSender {
     async send(payload: NotificationPayload): Promise<void> {
         // Admin → Teacher | School | Center only
-        for (const r of payload.recipients) {
-            if (!['Teacher', 'School', 'Center'].includes(r.model)) {
-                throw new Error('Admin cannot notify this target');
-            }
-        }
+        if (payload.sender.model !== "Admin") {
+            throw new Error("Invalid sender type for AdminNotificationSender");
+    }
     }
 }
+
+
 
 export class UserNotificationService {
 
-  constructor(private io: Server) {} // socket instance injected
-
     async distribute(
         notification: INotification,
-        recipients: NotificationPayload['recipients']
+        recipients: {
+        userId: Types.ObjectId,
+        userModel: string
+        }[]
     ) {
-        const io=getIO();
 
         const bulkDocs: any[] = [];
 
-        for (const r of recipients) {
-            for (const userId of r.ids) {
-                //  Save for in-app persistence
-                bulkDocs.push({
-                    userId,userModel: r.model,
-                    notificationId: notification._id,
-                    isRead: false,
-                });
-                
-                //  Emit real-time notification
-                io.to(`${r.model}-${userId}`).emit(
-                    "notification:new",
-                    notification
-                );
-            }
+        for (const user of recipients) {
+
+        // Save DB record
+        bulkDocs.push({
+            userId: user.userId,
+            userModel: user.userModel,
+            notificationId: notification._id,
+            isRead: false,
+        });
+        
+        const io=getIO();
+
+        // Emit via socket
+        io
+            .to(`Admin-78hsKi67`)
+            .emit("notification:new", {
+                type: notification.type,
+                title: notification.title,
+                message: notification.message,
+                link: notification.link,
+                attachmentUrl: notification.attachmentUrl,
+                createdAt: notification.createdAt,
+            });
         }
 
         if (bulkDocs.length) {
-            await userNotificationModel.insertMany(bulkDocs);
+        await userNotificationModel.insertMany(bulkDocs);
         }
     }
 }
+
 
 
 

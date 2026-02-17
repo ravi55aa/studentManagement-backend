@@ -7,11 +7,10 @@ import app from "./app"; //express.server
 
 const server = http.createServer(app);
 
-// Initialize socket
-const io = initSocket(server); 
+//export const io=initSocket(server);
 
 const PORT = env.PORT || 5000;
 
-app.listen(PORT,()=>{
+server.listen(PORT,()=>{
     console.log(`http://localhost:${PORT}`);
 });
