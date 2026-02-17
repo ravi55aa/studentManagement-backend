@@ -32,6 +32,10 @@ const env:any={
     CLOUD_NAME:process.env.CLOUD_NAME,
     CLOUDINARY_API_KEY:process.env.CLOUDINARY_API_KEY,
     CLOUDINARY_API_KEY_SECRET:process.env.CLOUDINARY_API_KEY_SECRET,
+
+    //*STRIPE
+    STRIPE_PUBLISHABLE_KEY:process.env.STRIPE_PUBLISHABLE_KEY,
+    STRIPE_SECRET_KEY:process.env.STRIPE_SECRET_KEY
 }
 
 export default env;

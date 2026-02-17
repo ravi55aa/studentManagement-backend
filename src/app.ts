@@ -15,7 +15,8 @@ import {
     documentsRouter,
     resetPassword,
     teacherRouter,
-    notificationRouter
+    notificationRouter,
+    stripeRouter
     } from "./Routes/index"; 
 
 
@@ -44,6 +45,7 @@ app.use("/documents",documentsRouter);
 app.use("/password",resetPassword);
 app.use("/teacher",teacherRouter);
 app.use("/notification",notificationRouter);
+app.use("/stripe",stripeRouter);
 
 
 app.use((req, res) => {
