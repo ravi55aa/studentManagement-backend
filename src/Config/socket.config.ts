@@ -35,7 +35,7 @@ export const initSocket = (server: HttpServer) => {
         });
     });
 
-        return io;
+        //return io;
 };
 
 
