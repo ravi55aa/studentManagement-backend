@@ -7,3 +7,4 @@ export {default as resetPassword} from "./resetPassword.routes";
 export {default as teacherRouter} from "./teacher.router"
 export {default as notificationRouter} from "./notificatoinRouter"
 export {default as stripeRouter} from "./stripe.route";
+export {default as feesRouter} from "./fees.routes";

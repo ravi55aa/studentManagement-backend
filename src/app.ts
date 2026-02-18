@@ -16,7 +16,8 @@ import {
     resetPassword,
     teacherRouter,
     notificationRouter,
-    stripeRouter
+    stripeRouter,
+    feesRouter
     } from "./Routes/index"; 
 
 
@@ -46,6 +47,7 @@ app.use("/password",resetPassword);
 app.use("/teacher",teacherRouter);
 app.use("/notification",notificationRouter);
 app.use("/stripe",stripeRouter);
+app.use("/fee",feesRouter);
 
 
 app.use((req, res) => {

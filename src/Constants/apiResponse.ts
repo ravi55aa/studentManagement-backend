@@ -11,6 +11,18 @@ export class ApiResponse {
         };
     }
 
+    static created<T>(data: T) {
+        return {
+        status: 201,
+        resBody: {
+            success: true,
+            data,
+            error: null,
+            message:"Created Successfully",
+        },
+        };
+    }
+
     static notFound(message = "Resource not found") {
         return {
         status: 404,

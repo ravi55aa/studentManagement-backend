@@ -177,3 +177,73 @@ export const schoolSubjectSchema = z
         }
     );
 
+
+
+
+    //**  FESS  **// 
+// Mongo ObjectId validation (24 hex characters)
+export const autoReminderSchema = z
+    .object({
+        enabled: z.boolean(),
+
+        daysBeforeDue: z
+            .coerce
+            .number({message:"Total capacity value is required"})
+            .min(2, "Min capacity should be 10 ")
+            .optional()
+    })
+    .refine(
+        (data) => {
+        if (data.enabled && !data.daysBeforeDue) {
+            return false;
+        }
+        return true;
+        },
+        {
+        message: "Days before due is required when reminder is enabled",
+        path: ["daysBeforeDue"],
+        }
+    );
+
+/* ---------------=MAIN FEE SCHEMA--------------------- */
+
+export const feeSchema = z
+    .object({
+        name: z
+        .string()
+        .min(2, "Fee name must be at least 2 characters"),
+
+        code: z
+        .string()
+        .min(2, "Fee code must be at least 2 characters"),
+
+        type: z.string(),
+
+        appliesTo: z.object({
+        model: z.string(),
+        id: z
+            .string()
+            .min(1, "Please select a valid reference"),
+        }),
+
+        status: z
+        .string()
+        .default("ACTIVE"),
+
+        totalAmount: z.coerce
+        .number({message:"Total capacity value is required"})
+        .positive("Amount must be greater than 0"),
+        
+        dueDate: z.preprocess(
+        (val) => (val ? new Date(val as string) : undefined),
+            z.date({ error: "Due date is required" })
+        ),
+
+        currency: z
+        .string()
+        .min(2, "Currency required (e.g. INR, USD)"),
+
+        autoReminder: autoReminderSchema,
+    })
+
+    /* ------------TYPE ↔ MODEL VALIDATION--------------- */

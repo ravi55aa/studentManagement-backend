@@ -183,3 +183,16 @@ const NotifyRepo=new NotificationRepo();
 
 const notificationSer= new NotificationService(NotifyRepo,userNotificationService);
 export const notificationController=new NotificationController(notificationSer);
+
+
+//**FEE ADDING */
+import { FeeRepository } 
+    from "./Repository/feeRepository";
+import {FeeService } 
+    from "./Services/feesService";
+import { FeeController } 
+    from "./Controller/FessController";
+
+const feesRepo=new FeeRepository();
+const feeSer= new FeeService(feesRepo);
+export const feeController=new FeeController(feeSer);
