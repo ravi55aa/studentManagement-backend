@@ -5,7 +5,6 @@ import { FeeDto } from "../dto/feesDto";
 import { ApiResponse } from "../Constants/apiResponse"; 
 import { serviceReturnType } from "../Constants/interfaces"; 
 import { IFee } from "../Models/feesModel";
-import logger from "../Utils/logger";
 
 export class FeeService implements IFeeService {
 

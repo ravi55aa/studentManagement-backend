@@ -12,12 +12,16 @@ import {
 import { handleValidationOF } from "../Middlewares/validateUser.middleware";
 import { NotificationPayloadSchema } from "../Validators/notifications";
 import { INotificationRepo } from "../Interfaces/repository/INotificationRepo";
-import { Server } from "socket.io";
+
 import { INotification } from "../Models/notificaitonModel";
 import { getIO } from "../Config/socket.config";
 import { Types } from "mongoose";
 import { teacherModel } from "../Models";
-import { SchoolAcademicYearDto } from "../dto/schoolDTO";
+
+import { ApiResponse } from "../Constants/apiResponse";
+import { serviceReturnType } from "../Constants/interfaces";
+import { handleTokenVerification } from "../Utils/jwt";
+import { NotificationDto } from "../dto/notificatoinDto";
 
 
 
@@ -39,13 +43,13 @@ export class NotificationService implements INotificationService {
         private userNotificationService: UserNotificationService
     ) {}
 
-    async addNotification(
+    public async addNotification(
         req: Request,
         res: Response
     ): Promise<boolean> {
 
         const payload: NotificationPayload 
-            = ExtractFieldsHelper.addNotification(req,res);
+            = NotificationDto.addNotification(req,res);
 
         handleValidationOF(
         NotificationPayloadSchema,
@@ -54,7 +58,7 @@ export class NotificationService implements INotificationService {
         );
 
         //  Validate sender role only
-        this.validateSender(payload.sender.model);
+        this._validateSender(payload.sender.model);
 
         //  Save main notification
         const notification 
@@ -66,7 +70,7 @@ export class NotificationService implements INotificationService {
 
         //  Resolve recipients internally
         const recipients 
-            = await this.resolveRecipients(payload.sender.model);
+            = await this._resolveRecipients(payload.sender.model);
 
         //  Distribute (DB + Socket)
         await this.userNotificationService.distribute(
@@ -77,14 +81,16 @@ export class NotificationService implements INotificationService {
         return true;
     }
 
-    private validateSender(model: string) {
+
+    private _validateSender(model: string) {
 
         if (!["Admin", "Teacher"].includes(model)) {
         throw new Error("Invalid sender role");
         }
     }
 
-    private async resolveRecipients(senderModel: string) {
+
+    private async _resolveRecipients(senderModel: string) {
 
         if (senderModel === "Admin") {
         const teachers = await teacherModel
@@ -112,50 +118,34 @@ export class NotificationService implements INotificationService {
 
         return [];
     }
-}
 
 
+    public async getAllNotifications(
+        req: Request,
+        res: Response
+    ): Promise<serviceReturnType> {
 
-//DTO
-export class ExtractFieldsHelper {
-    static addNotification(req:Request,res:Response){
-        const {
-            type,title,
-            message,link,attachmentUrl,
-            
-        }:Partial<NotificationPayload>=req.body;
+        const decoded = handleTokenVerification(req, res);
 
-        const fields= Object.keys(req.body);
-        
-        for(let field of fields){
-            if(field == "link" || 
-                field=="attachmentUrl") continue;
+        const userId = decoded.userId;
+        const role = decoded.role;
 
-            if(!req.body[field]){
-                throw new Error(`${field} Cannot be empty`);
-            }
+        if (!userId || !role) {
+            return ApiResponse.unAuthorized("Invalid user");
         }
 
-        const decodedToken=SchoolAcademicYearDto.getTenantId(req,res);
+        // Fetch from UserNotification table
+        const notifications =
+            await this.notificationRepo
+                .findByUser(userId, role);
 
-        const updateSender={
-            model: "Admin", //late update to 'decodedToken.role'
-            id:decodedToken.adminId 
+        if (!notifications.length) {
+            return ApiResponse.success([]);
         }
 
-        const payload:NotificationPayload = {
-            type:type!,
-            title:title!,
-            message:message!,
-            sender:updateSender!,
-            link,
-            attachmentUrl
-        }
-
-        return payload;
+        return ApiResponse.success(notifications);
     }
 }
-
 
 
 
@@ -177,6 +167,7 @@ export class AdminNotificationSender implements INotificationSender {
     }
     }
 }
+
 
 
 

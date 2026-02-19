@@ -40,6 +40,7 @@ const FeesSchema = new Schema<IFee>({
     tenantId: { type: Schema.Types.ObjectId },
     currency: { type: String },
     status: { type: String },
+    dueDate: { type: Date },
     type: { type:String, enum: Object.values(FeeType),
         required: true },
     appliesTo: {

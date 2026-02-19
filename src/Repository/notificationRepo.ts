@@ -20,6 +20,20 @@ export class NotificationRepo
         }
     }
 
+
+    public async findByUser(
+    userId: string,
+    role: string
+    ):Promise<INotification[] | []>{
+
+        return await notificationModel
+            .find({
+                "sender.id":userId,
+                "sender.model": role
+            },{sender:0})
+            .sort({ createdAt: -1 });
+    }
+
 }
 
 

@@ -16,13 +16,9 @@ export class SchoolRepository
     }
 
 
-
-
     public async findByName(email: string): Promise<ISchool | null> {
         return await schoolModel.findOne({ email }).exec();
     }
-
-
 
 
     public async findById(schoolId: string): Promise<ISchool | null> {
@@ -30,15 +26,11 @@ export class SchoolRepository
     }
 
 
-
-
     public async createSchool(schoolData: ISchool): Promise<ISchool> {
         const newSchool = new schoolModel(schoolData);
         await newSchool.save();
         return newSchool;
     }
-
-
 
 
     public async updateSchool(
@@ -70,8 +62,6 @@ export class SchoolRepository
             throw new Error("Failed to update school");
         }
     }
-
-
 
 
     public async deleteSchool(

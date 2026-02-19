@@ -1,7 +1,10 @@
+import { StatusCodes } from "./statusCodes";
+
 export class ApiResponse {
+
     static success<T>(data: T, message = "Success") {
         return {
-        status: 200,
+        status: StatusCodes.OK,
         resBody: {
             success: true,
             data,
@@ -11,9 +14,21 @@ export class ApiResponse {
         };
     }
 
+    static unAuthorized( message = "User unauthorized") {
+        return {
+        status: StatusCodes.UNAUTHORIZED,
+        resBody: {
+            success: true,
+            data:null,
+            error: null,
+            message,
+        },
+        };
+    }
+
     static created<T>(data: T) {
         return {
-        status: 201,
+        status: StatusCodes.CREATED,
         resBody: {
             success: true,
             data,
@@ -25,7 +40,7 @@ export class ApiResponse {
 
     static notFound(message = "Resource not found") {
         return {
-        status: 404,
+        status: StatusCodes.NOT_FOUND,
         resBody: {
             success: false,
             data: null,
@@ -37,7 +52,7 @@ export class ApiResponse {
 
     static failure(message = "Something went wrong") {
         return {
-        status: 400,
+        status: StatusCodes.BAD_REQUEST,
         resBody: {
             success: false,
             data: null,
@@ -49,7 +64,7 @@ export class ApiResponse {
 
     static badRequest(message = "Bad Request") {
     return {
-        status: 400,
+        status: StatusCodes.BAD_REQUEST,
         resBody: {
         success: false,
         data: null,

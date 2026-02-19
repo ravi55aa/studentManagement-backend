@@ -12,7 +12,7 @@ router.get("/get-all", authMiddleware,
     (req,res,next)=>feeController.getAllFees(req,res,next)
 );
 
-router.get("/fee/:id", authMiddleware, 
+router.get("/get/:id", authMiddleware, 
     (req,res,next)=>feeController.getFeeById(req,res,next)
 );
 

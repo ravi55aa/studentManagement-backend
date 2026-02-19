@@ -4,9 +4,7 @@ import { handleTokenVerification } from "../Utils/jwt";
 
 export class FeeDto {
 
-    /* ----------------------------------------
-        CREATE FEE DTO
-    ---------------------------------------- */
+    /* ------------CREATE FEE DTO------------------ */
     static createFeeDto(
         req: Request,
         res: Response
@@ -32,10 +30,10 @@ export class FeeDto {
             totalAmount: Number(data.totalAmount),
 
             dueDate: data.dueDate
-                ? new Date(data.dueDate)
+                ? data.dueDate
                 : undefined!,
 
-            currency: data.currency ?? "INR",
+            currency: data?.currency ?? "INR",
 
             autoReminder: {
                 enabled: data.autoReminder?.enabled ?? false,
@@ -48,6 +46,7 @@ export class FeeDto {
 
             tenantId: decoded.tenantId,
         };
+
 
         return returnData;
     }

@@ -1,4 +1,5 @@
 import {Request,Response} from "express";
+import { serviceReturnType } from "../../Constants/interfaces";
 
 
 export interface NotificationPayload {
@@ -23,4 +24,5 @@ export interface INotificationSender {
 //------------ Service-interface
 export interface INotificationService {
     addNotification(req:Request,res:Response): Promise<boolean>
+    getAllNotifications(req: Request,res: Response): Promise<serviceReturnType>
 }
