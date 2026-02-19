@@ -3,24 +3,27 @@ import { Request, Response, NextFunction }
 import { StatusCodes } 
     from "../Constants/statusCodes";
 
-import { ISchoolService } 
-    from "../Interfaces/services/ISchoolService";
 import { IResponse } 
     from "../Interfaces/IResponse";
 import { ISchool } 
     from "../Models/schoolModel";
 import {  handleSchoolRB, handleSchoolResBody, validateResponseBody } 
     from "../Utils/responseBody";
+import { injectable,inject } from "tsyringe";
+import { SchoolService } from "../Services/schoolService";
 
 
 
 
+
+@injectable()
 export class SchoolController {
-    private schoolService: ISchoolService;
 
-    constructor(schoolService: ISchoolService) {
-        this.schoolService = schoolService;
-    }
+    constructor(
+        @inject(SchoolService)
+        private schoolService: SchoolService
+    ) {}
+
 
     //*create
     public async createSchool(req: Request, res: Response, next: NextFunction) {

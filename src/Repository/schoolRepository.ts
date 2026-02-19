@@ -1,3 +1,4 @@
+import { injectable } from "tsyringe";
 import { ISchoolRepository } 
     from "../Interfaces/repository/ISchoolRepository";
 import schoolModel, { ISchool } 
@@ -7,6 +8,8 @@ import { BaseRepository } from "./BaseRepository";
 
 
 
+
+@injectable()
 export class SchoolRepository 
     extends BaseRepository<ISchool>
     implements ISchoolRepository 

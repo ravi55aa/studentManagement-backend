@@ -3,9 +3,10 @@ import { IBatchRepository } from "../Interfaces/repository/IBatchRepository";
 
 import { IBatches,batchModel } from "../Models/batchModel";
 import { BaseRepository } from "./BaseRepository";
+import { injectable } from "tsyringe";
 
 
-
+@injectable()
 export class BatchRepository 
 extends BaseRepository<IBatches> 
 implements IBatchRepository{

@@ -19,7 +19,8 @@ import { IUser }
     from "../Models/userModel";
 import { serviceReturnType } 
     from "../Constants/interfaces";
-
+import { injectable,inject } from "tsyringe";
+import { ForgotPasswordService } from "../Services/forgotPassword.service";
 
 //todo
 //For temporary purpose
@@ -29,16 +30,13 @@ import { serviceReturnType }
 
 
 
-
+@injectable()
 export class PasswordResetController{
 
-
-    private fps:IForgotPasswordService;
-
-
-    constructor(reset:IForgotPasswordService){
-        this.fps=reset;
-    }
+    constructor(
+        @inject(ForgotPasswordService)
+        private fps:IForgotPasswordService
+    ){}
 
 
     async verifyEmail(req:Request,res:Response,next:NextFunction){

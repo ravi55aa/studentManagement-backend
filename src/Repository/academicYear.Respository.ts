@@ -3,8 +3,10 @@ import { ISchoolAcademicYearRepo, ISchoolCoursesRepo, ISchoolSubjectsRepo } from
 import academicSubjectsModel, { academicYearModel, IAcademicSubject, IAcademicYear } from "../Models/academicYear";
 import { BaseRepository } from "./BaseRepository";
 import coursesModel, { coursesMetaModel, IAcademicCourse, IAcademicCourseMeta } from "../Models/courses.model";
+import { injectable } from "tsyringe";
 
 
+@injectable()
 export class AcademicYearRepository extends BaseRepository<IAcademicYear> implements ISchoolAcademicYearRepo {
     constructor(){
             super(academicYearModel);

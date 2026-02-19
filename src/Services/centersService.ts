@@ -11,17 +11,25 @@ import { ICenterRepository } from "../Interfaces/repository/ICenterRepository";
 import { CenterResponseBody } from "../Utils/ResponseBody/center.responsebody";
 import { ICenterService } from "../Interfaces/services/ICenterService";
 import { addressModel } from "../Models";
+import { inject, injectable } from "tsyringe";
+import { AddressRepository } from "../Repository/addressRepository";
+import { CenterRepository } from "../Repository/centerRepository";
 
 
+
+@injectable()
 export class CentersService implements ICenterService{
 
-    private addressRepo:IAddressRepository;
-    private centerRepo:ICenterRepository;
+    
 
 
-    constructor(ar:IAddressRepository,cr:ICenterRepository){
-        this.addressRepo=ar
-        this.centerRepo=cr
+    constructor(
+        @inject(AddressRepository)
+        private addressRepo:AddressRepository,
+
+        @inject(CenterRepository)
+        private centerRepo:CenterRepository
+    ){
     }
 
     //!center already exist {prop:name};

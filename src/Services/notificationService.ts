@@ -22,7 +22,8 @@ import { ApiResponse } from "../Constants/apiResponse";
 import { serviceReturnType } from "../Constants/interfaces";
 import { handleTokenVerification } from "../Utils/jwt";
 import { NotificationDto } from "../dto/notificatoinDto";
-
+import { injectable,inject } from "tsyringe";
+import { NotificationRepo } from "../Repository/notificationRepo";
 
 
 
@@ -35,11 +36,13 @@ import { NotificationDto } from "../dto/notificatoinDto";
 */
 
 
-
+@injectable()
 export class NotificationService implements INotificationService {
 
     constructor(
-        private notificationRepo: INotificationRepo,
+        @inject(NotificationRepo)
+        private notificationRepo: NotificationRepo,
+        
         private userNotificationService: UserNotificationService
     ) {}
 

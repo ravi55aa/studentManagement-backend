@@ -18,23 +18,23 @@ import { IResponse }
     from "../Interfaces/IResponse";
 import { serviceReturnType } 
     from "../Constants/interfaces";
-import { idToObjectId } 
+import { ForgotPasswordRepository, idToObjectId } 
     from "../Repository/forgotPassword.Repository";
 import { StatusCodes } 
     from "../Constants/statusCodes";
 import { ForgotPasswordDTO } from "../dto/forogotPasssword.dto";
+import { injectable,inject } from "tsyringe";
 
 
 
 
+@injectable()
 export class ForgotPasswordService implements IForgotPasswordService{
     
-    private repository:IForgotPasswordRepository;
-    
-    constructor(repository:IForgotPasswordRepository){
-        this.repository=repository;
-    }
-
+    constructor(
+        @inject(ForgotPasswordRepository)
+        private repository:ForgotPasswordRepository)
+    {}
 
 
     async verifyEmail(modelName:string,email:string):Promise<null|IUser|ISchool>{

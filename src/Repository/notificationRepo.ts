@@ -1,8 +1,13 @@
+import { injectable } from "tsyringe";
 import { INotificationRepo } from "../Interfaces/repository/INotificationRepo";
 import { NotificationPayload } from "../Interfaces/services/INotificatoin";
 import { INotification, notificationModel, } from "../Models/notificaitonModel";
 import { BaseRepository } from "./BaseRepository";
 
+
+
+
+@injectable()
 export class NotificationRepo 
     extends BaseRepository<INotification> 
     implements INotificationRepo 

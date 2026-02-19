@@ -2,18 +2,20 @@ import { Request,Response,NextFunction }
     from "express";
 import { serviceReturnType } 
     from "../Constants/interfaces";
-import { IBatchService } 
-    from "../Interfaces/services/IBatchService";
+
+import { injectable,inject } from "tsyringe";
+import { BatchService } from "../Services/batchService";
 
 
+
+@injectable()
 export class BatchController{
-    
-    private batchService:IBatchService;
 
 
-    constructor(cs:IBatchService){
-        this.batchService=cs;
-    }
+    constructor(
+        @inject(BatchService) 
+        private batchService:BatchService
+    ){}
 
 
     async addNewBatch(req:Request,res:Response,next:NextFunction){

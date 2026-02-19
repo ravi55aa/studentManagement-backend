@@ -1,13 +1,16 @@
 import { Request, Response, NextFunction } from "express";
-import { IFeeService } from "../Interfaces/services/IFeeService";
+import { injectable,inject } from "tsyringe";
+import { FeeService } from "../Services/feesService";
 
+
+
+@injectable()
 export class FeeController {
 
-    private readonly feeService: IFeeService;
-
-    constructor(feeService: IFeeService) {
-        this.feeService = feeService;
-    }
+    constructor(
+        @inject(FeeService)
+        private feeService: FeeService
+    ) {}
 
     /* ----------------------------------------
         CREATE FEE

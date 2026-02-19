@@ -1,7 +1,6 @@
 import { FilterQuery } 
     from "mongoose";
-import { IAddressRepository } 
-    from "../Interfaces/repository/IAddressRepository";
+
 import { IAddressService } 
     from "../Interfaces/services/IAddressService";
 import { IAddress } 
@@ -10,16 +9,18 @@ import { serviceReturnType } from "../Constants/interfaces";
 import { IResponse } from "../Interfaces/IResponse";
 import { AddressDTO } from "../dto/addressDTO";
 import {Request,Response} from "express";
+import { AddressRepository } from "../Repository/addressRepository";
+import { injectable,inject } from "tsyringe";
 
 
 
+@injectable()
 export class AddressService implements IAddressService{
-
-    private addressRepository:IAddressRepository;
     
-    constructor(addressRepository:IAddressRepository){
-        this.addressRepository=addressRepository;
-    }
+    constructor(
+    @inject(AddressRepository) 
+    private addressRepository:AddressRepository)
+    {}
 
     async getSchoolAddress(id:string)
     :Promise<IAddress|null>{

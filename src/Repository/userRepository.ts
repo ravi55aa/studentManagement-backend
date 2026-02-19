@@ -4,9 +4,10 @@ import { addressModel, adminModel } from "../Models";
 import { IAddress } from "../Models/addressModel";
 import { IUser } from "../Models/userModel";
 import { BaseRepository } from "./BaseRepository";
+import { injectable } from "tsyringe";
 
 
-
+@injectable()
 export class UserRepository 
     extends BaseRepository<IUser>
     implements IUserRepository

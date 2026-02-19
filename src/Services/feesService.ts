@@ -1,18 +1,21 @@
 import { Request, Response } from "express";
 import { IFeeService } from "../Interfaces/services/IFeeService";
-import { IFeeRepository } from "../Interfaces/repository/IFessRepository"; 
+import { FeeRepository } from "../Repository/feeRepository";
 import { FeeDto } from "../dto/feesDto";
 import { ApiResponse } from "../Constants/apiResponse"; 
 import { serviceReturnType } from "../Constants/interfaces"; 
 import { IFee } from "../Models/feesModel";
+import { injectable,inject } from "tsyringe";
 
+
+
+@injectable()
 export class FeeService implements IFeeService {
 
-    private readonly feeRepo: IFeeRepository;
-
-    constructor(feeRepo: IFeeRepository) {
-        this.feeRepo = feeRepo;
-    }
+    constructor(
+        @inject(FeeRepository)
+        private feeRepo:FeeRepository)
+    {}
 
     
     public async createFee(

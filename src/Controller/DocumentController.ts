@@ -1,8 +1,7 @@
 import { Request,Response,NextFunction } 
     from "express";
 
-import { IDocumentService } 
-    from "../Interfaces/services/IDocument.service";
+
 import { IDocument } 
     from "../Models/documentModel";
 import { IResponse } 
@@ -10,19 +9,19 @@ import { IResponse }
 import { handleDocRespBody } from "../Utils/responseBody";
 import { StatusCodes } from "../Constants/statusCodes";
 import { DocumentsDto } from "../dto/schoolDTO";
+import { injectable,inject } from "tsyringe";
+import { DocumentService } from "../Services/documentService";
 
 
 
-
-
+@injectable()
 export class DocumentController{
 
-    private documentService:IDocumentService;
 
-
-    constructor(documentService:IDocumentService){
-        this.documentService=documentService;
-    }
+    constructor(
+        @inject(DocumentService)
+        private documentService:DocumentService
+    ){}
 
 
     public async addNewDocuments(req:Request,res:Response,next:NextFunction) : 

@@ -1,7 +1,5 @@
 import { NextFunction, Request,Response } 
     from "express";
-import { IUserAuthService } 
-    from "../Interfaces/services/IAdminAuthService";
 import { StatusCodes } 
     from "../Constants/statusCodes";
 import {IResponse} 
@@ -15,16 +13,18 @@ import { AuthUserDTO }
 import { handleResponseBody } 
     from "../Utils/responseBody";
 import logger from "../Utils/logger";
+import { injectable,inject } from "tsyringe";
+import { UserAuthService } from "../Services/userAuthService";
 
 
 
+@injectable()
 export class UserAuthController{
     
-    private authService: IUserAuthService;
-    
-    constructor(authService: IUserAuthService){
-        this.authService=authService
-    }
+    constructor(
+        @inject(UserAuthService)
+        private authService: UserAuthService
+    ){}
 
 
 

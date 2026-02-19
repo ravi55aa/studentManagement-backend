@@ -6,7 +6,9 @@ import { ITeacherRepo } from "../Interfaces/repository/ITeacherRepo";
 import logger from "../Utils/logger";
 import { IGetAllTeachers } from "../Interfaces/Other/getAllTeachers";
 import { batchModel } from "../Models/batchModel";
+import { injectable } from "tsyringe";
 
+@injectable()
 export class TeacherRepository 
     extends BaseRepository<ITeacherBio> 
     implements ITeacherRepo  

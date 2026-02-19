@@ -1,12 +1,16 @@
 import { Request, Response, NextFunction } from "express";
-import { ITeacherService } from "../Interfaces/services/ITeacherService";
+import { TeacherService } from "../Services/teacherService";
+import { injectable,inject } from "tsyringe";
 
+
+@injectable()
 export class TeacherController {
-    private readonly teacherService: ITeacherService;
+    
 
-    constructor(teacherService: ITeacherService) {
-        this.teacherService = teacherService;
-    }
+    constructor(
+        @inject(TeacherService) 
+        private teacherService:TeacherService
+    ) {}
 
     public async createTeacherBio(
         req: Request,

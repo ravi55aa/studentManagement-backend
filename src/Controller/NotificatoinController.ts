@@ -1,13 +1,17 @@
 import {Request,Response,NextFunction } from "express";
-import { INotificationService } from "../Interfaces/services/INotificatoin";
 import { StatusCodes } from "../Constants/statusCodes";
+import { injectable,inject } from "tsyringe";
+import { NotificationService } from "../Services/notificationService";
 
+
+
+@injectable()
 export class NotificationController {
-    private notificationService:INotificationService;
 
-    constructor(notifySer:INotificationService){
-        this.notificationService=notifySer;
-    }
+    constructor(
+        @inject(NotificationService) 
+        private notificationService:NotificationService
+    ){}
 
     async addNewNotification(req:Request,res:Response,next:NextFunction){
         try {

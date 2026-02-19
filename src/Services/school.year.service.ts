@@ -42,7 +42,8 @@ import {
     ISchoolAcademicSubjectSer, 
     ISchoolAcademicYear } 
 from "../Interfaces/services/ISchoolAcademicYear";
-
+import { AcademicYearRepository } from "../Repository/academicYear.Respository";
+import { injectable,inject } from "tsyringe";
 
 
 // Page level dependencies
@@ -55,13 +56,15 @@ export interface IFullCourses {
 
 
 //** SCHOOL ACADEMIC YEAR */
-
+@injectable()
 export class SchoolYear implements ISchoolAcademicYear{
 
-    private yearRepo:ISchoolAcademicYearRepo;
-    constructor(yr:ISchoolAcademicYearRepo){
-        this.yearRepo=yr;
-    }   
+    
+    constructor(
+    @inject(AcademicYearRepository) 
+    private yearRepo:AcademicYearRepository)
+    {}
+
 
     async addNewSchoolYear(req:Request,res:Response):Promise<serviceReturnType>{
         

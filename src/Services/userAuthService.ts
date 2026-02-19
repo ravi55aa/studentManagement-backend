@@ -1,8 +1,6 @@
 
 import { IUserAuthService } 
     from "../Interfaces/services/IAdminAuthService"
-import { IUserRepository } 
-    from "../Interfaces/repository/IAdminRepository";
 import { IUser } 
     from "../Models/userModel";
 import {IAddress} 
@@ -13,12 +11,16 @@ import { Request,Response }
     from "express";
 import { handleJwtTokensGenerator, IJwtPayload} 
     from "../Utils/jwt";
+import { injectable,inject } from "tsyringe";
+import { UserRepository } from "../Repository/userRepository";
 
 
+@injectable()
 export class UserAuthService implements IUserAuthService {
     
     constructor(
-        private userRepository:IUserRepository,
+        @inject(UserRepository) 
+        private userRepository:UserRepository,
     ){}
 
 

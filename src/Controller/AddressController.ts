@@ -11,21 +11,22 @@ import { AddressDTO }
 import { AddressMessage } 
     from "../Constants/resposeMessages";
 
-import { IAddressService } 
-    from "../Interfaces/services/IAddressService";
 import { handleAddressResponseBody } 
     from "../Utils/addressResponseBody";
 import { addressModel } from "../Models";
+import { injectable,inject } from "tsyringe";
+import { AddressService } from "../Services/addressService";
 
 
 
 
+@injectable()
 export class AddressController{
-    private addressService:IAddressService;
 
-    constructor(addressService:IAddressService){
-        this.addressService=addressService;
-    }
+    constructor(
+        @inject(AddressService) 
+        private addressService:AddressService)
+    {}
 
 
     public async getSchoolAddress(req:Request,res:Response,next:NextFunction) : 

@@ -6,6 +6,7 @@ import schoolModel, { ISchool } from "../Models/schoolModel";
 import { IUser } from "../Models/userModel";
 import { getUserModel } from "../Utils/userModelResolver";
 import { UserRole } from "../types/auth.types";
+import { injectable } from "tsyringe";
 
 
 
@@ -15,6 +16,8 @@ export const idToObjectId=(id:string)=>{
 
 
 
+
+@injectable()
 export class ForgotPasswordRepository
     implements IForgotPasswordRepository
     {

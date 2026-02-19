@@ -7,13 +7,18 @@ import { IDocument } from "../Models/documentModel";
 import { Request,Response } from "express";
 import { DocumentsDto } from "../dto/schoolDTO";
 import { SchoolResponseBody } from "../Utils/ResponseBody/school.responce.body";
+import { inject, injectable } from "tsyringe";
+import { DocumentRepository } from "../Repository/documentRepository";
 
+
+
+@injectable()
 export class DocumentService implements IDocumentService{
-    private documentRepository:IDocumentRepository;
 
-    constructor(documentRepo:IDocumentRepository){
-        this.documentRepository=documentRepo;
-    }
+    constructor(
+        @inject(DocumentRepository)
+        private documentRepository:DocumentRepository)
+        {}
 
     public async uploadDocs(data: IDocument): 
     Promise<IDocument|null> 

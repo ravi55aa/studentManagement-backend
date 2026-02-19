@@ -4,7 +4,11 @@ import feeModel,{IFee} from "../Models/feesModel";
 import { IFeeRepository } from "../Interfaces/repository/IFessRepository"; 
 import logger from "../Utils/logger";
 import { BaseRepository } from "./BaseRepository";
+import { injectable } from "tsyringe";
 
+
+
+@injectable()
 export class FeeRepository extends BaseRepository<IFee> implements IFeeRepository {
 
     constructor(){

@@ -2,10 +2,11 @@ import { BaseRepository } from "./BaseRepository";
 import documentModel ,{ IDocument, IUploadedDoc } from "../Models/documentModel";
 import { IDocumentRepository } from "../Interfaces/repository/IDocument.interface";
 import { FilterQuery } from "mongoose";
+import { injectable } from "tsyringe";
 
 
 
-
+@injectable()
 export class DocumentRepository
         extends BaseRepository<IDocument> 
                 implements IDocumentRepository

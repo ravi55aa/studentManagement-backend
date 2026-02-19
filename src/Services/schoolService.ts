@@ -1,7 +1,6 @@
 import {  ISchoolService} 
     from "../Interfaces/services/ISchoolService"
-import { ISchoolRepository } 
-    from "../Interfaces/repository/ISchoolRepository";
+
 import { IUserRepository } 
     from "../Interfaces/repository/IAdminRepository";
 
@@ -21,28 +20,30 @@ import { IAddressRepository } from "../Interfaces/repository/IAddressRepository"
 import { IDocumentRepository } from "../Interfaces/repository/IDocument.interface";
 import { IResponse } from "../Interfaces/IResponse";
 import { AddressDTO } from "../dto/addressDTO";
+import { SchoolRepository } from "../Repository/schoolRepository";
+import { injectable,inject } from "tsyringe";
+import { UserRepository } from "../Repository/userRepository";
+import { AddressRepository } from "../Repository/addressRepository";
+import { DocumentRepository } from "../Repository/documentRepository";
 
 
 
-
+@injectable()
 export class SchoolService implements ISchoolService {
 
-    private schoolRepository: ISchoolRepository;
-    private userRepository: IUserRepository;
-    private addressRepo:IAddressRepository;
-    private docRepo:IDocumentRepository;
-
     constructor(
-        schoolRepository: ISchoolRepository,
-        userRepository: IUserRepository,
-        addressRepo:IAddressRepository,
-        docRepo:IDocumentRepository,
-    ) {
-        this.schoolRepository = schoolRepository;
-        this.userRepository = userRepository;
-        this.addressRepo=addressRepo;
-        this.docRepo=docRepo;
-    }
+        @inject(SchoolRepository)
+        private schoolRepository: SchoolRepository,
+
+        @inject(UserRepository)
+        private userRepository: IUserRepository,
+
+        @inject(AddressRepository)
+        private addressRepo:IAddressRepository,
+
+        @inject(DocumentRepository)
+        private docRepo:IDocumentRepository,
+    ) {}
 
 
 

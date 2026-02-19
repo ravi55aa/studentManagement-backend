@@ -7,13 +7,16 @@ import { IAddress }
     from "../Models/addressModel";
 import { BaseRepository } 
     from "./BaseRepository";
+import { inject, injectable } from "tsyringe";
 
 
+@injectable()
 export class AddressRepository 
 extends BaseRepository<IAddress>
 implements IAddressRepository {
 
-    constructor(){
+    constructor(
+    ){
         super(addressModel);
     }
 

@@ -1,16 +1,18 @@
 import { Request,Response,NextFunction } from "express";
-import { ICenterService } from "../Interfaces/services/ICenterService";
 import { serviceReturnType } from "../Constants/interfaces";
+import { injectable,inject } from "tsyringe";
+import { CentersService } from "../Services/centersService";
 
 
+
+@injectable()
 export class CentersController{
-    
-    private centerService:ICenterService;
 
 
-    constructor(cs:ICenterService){
-        this.centerService=cs;
-    }
+    constructor(
+        @inject(CentersService)
+        private centerService:CentersService 
+    ){}
 
 
     async addNewCenter(req:Request,res:Response,next:NextFunction){
@@ -36,7 +38,7 @@ export class CentersController{
     async getAllCenters(req:Request,res:Response,next:NextFunction){
         try{
 
-            const {status,resBody}=await this.centerService.getAllCenters(req,res)
+            const {status,resBody}=await this.centerService.getAllCenters()
 
             res.status(status).json(resBody);
         }catch(err){

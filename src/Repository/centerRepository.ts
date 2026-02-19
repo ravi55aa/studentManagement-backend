@@ -4,8 +4,11 @@ import { ICenterRepository }
 import centerModel, { ICenter } 
     from "../Models/centerModel"
 import { BaseRepository } from "./BaseRepository";
+import { injectable } from "tsyringe";
 
 
+
+@injectable()
 export class CenterRepository extends BaseRepository<ICenter> implements ICenterRepository{
 
     constructor(){

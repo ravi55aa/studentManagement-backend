@@ -8,17 +8,23 @@ import { StatusCodes } from "../Constants/statusCodes";
 import {  batchModel, IBatches } from "../Models/batchModel";
 import { BatchDto } from "../dto/batchDto";
 import { BatchResponseBody } from "../Utils/ResponseBody/batch.response";
-import { IBatchRepository } from "../Interfaces/repository/IBatchRepository";
+
 import { IBatchService } from "../Interfaces/services/IBatchService";
 import { ApiResponse } from "../Constants/apiResponse";
+import { injectable,inject } from "tsyringe";
+import { BatchRepository } from "../Repository/batchRespository";
 
 
+
+@injectable()
 export class BatchService implements IBatchService {
 
-    private batchRepo:IBatchRepository;
 
-    constructor(cr:IBatchRepository){
-        this.batchRepo=cr
+    constructor(
+        @inject(BatchRepository) 
+        private batchRepo:BatchRepository
+    ){
+        
     }
 
 

@@ -2,19 +2,20 @@ import { Request,Response,NextFunction }
     from "express";
 import { serviceReturnType } 
     from "../Constants/interfaces";
-import { ISchoolAcademicCourseSer, ISchoolAcademicSubjectSer, ISchoolAcademicYear } 
-    from "../Interfaces/services/ISchoolAcademicYear";
 import coursesModel, { coursesMetaModel } from "../Models/courses.model";
+import { injectable,inject } from "tsyringe";
+import { SchoolAcademicCoursesService, SchoolAcademicSubjectSer, SchoolYear } from "../Services/school.year.service";
+
+
 
 /******** SCHOOL YEAR********/
+@injectable()
 export class SchoolAcademicController{
-    
-    private academicService:ISchoolAcademicYear;
 
-
-    constructor(as:ISchoolAcademicYear){
-        this.academicService=as;
-    }
+    constructor(
+        @inject(SchoolYear)
+        private academicService:SchoolYear
+    ){}
 
 
     async addNewYear(req:Request,res:Response,next:NextFunction){
@@ -75,16 +76,14 @@ export class SchoolAcademicController{
 
 
 
-
+@injectable()
 /******** SCHOOL SUBJECTS********/
 export class SchoolAcademicSubjectController{
-    
-    private service:ISchoolAcademicSubjectSer;
 
-
-    constructor(as:ISchoolAcademicSubjectSer){
-        this.service=as;
-    }
+    constructor(
+        @inject(SchoolAcademicSubjectSer)
+        private service:SchoolAcademicSubjectSer
+    ){}
 
 
     async addNewSchoolSubject(req:Request,res:Response,next:NextFunction){
@@ -149,14 +148,13 @@ export class SchoolAcademicSubjectController{
 
 
 /******** SCHOOL SUBJECTS********/
+@injectable()
 export class SchoolAcademicCourseController{
-    
-    private courseService:ISchoolAcademicCourseSer;
 
-
-    constructor(as:ISchoolAcademicCourseSer){
-        this.courseService=as;
-    }
+    constructor(
+        @inject(SchoolAcademicCoursesService)
+        private courseService:SchoolAcademicCoursesService
+        ){}
 
 
     async addNewSchoolCourse(req:Request,res:Response,next:NextFunction){

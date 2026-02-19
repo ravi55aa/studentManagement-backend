@@ -5,21 +5,21 @@ import { ITeacher, ITeacherBio, teacherBioModel } from "../Models/teacherModel";
 import { teacherModel } from "../Models";
 import { TeacherDTO, TeacherValidation } from "../dto/teacherDto";
 import { serviceReturnType } from "../Constants/interfaces";
-import { ITeacherRepo } from "../Interfaces/repository/ITeacherRepo";
 import { ITeacherService } from "../Interfaces/services/ITeacherService";
 import { TeacherResponseBody } from "../Utils/ResponseBody/teacher.responseBody";
 import { IGetAllTeachers } from "../Interfaces/Other/getAllTeachers";
 import { ApiResponse } from "../Constants/apiResponse";
 import { TeacherType } from "../types/teacher.types";
 import logger from "../Utils/logger";
+import {injectable,inject} from "tsyringe";
+import { TeacherRepository } from "../Repository/teacherRepo";
 
-
+@injectable()
 export class TeacherService implements ITeacherService{
 
-    private teacherRepo:ITeacherRepo
-
-    constructor(tr:ITeacherRepo){
-        this.teacherRepo=tr;
+    
+    constructor(@inject(TeacherRepository)
+        private teacherRepo:TeacherRepository){
     }
 
     /* ----------------------------------------
