@@ -1,10 +1,10 @@
-export {default as oauthRouter} from "./oauth.routes";
-export {default as authRouter} from "./auth.router";
-export {default as schoolRouter} from "./school.routes";
-export {default as addressRouter} from "./address.router";
-export {default as documentsRouter} from "./document.router"
-export {default as resetPassword} from "./resetPassword.routes";
-export {default as teacherRouter} from "./teacher.router"
-export {default as notificationRouter} from "./notificatoinRouter"
-export {default as stripeRouter} from "./stripe.route";
-export {default as feesRouter} from "./fees.routes";
+export { default as oauthRouter } from './oauth.routes';
+export { default as authRouter } from './auth.router';
+export { default as schoolRouter } from './school.routes';
+export { default as addressRouter } from './address.router';
+export { default as documentsRouter } from './document.router';
+export { default as resetPassword } from './resetPassword.routes';
+export { default as teacherRouter } from './teacher.router';
+export { default as notificationRouter } from './notificatoinRouter';
+export { default as stripeRouter } from './stripe.route';
+export { default as feesRouter } from './fees.routes';

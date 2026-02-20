@@ -9,14 +9,14 @@
     // See also https://aka.ms/tsconfig/module
     "module": "commonjs",
     "target": "es2022",
-    "types": ["node","express-session"],
+    "types": ["node", "express-session"],
     // For nodejs:
     // "lib": ["esnext"],y
     // "types": ["node"],
     // and npm install -D @types/node
-    
+
     "moduleResolution": "node",
-    "typeRoots": ["./node_modules/@types","./src/types","./types"],
+    "typeRoots": ["./node_modules/@types", "./src/types", "./types"],
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
@@ -38,7 +38,7 @@
     // "noFallthroughCasesInSwitch": true,
     // "noPropertyAccessFromIndexSignature": true,
     "experimentalDecorators": true,
-  "emitDecoratorMetadata": true,
+    "emitDecoratorMetadata": true,
 
     // Recommended Options
     "strict": false,
@@ -61,7 +61,6 @@
     "strictBuiltinIteratorReturn": true,
     "alwaysStrict": true,
     "useUnknownInCatchVariables": true
-
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"],

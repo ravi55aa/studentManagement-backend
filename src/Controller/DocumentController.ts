@@ -1,123 +1,82 @@
-import { Request,Response,NextFunction } 
-    from "express";
+import { Request, Response, NextFunction } from 'express';
 
-
-import { IDocument } 
-    from "../Models/documentModel";
-import { IResponse } 
-    from "../Interfaces/IResponse";
-import { handleDocRespBody } from "../Utils/responseBody";
-import { StatusCodes } from "../Constants/statusCodes";
-import { DocumentsDto } from "../dto/schoolDTO";
-import { injectable,inject } from "tsyringe";
-import { DocumentService } from "../Services/documentService";
-
-
+import { IDocument } from '../Models/documentModel';
+import { IResponse } from '../Interfaces/IResponse';
+import { handleDocRespBody } from '../Utils/responseBody';
+import { StatusCodes } from '../Constants/statusCodes';
+import { DocumentsDto } from '../dto/schoolDTO';
+import { injectable, inject } from 'tsyringe';
+import { DocumentService } from '../Services/documentService';
 
 @injectable()
-export class DocumentController{
+export class DocumentController {
+  constructor(
+    @inject(DocumentService)
+    private documentService: DocumentService,
+  ) {}
 
+  public async addNewDocuments(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      //dto
+      //service_call
+      //res + catchError
 
-    constructor(
-        @inject(DocumentService)
-        private documentService:DocumentService
-    ){}
+      const dto = DocumentsDto.handleDtoOfDoc(req);
+      dto.userId = dto.tenantId;
 
+      const resDoc = this.documentService.uploadDocs(dto);
 
-    public async addNewDocuments(req:Request,res:Response,next:NextFunction) : 
-    Promise<void>{    
-        try{
+      const resBody: IResponse<Promise<IDocument | null>> = handleDocRespBody(resDoc);
 
-            //dto
-            //service_call
-            //res + catchError
-
-            const dto
-                = DocumentsDto.handleDtoOfDoc(req);
-            dto.userId=dto.tenantId
-
-            const resDoc
-            = this.documentService.uploadDocs(dto);
-
-            const resBody:IResponse<Promise<IDocument|null>> 
-            = handleDocRespBody(resDoc);
-
-            res
-            .status(StatusCodes.OK)
-            .json(resBody);
-
-        }catch(err){
-            next(err);
-        }
+      res.status(StatusCodes.OK).json(resBody);
+    } catch (err) {
+      next(err);
     }
+  }
 
+  public async updateDocuments(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { status, resBody } = await this.documentService.updateDocs(req, res);
 
-    public async updateDocuments(req:Request,res:Response,next:NextFunction) : 
-    Promise<void>{    
-        try{
-
-            const {status,resBody}
-            = await this.documentService.updateDocs(req,res);
-
-            res
-            .status(status)
-            .json(resBody);
-            
-        }catch(err){
-            next(err);
-        }
+      res.status(status).json(resBody);
+    } catch (err) {
+      next(err);
     }
+  }
 
-//Plural
-    public async deleteDocuments(req:Request,res:Response,next:NextFunction) : 
-    Promise<void>{    
-        try{
+  //Plural
+  public async deleteDocuments(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { status, resBody } = await this.documentService.deleteDocument(req, res);
 
-            const {status,resBody}
-            = await this.documentService.deleteDocument(req,res);
-
-            res
-            .status(status)
-            .json(resBody);
-            
-        }catch(err){
-            next(err);
-        }
+      res.status(status).json(resBody);
+    } catch (err) {
+      next(err);
     }
+  }
 
+  //Singular
+  public async deleteADocumentFile(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { status, resBody } = await this.documentService.deleteAFile(req);
 
-//Singular
-    public async deleteADocumentFile(req:Request,res:Response,next:NextFunction) : 
-    Promise<void>{    
-        try{
-
-            const {status,resBody}
-            = await this.documentService.deleteAFile(req);
-
-            res
-            .status(status)
-            .json(resBody);
-            
-        }catch(err){
-            next(err);
-        }
+      res.status(status).json(resBody);
+    } catch (err) {
+      next(err);
     }
+  }
 
+  public async uploadAdditionDocuments(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const { status, resBody } = await this.documentService.update_NewAddition_Documents(req);
 
-    public async uploadAdditionDocuments(req:Request,res:Response,next:NextFunction) : 
-    Promise<void>{    
-        try{
-
-            const {status,resBody}
-            = await this.documentService.update_NewAddition_Documents(req);
-
-            res
-            .status(status)
-            .json(resBody);
-            
-        }catch(err){
-            next(err);
-        }
+      res.status(status).json(resBody);
+    } catch (err) {
+      next(err);
     }
-
+  }
 }

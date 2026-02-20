@@ -1,4 +1,4 @@
-export type TGeneratesTokens={
-    token:string,
-    refreshToken:string
-}
+export type TGeneratesTokens = {
+  token: string;
+  refreshToken: string;
+};

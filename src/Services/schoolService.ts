@@ -1,197 +1,172 @@
-import {  ISchoolService} 
-    from "../Interfaces/services/ISchoolService"
+import { ISchoolService } from '../Interfaces/services/ISchoolService';
 
-import { IUserRepository } 
-    from "../Interfaces/repository/IAdminRepository";
+import { IUserRepository } from '../Interfaces/repository/IAdminRepository';
 
-import  { ISchool } 
-    from "../Models/schoolModel";
-import { IAddress } 
-    from "../Models/addressModel";
+import { ISchool } from '../Models/schoolModel';
+import { IAddress } from '../Models/addressModel';
 
-import { handleJwtTokensGenerator, IJwtPayload } 
-    from "../Utils/jwt";
-import { SchoolAcademicYearDto, SchoolDTO } 
-    from "../dto/schoolDTO";
-import { Request,Response } 
-    from "express";
-import { serviceReturnType } from "../Constants/interfaces";
-import { IAddressRepository } from "../Interfaces/repository/IAddressRepository";
-import { IDocumentRepository } from "../Interfaces/repository/IDocument.interface";
-import { IResponse } from "../Interfaces/IResponse";
-import { AddressDTO } from "../dto/addressDTO";
-import { SchoolRepository } from "../Repository/schoolRepository";
-import { injectable,inject } from "tsyringe";
-import { UserRepository } from "../Repository/userRepository";
-import { AddressRepository } from "../Repository/addressRepository";
-import { DocumentRepository } from "../Repository/documentRepository";
-
-
+import { handleJwtTokensGenerator, IJwtPayload } from '../Utils/jwt';
+import { SchoolAcademicYearDto, SchoolDTO } from '../dto/schoolDTO';
+import { Request, Response } from 'express';
+import { serviceReturnType } from '../Constants/interfaces';
+import { IAddressRepository } from '../Interfaces/repository/IAddressRepository';
+import { IDocumentRepository } from '../Interfaces/repository/IDocument.interface';
+import { IResponse } from '../Interfaces/IResponse';
+import { AddressDTO } from '../dto/addressDTO';
+import { SchoolRepository } from '../Repository/schoolRepository';
+import { injectable, inject } from 'tsyringe';
+import { UserRepository } from '../Repository/userRepository';
+import { AddressRepository } from '../Repository/addressRepository';
+import { DocumentRepository } from '../Repository/documentRepository';
 
 @injectable()
 export class SchoolService implements ISchoolService {
+  constructor(
+    @inject(SchoolRepository)
+    private schoolRepository: SchoolRepository,
 
-    constructor(
-        @inject(SchoolRepository)
-        private schoolRepository: SchoolRepository,
+    @inject(UserRepository)
+    private userRepository: IUserRepository,
 
-        @inject(UserRepository)
-        private userRepository: IUserRepository,
+    @inject(AddressRepository)
+    private addressRepo: IAddressRepository,
 
-        @inject(AddressRepository)
-        private addressRepo:IAddressRepository,
+    @inject(DocumentRepository)
+    private docRepo: IDocumentRepository,
+  ) {}
 
-        @inject(DocumentRepository)
-        private docRepo:IDocumentRepository,
-    ) {}
+  public async createSchool(req: Request, res: Response) {
+    const schoolData: Partial<ISchool> = SchoolDTO.createSchool(req.body);
 
+    const adminId: string | undefined = req.user?.userId; //JWT middleware attaches
 
-
-    public async createSchool(
-        req:Request,res:Response,
-    ) {
-        const schoolData:Partial<ISchool> = SchoolDTO.createSchool(req.body);
-            
-        const adminId:string|undefined = req.user?.userId;  //JWT middleware attaches 
-
-        const admin = await this.userRepository.findById(adminId!);
-        if (!admin) { throw new Error("Admin not found"); }
-
-        const plainSchoolData =
-            (schoolData && typeof schoolData.toObject === "function")
-                ? schoolData.toObject()
-                : schoolData;
-
-        const createdSchool =
-            await this.schoolRepository.createSchool({
-                ...plainSchoolData,
-                userId: admin._id
-            });
-
-        admin.tenantId = createdSchool._id;
-        await admin.save();
-        
-        const payload:IJwtPayload={
-            userId:admin._id,
-            tenantId:createdSchool._id,
-            role:"school"
-        }
-        handleJwtTokensGenerator(payload,req,res);
-
-        return createdSchool;
+    const admin = await this.userRepository.findById(adminId!);
+    if (!admin) {
+      throw new Error('Admin not found');
     }
 
+    const plainSchoolData =
+      schoolData && typeof schoolData.toObject === 'function' ? schoolData.toObject() : schoolData;
 
-    //LOGIN
-    async getSchool(req:Request,res:Response) {
+    const createdSchool = await this.schoolRepository.createSchool({
+      ...plainSchoolData,
+      userId: admin._id,
+    });
 
-        const query = SchoolDTO.getSchool(req,res);
-        const school = await this.schoolRepository.findOne(query);
+    admin.tenantId = createdSchool._id;
+    await admin.save();
 
-        if (!school) throw new Error("School not found");
+    const payload: IJwtPayload = {
+      userId: admin._id,
+      tenantId: createdSchool._id,
+      role: 'school',
+    };
+    handleJwtTokensGenerator(payload, req, res);
 
-        //JWT ****
-        const payload:IJwtPayload={
-            role:"school",
-            userId:school.userId!,
-            tenantId:school._id
-        }
+    return createdSchool;
+  }
 
-        handleJwtTokensGenerator(payload,req,res);
+  //LOGIN
+  async getSchool(req: Request, res: Response) {
+    const query = SchoolDTO.getSchool(req, res);
+    const school = await this.schoolRepository.findOne(query);
 
-        return school;
+    if (!school) throw new Error('School not found');
+
+    //JWT ****
+    const payload: IJwtPayload = {
+      role: 'school',
+      userId: school.userId!,
+      tenantId: school._id,
+    };
+
+    handleJwtTokensGenerator(payload, req, res);
+
+    return school;
+  }
+
+  async updateSchoolMeta(req: Request, res: Response): Promise<serviceReturnType> {
+    const { id, dtoData } = SchoolDTO.updateSchool(req, res);
+
+    await this.schoolRepository.updateSchool(id, dtoData);
+
+    const status = 200;
+    const resBody = {
+      success: true,
+      data: null,
+      error: null,
+      message: 'Updated successfully',
+    };
+
+    return { status, resBody };
+  }
+
+  // public async updateSchool(
+  //     schoolId: string,
+  //     updateData: Partial<ISchool>
+  // ):Promise<ISchool|null> {
+  //     // Ensure the school exists
+  //     const existingSchool = await this.schoolRepository.findById(schoolId);
+  //     if (!existingSchool) {
+  //         throw new Error("School not found");
+  //     }
+
+  //     // Convert schema object to plain object if needed
+  //     const plainUpdateData =
+  //         (updateData && typeof updateData.toObject === "function")
+  //             ? updateData.toObject()
+  //             : updateData;
+
+  //     const updatedSchool =
+  //         await this.schoolRepository.updateSchool(
+  //             schoolId,
+  //             { $set: { ...plainUpdateData } }
+  //         );
+
+  //     return updatedSchool;
+  // }
+
+  //TODO handleResponseOf();
+  public async getSchoolAllData(req: Request, res: Response): Promise<serviceReturnType> {
+    const { tenantId } = SchoolAcademicYearDto.getTenantId(req, res);
+
+    const schoolDoc: Partial<ISchool | null> = await this.schoolRepository.findById(tenantId!);
+
+    const addrQuery = { userId: tenantId };
+    const schoolAddressDoc = await this.addressRepo.findOne(addrQuery);
+
+    const docsQuery = { userId: tenantId, role: 'School' };
+    const schoolFilesDoc = await this.docRepo.findOne(docsQuery);
+
+    const allData = {
+      meta: schoolDoc,
+      address: schoolAddressDoc,
+      documents: schoolFilesDoc,
+    };
+
+    //handleResBody
+    const status = schoolAddressDoc ? 200 : 500;
+    const resBody: IResponse<object> = {
+      error: schoolAddressDoc ? null : 'something went down',
+      data: allData,
+      success: schoolAddressDoc !== null ? true : false,
+      message: schoolAddressDoc ? 'Data fetched Successfully' : 'Something went down',
+    };
+    //const {status,resBody}=AcademicYearResponseBody.newAcademicYear(allData);
+
+    return { status, resBody };
+  }
+
+  public async deleteSchool(schoolId: string) {
+    const school = await this.schoolRepository.findById(schoolId);
+    if (!school) {
+      throw new Error('School not found');
     }
 
+    // Remove school from DB
+    await this.schoolRepository.deleteSchool(schoolId);
 
-    async updateSchoolMeta(req:Request,res:Response):Promise<serviceReturnType> {
-
-        const {id,dtoData} =SchoolDTO.updateSchool(req,res);
-
-        await this.schoolRepository.updateSchool(id,dtoData);
-
-        const status=200;
-        const resBody={
-            success:true,
-            data:null,
-            error:null,
-            message:"Updated successfully"
-        }
-
-        return {status,resBody};
-    }
-
-
-    // public async updateSchool(
-    //     schoolId: string,
-    //     updateData: Partial<ISchool>
-    // ):Promise<ISchool|null> {
-    //     // Ensure the school exists
-    //     const existingSchool = await this.schoolRepository.findById(schoolId);
-    //     if (!existingSchool) {
-    //         throw new Error("School not found");
-    //     }
-
-    //     // Convert schema object to plain object if needed
-    //     const plainUpdateData =
-    //         (updateData && typeof updateData.toObject === "function")
-    //             ? updateData.toObject()
-    //             : updateData;
-
-    //     const updatedSchool =
-    //         await this.schoolRepository.updateSchool(
-    //             schoolId,
-    //             { $set: { ...plainUpdateData } }
-    //         );
-
-    //     return updatedSchool;
-    // }
-    
-    //TODO handleResponseOf();
-    public async getSchoolAllData(req:Request,res:Response):Promise<serviceReturnType>{
-            
-        const {tenantId}=SchoolAcademicYearDto.getTenantId(req,res);
-
-        const schoolDoc:Partial<ISchool|null>=await this.schoolRepository.findById(tenantId!);
-
-
-        const addrQuery={userId :tenantId};
-        const schoolAddressDoc=await this.addressRepo.findOne(addrQuery);
-
-
-        const docsQuery={userId:tenantId, role:"School"};
-        const schoolFilesDoc=await this.docRepo.findOne(docsQuery);
-
-
-        const allData={
-            meta:schoolDoc,
-            address:schoolAddressDoc,
-            documents:schoolFilesDoc
-        }
-
-        //handleResBody
-        const status=schoolAddressDoc ? 200 : 500;
-        const resBody:IResponse<object>={
-            error:schoolAddressDoc?null:"something went down",
-            data:allData,
-            success:schoolAddressDoc!==null?true:false,
-            message:schoolAddressDoc?"Data fetched Successfully":"Something went down",
-        }
-        //const {status,resBody}=AcademicYearResponseBody.newAcademicYear(allData);
-        
-        return {status,resBody};
-    }
-
-
-    public async deleteSchool(schoolId: string) {
-        const school = await this.schoolRepository.findById(schoolId);
-        if (!school) {
-            throw new Error("School not found");
-        }
-
-        // Remove school from DB
-        await this.schoolRepository.deleteSchool(schoolId);
-
-        /* Optional:
+    /* Optional:
         Remove tenantId from admin who created this school
         await this.userRepository.updateMany(
             { tenantId: schoolId },
@@ -199,60 +174,24 @@ export class SchoolService implements ISchoolService {
         );
         */
 
-        return { message: "School deleted successfully" };
-    }
+    return { message: 'School deleted successfully' };
+  }
 
+  public async addAddress(req: Request, res: Response): Promise<IAddress> {
+    const dto: Partial<IAddress> = AddressDTO.handleAddress(req, res);
 
-    public async addAddress(req:Request,res:Response): Promise<IAddress> {
-        const dto:Partial<IAddress>=AddressDTO.handleAddress(req,res);
+    const newAddress = await this.userRepository.addAddress(dto);
 
-        const newAddress = await this.userRepository.addAddress(dto);
-
-        return newAddress;
-    }
+    return newAddress;
+  }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// export class SchoolService 
+// export class SchoolService
 // implements ISchoolService {
 
 //     private schoolRepository: ISchoolRepository;
 
 //     private userRepository: IUserRepository;
-
-
 
 //     constructor(
 //         schoolRepository: ISchoolRepository,
@@ -262,14 +201,12 @@ export class SchoolService implements ISchoolService {
 //         this.userRepository = userRepository;
 //     }
 
-
-
 //     public async createSchool(
 //         adminId:string,
 //         schoolData: ISchool,
 //     ) {
-        
-//         const admin = 
+
+//         const admin =
 //         await this.userRepository.findById(adminId);
 
 //         if (!admin) { throw new Error("Admin not found");}
@@ -279,22 +216,19 @@ export class SchoolService implements ISchoolService {
 //             ? schoolData.toObject()
 //             : schoolData;
 
-//         const createdSchool = 
+//         const createdSchool =
 //         await this.schoolRepository
 //         .createSchool({...plainSchoolData,userId:admin._id});
 
-        
 //         admin.tenantId = createdSchool._id;
 //         await admin.save();
 
 //         return createdSchool;
 //     }
 
-
-
 //     async getSchool(query: FilterQuery<Partial<ISchool>>) {
 //         try{
-    
+
 //             const isSchool=await this.schoolRepository.findOne(query);
 
 //             return isSchool;
@@ -303,13 +237,9 @@ export class SchoolService implements ISchoolService {
 //         }
 //     }
 
-
-
-
 //     public async addAddress(address: IAddress): Promise<IAddress> {
 //         const newAddress=await this.userRepository.addAddress(address);
 //         return newAddress;
 //     }
 
-    
 // }

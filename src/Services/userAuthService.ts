@@ -1,76 +1,57 @@
+import logger from '../Utils/logger';
 
-import { IUserAuthService } 
-    from "../Interfaces/services/IAdminAuthService"
-import { IUser } 
-    from "../Models/userModel";
-import {IAddress} 
-    from "../Models/addressModel";
-import { AddressFormatter, UserValidator } 
-    from "../Constants/userValidator";
-import { Request,Response } 
-    from "express";
-import { handleJwtTokensGenerator, IJwtPayload} 
-    from "../Utils/jwt";
-import { injectable,inject } from "tsyringe";
-import { UserRepository } from "../Repository/userRepository";
-import logger from "../Utils/logger";
-
+import { IUserAuthService } from '../Interfaces/services/IAdminAuthService';
+import { IUser } from '../Models/userModel';
+import { IAddress } from '../Models/addressModel';
+import { AddressFormatter, UserValidator } from '../Constants/userValidator';
+import { Request, Response } from 'express';
+import { handleJwtTokensGenerator, IJwtPayload } from '../Utils/jwt';
+import { injectable, inject } from 'tsyringe';
+import { UserRepository } from '../Repository/userRepository';
 
 @injectable()
 export class UserAuthService implements IUserAuthService {
-    
-    constructor(
-        @inject(UserRepository) 
-        private userRepository:UserRepository,
-    ){}
+  constructor(
+    @inject(UserRepository)
+    private userRepository: UserRepository,
+  ) {}
 
+  async register(userData: Partial<IUser>, address: Partial<IAddress>) {
+    await UserValidator.ensureUserIsTaken(this.userRepository, userData.email!);
 
-
-    async register(userData:Partial<IUser>,address:Partial<IAddress>){
-        await UserValidator.ensureUserIsTaken(this.userRepository,userData.email!);
-
-        const createUser = await this.userRepository.create(userData);
-        if(!createUser){
-            throw new Error("Cant create the user");
-        }
-
-        await this.userRepository.addAddress(
-            {
-                ...AddressFormatter.toPlain(address),
-                userId:createUser._id,
-                userType:"Admin"
-            }
-        );
-        return createUser;
+    const createUser = await this.userRepository.create(userData);
+    if (!createUser) {
+      throw new Error('Cant create the user');
     }
 
+    await this.userRepository.addAddress({
+      ...AddressFormatter.toPlain(address),
+      userId: createUser._id,
+      userType: 'Admin',
+    });
+    return createUser;
+  }
 
+  async signIn(req: Request, res: Response) {
+    try {
+      const userData: IUser = req.body;
 
-    async signIn(req:Request,res:Response){
-        try{
+      const isUser: IUser | null = await this.userRepository.findOne({
+        email: userData.email,
+        password: userData.password,
+      });
 
-            const userData:IUser=req.body;
+      //jwt ****
+      if (isUser) {
+        const payload: IJwtPayload = { userId: isUser._id!, role: 'admin', tenantId: null };
 
-            const isUser:IUser|null= await this.userRepository.findOne({email:userData.email,password:userData.password});
+        handleJwtTokensGenerator(payload, req, res);
+      }
 
-            //jwt ****
-            if(isUser){
-                const payload:IJwtPayload=
-                {   userId:isUser._id!,
-                    role:"admin",
-                    tenantId:null
-                }
-
-                handleJwtTokensGenerator(payload,req,res);
-            }
-            
-            return isUser;
-        } catch(err:unknown){
-            logger.error(err);
-            throw new Error("Failed to sign in",{cause:err});
-        }
+      return isUser;
+    } catch (err: unknown) {
+      logger.error(err);
+      throw new Error('Failed to sign in', { cause: err });
     }
-
+  }
 }
-
-

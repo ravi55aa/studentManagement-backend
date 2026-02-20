@@ -1,170 +1,145 @@
-import { Request,Response } from "express"
-import { CenterDto } from "../dto/centersDto"
-import centerModel, { ICenter } from "../Models/centerModel";
-import { AddressDTO } from "../dto/addressDTO";
-import { IAddress } from "../Models/addressModel";
-import { serviceReturnType } from "../Constants/interfaces";
-import { IResponse } from "../Interfaces/IResponse";
-import { StatusCodes } from "../Constants/statusCodes";
-import { CenterResponseBody } from "../Utils/ResponseBody/center.responsebody";
-import { ICenterService } from "../Interfaces/services/ICenterService";
-import { addressModel } from "../Models";
-import { inject, injectable } from "tsyringe";
-import { AddressRepository } from "../Repository/addressRepository";
-import { CenterRepository } from "../Repository/centerRepository";
-
-
+import { Request, Response } from 'express';
+import { CenterDto } from '../dto/centersDto';
+import centerModel, { ICenter } from '../Models/centerModel';
+import { AddressDTO } from '../dto/addressDTO';
+import { IAddress } from '../Models/addressModel';
+import { serviceReturnType } from '../Constants/interfaces';
+import { IResponse } from '../Interfaces/IResponse';
+import { StatusCodes } from '../Constants/statusCodes';
+import { CenterResponseBody } from '../Utils/ResponseBody/center.responsebody';
+import { ICenterService } from '../Interfaces/services/ICenterService';
+import { addressModel } from '../Models';
+import { inject, injectable } from 'tsyringe';
+import { AddressRepository } from '../Repository/addressRepository';
+import { CenterRepository } from '../Repository/centerRepository';
 
 @injectable()
-export class CentersService implements ICenterService{
+export class CentersService implements ICenterService {
+  constructor(
+    @inject(AddressRepository)
+    private addressRepo: AddressRepository,
 
-    
+    @inject(CenterRepository)
+    private centerRepo: CenterRepository,
+  ) {}
 
+  //!center already exist {prop:name};
+  async createCenter(req: Request, res: Response): Promise<serviceReturnType> {
+    const dto: Partial<ICenter> = CenterDto.handleNewCenterDto(req, res);
 
-    constructor(
-        @inject(AddressRepository)
-        private addressRepo:AddressRepository,
+    const newCenterDoc: Partial<ICenter | null> = await this.centerRepo.addCenter(dto);
 
-        @inject(CenterRepository)
-        private centerRepo:CenterRepository
-    ){
-    }
+    // const address:Partial<IAddress> = AddressDTO.handleAddress(req);
 
-    //!center already exist {prop:name};
-    async createCenter(req:Request,res:Response):Promise<serviceReturnType> {
+    // await this.addressRepo.create(address);
 
-        const dto:Partial<ICenter> = CenterDto.handleNewCenterDto(req,res);
+    const { status, resBody } = CenterResponseBody.createCenter(newCenterDoc);
 
-        const newCenterDoc:Partial<ICenter|null> = await this.centerRepo.addCenter(dto);
+    return { status, resBody };
+  }
 
-        // const address:Partial<IAddress> = AddressDTO.handleAddress(req);
-        
-        // await this.addressRepo.create(address);
+  async createCenterAddress(req: Request, res: Response): Promise<serviceReturnType> {
+    const { id } = req.params;
 
+    const dto: Partial<IAddress> = AddressDTO.handleAddress(req, res);
+    dto.userId = id;
+    dto.userType = 'Center';
 
-        const {status,resBody} = CenterResponseBody.createCenter(newCenterDoc);
+    const doc: Partial<IAddress | null> = await addressModel.create(dto);
 
-        return {status,resBody};
-    }
+    const status = doc ? 200 : 404;
+    const resBody: IResponse<Partial<IAddress | null>> = {
+      success: status == 200 ? true : false,
+      data: doc,
+      error: status == 200 ? null : 'Something went error',
+      message: status == 200 ? 'Fetched' : 'Not-fetched',
+    };
 
+    return { status, resBody };
+  }
 
-    async createCenterAddress(req:Request,res:Response):Promise<serviceReturnType> {
-        const {id}=req.params;
+  async getCenterById(req: Request): Promise<serviceReturnType> {
+    const { id } = req.params;
+    const doc: Partial<ICenter | null> = await this.centerRepo.findById(id!);
 
-        const dto:Partial<IAddress> = AddressDTO.handleAddress(req,res);
-        dto.userId=id;
-        dto.userType="Center";
+    //handleResBody
+    const status = doc ? 200 : 404;
+    const resBody: IResponse<Partial<ICenter | null>> = {
+      success: status == 200 ? true : false,
+      data: doc,
+      error: status == 200 ? null : 'Something went error',
+      message: status == 200 ? 'Fetched' : 'Not-fetched',
+    };
 
-        const doc:Partial<IAddress|null> = await addressModel.create(dto);
+    //const {status,resBody}=AcademicYearResponseBody.newAcademicYear(newAYearDoc);
 
+    return { status, resBody };
+  }
 
-        const status=doc?200:404;
-        const resBody:IResponse<Partial<IAddress|null>>={
-            success:status==200?true:false,
-            data:doc,
-            error:status==200?null:"Something went error",
-            message:status==200?"Fetched":"Not-fetched",
-        }
+  async getAllCenters(): Promise<serviceReturnType> {
+    const arrayOfCentersDoc: ICenter[] = await this.centerRepo.getAllCenters();
 
-        return {status,resBody};
-    }
+    const status: number = StatusCodes.OK;
 
+    //
+    const responseBody: IResponse<ICenter[]> = {
+      data: arrayOfCentersDoc,
+      error: null,
+      message: 'Centers Data fetched Successfully',
+      success: true,
+    };
 
-    async getCenterById(req:Request):Promise<serviceReturnType>{
-            const {id}=req.params;
-            const doc:Partial<ICenter|null>=await this.centerRepo.findById(id!);
-            
-            //handleResBody
-            const status=doc?200:404;
-            const resBody:IResponse<Partial<ICenter|null>>={
-                success:status==200?true:false,
-                data:doc,
-                error:status==200?null:"Something went error",
-                message:status==200?"Fetched":"Not-fetched",
-            }
-    
-            //const {status,resBody}=AcademicYearResponseBody.newAcademicYear(newAYearDoc);
-            
-            return {status,resBody};
-        }
+    return { status, resBody: responseBody };
+  }
 
+  async updateCenter(req: Request, res: Response): Promise<serviceReturnType> {
+    const centerData: Partial<ICenter> = CenterDto.handleNewCenterDto(req, res);
+    const { id } = req.params;
 
+    // const updatedDoc:Partial<ICenter|null> = await this.centerRepo.updateCenter(centerData);
 
-    async getAllCenters():Promise<serviceReturnType>{
-        const arrayOfCentersDoc:ICenter[]=await this.centerRepo.getAllCenters();
+    const doc = await centerModel.findByIdAndUpdate(id, centerData, { new: true });
 
-        const status:number=StatusCodes.OK;
+    // const address:Partial<IAddress> = AddressDTO.handleAddress(req);
 
-        //
-        const responseBody:IResponse<ICenter[]>={
-            data:arrayOfCentersDoc,
-            error:null,
-            message:"Centers Data fetched Successfully",
-            success:true
-        }
+    // await this.addressRepo.create(address);
 
-        return {status,resBody:responseBody};
-    }
+    const { status, resBody } = CenterResponseBody.createCenter(doc);
 
+    return { status, resBody };
+  }
 
+  async deleteCenter(req: Request): Promise<serviceReturnType> {
+    const { id } = req.params;
 
-    async updateCenter(req:Request,res:Response):Promise<serviceReturnType> {
+    const doc = await centerModel.deleteOne({ _id: id });
 
-        const centerData:Partial<ICenter> = CenterDto.handleNewCenterDto(req,res);
-        const {id}=req.params;
+    const status = doc ? StatusCodes.OK : StatusCodes.CONFLICT;
 
+    const resBody: IResponse<null> = {
+      success: status == 200 ? true : false,
+      data: null,
+      error: status == 200 ? null : 'Something went error',
+      message: status == 200 ? 'Deleted' : 'Not-deleted',
+    };
+    //const {status,resBody}=AcademicYearResponseBody.newAcademicYear(newAYearDoc);
 
-        // const updatedDoc:Partial<ICenter|null> = await this.centerRepo.updateCenter(centerData);
+    return { status, resBody };
+  }
 
-        const doc=await centerModel.findByIdAndUpdate(id,centerData,{new:true});
+  //**📌 Relationship / Business Logic
 
-        // const address:Partial<IAddress> = AddressDTO.handleAddress(req);
-        
-        // await this.addressRepo.create(address);
+  assignAdminToCenter() {}
 
+  removeAdminFromCenter() {}
 
-        const {status,resBody} = CenterResponseBody.createCenter(doc);
+  assignSchoolToCenter() {}
 
-        return {status,resBody};
-    }
+  removeSchoolFromCenter() {}
 
+  //** 📌 Status & Lifecycle
 
+  activateCenter() {}
 
-    async deleteCenter(req:Request):Promise<serviceReturnType>{
-        const {id} =  req.params
-        
-        const doc=await centerModel.deleteOne({_id:id});
-        
-        const status=doc?StatusCodes.OK:StatusCodes.CONFLICT;
-
-        const resBody:IResponse<null>={
-            success:status==200?true:false,
-            data:null,
-            error:status==200?null:"Something went error",
-            message:status==200?"Deleted":"Not-deleted",
-        }
-        //const {status,resBody}=AcademicYearResponseBody.newAcademicYear(newAYearDoc);
-        
-        return {status,resBody};
-    }
-
-
-
-    //**📌 Relationship / Business Logic
-
-    assignAdminToCenter(){}
-
-    removeAdminFromCenter(){}
-
-    assignSchoolToCenter(){}
-
-    removeSchoolFromCenter(){}
-
-
-    //** 📌 Status & Lifecycle
-
-    activateCenter(){}
-
-    deactivateCenter(){}
-
+  deactivateCenter() {}
 }

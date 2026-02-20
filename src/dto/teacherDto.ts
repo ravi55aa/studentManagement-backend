@@ -1,197 +1,183 @@
-import { ITeacher, ITeacherBio } from "../Models/teacherModel";
-import {Request,Response} from "express";
-import { handleTokenVerification } from "../Utils/jwt";
-import { handleValidationOF } from "../Middlewares/validateUser.middleware";
-import { createTeacherSchema } from "../Validators/teacher";
-import mongoose from "mongoose";
-import { batchModel } from "../Models/batchModel";
-import academicSubjectsModel, { academicYearModel } from "../Models/academicYear";
-import { getRandomId } from "../Utils/nanoId";
+import { ITeacher, ITeacherBio } from '../Models/teacherModel';
+import { Request, Response } from 'express';
+import { handleTokenVerification } from '../Utils/jwt';
+import { handleValidationOF } from '../Middlewares/validateUser.middleware';
+import { createTeacherSchema } from '../Validators/teacher';
+import mongoose from 'mongoose';
+import { batchModel } from '../Models/batchModel';
+import academicSubjectsModel, { academicYearModel } from '../Models/academicYear';
+import { getRandomId } from '../Utils/nanoId';
 
 export class TeacherDTO {
+  static createBio(req: Request, res: Response): Partial<ITeacherBio> {
+    const data: Partial<ITeacherBio> = req.body;
+    const decoded = handleTokenVerification(req, res);
+    const { docs, profile } = this.handleDocuments(req);
 
-    static createBio(req:Request,res:Response):Partial<ITeacherBio>{
+    const returnUpdated: Partial<ITeacherBio> = {
+      firstName: data.firstName!,
+      lastName: data.lastName!,
+      email: data.email!,
+      phone: data.phone!,
+      qualification: data.qualification!,
+      dateOfBirth: data.dateOfBirth!,
+      profilePhoto: profile || '',
+      experience: data.experience!,
+      gender: data.gender!,
+      documents: docs || [],
+      tenantId: decoded.tenantId,
+    };
 
-        const data:Partial<ITeacherBio>=req.body;
-        const decoded=handleTokenVerification(req,res);
-        const {docs,profile}=this.handleDocuments(req);
+    return returnUpdated;
+  }
 
-        const returnUpdated:Partial<ITeacherBio>={
-            firstName:data.firstName!,
-            lastName:data.lastName!,
-            email:data.email!,
-            phone:data.phone!,
-            qualification:data.qualification!,
-            dateOfBirth:data.dateOfBirth!,
-            profilePhoto:profile  || "",
-            experience:data.experience!,
-            gender:data.gender!,
-            documents:docs||[],
-            tenantId:decoded.tenantId
-        }
+  static updateBio(req: Request): Partial<ITeacherBio> {
+    const data: Partial<ITeacherBio> = req.body;
 
-        return returnUpdated;
+    const { docs, profile } = this.handleDocuments(req);
+
+    const returnUpdated: Partial<ITeacherBio> = {
+      ...(data.firstName && { firstName: data.firstName }),
+      ...(data.lastName && { lastName: data.lastName }),
+      ...(data.email && { email: data.email }),
+      ...(data.phone && { phone: data.phone }),
+      ...(data.qualification && { qualification: data.qualification }),
+      ...(data.gender && { gender: data.gender }),
+
+      ...(data.experience !== undefined && {
+        experience: Number(data.experience),
+      }),
+
+      ...(data.dateOfBirth && {
+        dateOfBirth: new Date(data.dateOfBirth),
+      }),
+
+      ...(profile && { profilePhoto: profile }),
+
+      ...(docs &&
+        docs.length > 0 && {
+          documents: docs,
+        }),
+    };
+
+    return returnUpdated;
+  }
+
+  static handleDocuments(req: Request) {
+    const files = req.files as {
+      profile?: Express.Multer.File[];
+      docs?: Express.Multer.File[];
+    };
+
+    const profile = files?.profile?.[0]?.path;
+    const documents = files?.docs;
+
+    const docs = documents?.map((f) => ({
+      url: f.path,
+      fileName: f.filename,
+    }));
+
+    return { docs, profile };
+  }
+
+  static async create(req: Request): Promise<Partial<ITeacher>> {
+    const data: Partial<ITeacher> = req.body;
+    const { id } = req.params;
+    const dto = {
+      teacherId: new mongoose.Types.ObjectId(id!),
+      academicYearId: data.academicYearId!,
+      employeeId: data.employeeId!,
+      employmentStatus: data.employmentStatus!,
+      assignedSubjects: data.assignedSubjects ?? [],
+      designation: data.designation!,
+      department: data.department ?? [],
+      dateOfJoining: data.dateOfJoining!,
+      dateOfLeaving: data?.dateOfLeaving ?? null,
+      centerId: data.centerId!,
+    };
+
+    const yearDoc = await academicYearModel.findOne({ code: dto.academicYearId! });
+
+    if (yearDoc?.id) {
+      dto.academicYearId = yearDoc._id;
     }
 
-    static updateBio(req:Request):Partial<ITeacherBio>{
+    const subjectToFollowArray = [];
+    for (const code of data.assignedSubjects!) {
+      const isSub = await academicSubjectsModel.findOne({ code: code });
+      if (!isSub) continue;
 
-        const data: Partial<ITeacherBio> = req.body;
-
-        const { docs, profile } = this.handleDocuments(req);
-
-        const returnUpdated: Partial<ITeacherBio> = {
-            ...(data.firstName && { firstName: data.firstName }),
-            ...(data.lastName && { lastName: data.lastName }),
-            ...(data.email && { email: data.email }),
-            ...(data.phone && { phone: data.phone }),
-            ...(data.qualification && { qualification: data.qualification }),
-            ...(data.gender && { gender: data.gender }),
-
-            ...(data.experience !== undefined && {
-            experience: Number(data.experience),
-            }),
-
-            ...(data.dateOfBirth && {
-            dateOfBirth: new Date(data.dateOfBirth),
-            }),
-
-            ...(profile && { profilePhoto: profile }),
-
-            ...(docs && docs.length > 0 && {
-            documents: docs,
-            }),
-        };
-
-        return returnUpdated;
+      subjectToFollowArray.push(isSub);
     }
+    dto.assignedSubjects = subjectToFollowArray;
+    dto.employeeId = getRandomId();
 
-    static handleDocuments(req:Request){
-        
-        const files = req.files as {
-            profile?: Express.Multer.File[] ;
-            docs?: Express.Multer.File[];
-        };
+    return dto;
+  }
 
-        const  profile = files?.profile?.[0]?.path;
-        const  documents = files?.docs;
+  static update(data: Partial<ITeacher>): Partial<ITeacher> {
+    return data;
+  }
 
-        const docs = documents?.map((f) => ({
-            url: f.path,
-            fileName: f.filename,
-        }));
-        
-        return {docs,profile}
-    }
+  static assignClass(req: Request): { teacherId: string; batchId: string } {
+    const { teacherId } = req.params;
+    const { batchId } = req.body;
 
-    static async create(req:Request):Promise<Partial<ITeacher>> {
-
-        const data:Partial<ITeacher>=req.body;
-        const {id}=req.params;
-        const dto= {
-            teacherId:new mongoose.Types.ObjectId(id!),
-            academicYearId: data.academicYearId!,
-            employeeId: data.employeeId!,
-            employmentStatus: data.employmentStatus! ,
-            assignedSubjects: data.assignedSubjects ?? [],
-            designation: data.designation!,
-            department: data.department ?? [],
-            dateOfJoining: data.dateOfJoining!,
-            dateOfLeaving: data?.dateOfLeaving ?? null,
-            centerId: data.centerId!
-        };
-        
-        const yearDoc = await academicYearModel.findOne({code:dto.academicYearId!});
-
-
-        if(yearDoc?.id){
-            dto.academicYearId = yearDoc._id;
-        }
-
-        const subjectToFollowArray=[];
-            for(const code of data.assignedSubjects!){
-                const isSub=await academicSubjectsModel.findOne({code:code});
-                if(!isSub) continue;
-
-                subjectToFollowArray.push(isSub);
-            }
-        dto.assignedSubjects=subjectToFollowArray;
-        dto.employeeId=getRandomId();
-
-        return dto;
-    }
-
-    static update(data:Partial<ITeacher>): Partial<ITeacher> {
-        return data;
-    }
-
-
-    static assignClass(req:Request): {teacherId:string,batchId:string }{
-        const {teacherId}=req.params;
-        const {batchId}=req.body
-
-        return {teacherId:teacherId!,batchId:batchId};
-    }
+    return { teacherId: teacherId!, batchId: batchId };
+  }
 }
 
-
 export class TeacherValidation {
+  static teacherBio(req: Request, res: Response): Partial<ITeacherBio> {
+    const data: Partial<ITeacherBio> = req.body;
+    const decoded = handleTokenVerification(req, res);
+    const { docs, profile } = TeacherDTO.handleDocuments(req);
 
-    static teacherBio(req:Request,res:Response):Partial<ITeacherBio>{
+    const returnUpdated: Partial<ITeacherBio> = {
+      firstName: data.firstName!,
+      lastName: data.lastName!,
+      email: data.email!,
+      phone: data.phone!,
+      qualification: data.qualification!,
+      dateOfBirth: data.dateOfBirth!,
+      profilePhoto: profile || '',
+      experience: data.experience!,
+      gender: data.gender!,
+      documents: docs || [],
+      tenantId: decoded.tenantId,
+    };
 
-        const data:Partial<ITeacherBio>=req.body;
-        const decoded=handleTokenVerification(req,res);
-        const {docs,profile}=TeacherDTO.handleDocuments(req);
+    return returnUpdated;
+  }
 
-        const returnUpdated:Partial<ITeacherBio>={
-            firstName:data.firstName!,
-            lastName:data.lastName!,
-            email:data.email!,
-            phone:data.phone!,
-            qualification:data.qualification!,
-            dateOfBirth:data.dateOfBirth!,
-            profilePhoto: profile || "",
-            experience:data.experience!,
-            gender:data.gender!,
-            documents:docs ||[],
-            tenantId:decoded.tenantId
-        }
+  static async teacher(req: Request, res: Response) {
+    const data = req.body;
+    const { id } = req.params;
 
-        return returnUpdated
-    }
+    const teacherData = {
+      teacherId: id!,
+      academicYearId: data.academicYearId!,
+      employeeId: data.employeeId!,
+      classTeacherOf: data.classTeacherOf!,
+      employmentStatus: data.employmentStatus!,
+      assignedSubjects: data.assignedSubjects ?? [],
+      designation: data.designation!,
+      department: data.department ?? [],
+      dateOfJoining: data.dateOfJoining!,
+      centerId: data.centerId!,
+    };
 
-    static async teacher(req:Request,res:Response) {
+    //MOVE THIS DB-CODE into repository
+    const year = await academicYearModel.findOne({ code: data.academicYearId });
+    teacherData.academicYearId = year?._id;
 
-        const data=req.body;
-        const {id}=req.params;
+    const batch = await batchModel.findOne({ code: data.classTeacherOf });
+    teacherData.academicYearId = batch?._id;
 
+    handleValidationOF(createTeacherSchema, teacherData, res);
+  }
 
-        const teacherData = {
-            teacherId: id!,
-            academicYearId: data.academicYearId!,
-            employeeId: data.employeeId!,
-            classTeacherOf: data.classTeacherOf!,
-            employmentStatus: data.employmentStatus! ,
-            assignedSubjects: data.assignedSubjects ?? [],
-            designation: data.designation!,
-            department: data.department ?? [],
-            dateOfJoining: data.dateOfJoining!,
-            centerId: data.centerId!
-        };
-
-        //MOVE THIS DB-CODE into repository
-        const year=await academicYearModel.findOne({code:data.academicYearId});
-        teacherData.academicYearId=year?._id;
-
-        const batch=await batchModel.findOne({code:data.classTeacherOf});
-        teacherData.academicYearId=batch?._id;
-
-
-        handleValidationOF(createTeacherSchema,
-            teacherData,res);
-        
-    }
-
-    static update(data:Partial<ITeacher>): Partial<ITeacher> {
-        return data;
-    }
+  static update(data: Partial<ITeacher>): Partial<ITeacher> {
+    return data;
+  }
 }

@@ -1,109 +1,92 @@
-
-import { serviceReturnType } from "../Constants/interfaces";
-import { IDocumentService } 
-    from "../Interfaces/services/IDocument.service";
-import { IDocument } from "../Models/documentModel";
-import { Request,Response } from "express";
-import { DocumentsDto } from "../dto/schoolDTO";
-import { SchoolResponseBody } from "../Utils/ResponseBody/school.responce.body";
-import { inject, injectable } from "tsyringe";
-import { DocumentRepository } from "../Repository/documentRepository";
-
-
+import { serviceReturnType } from '../Constants/interfaces';
+import { IDocumentService } from '../Interfaces/services/IDocument.service';
+import { IDocument } from '../Models/documentModel';
+import { Request, Response } from 'express';
+import { DocumentsDto } from '../dto/schoolDTO';
+import { SchoolResponseBody } from '../Utils/ResponseBody/school.responce.body';
+import { inject, injectable } from 'tsyringe';
+import { DocumentRepository } from '../Repository/documentRepository';
 
 @injectable()
-export class DocumentService implements IDocumentService{
+export class DocumentService implements IDocumentService {
+  constructor(
+    @inject(DocumentRepository)
+    private documentRepository: DocumentRepository,
+  ) {}
 
-    constructor(
-        @inject(DocumentRepository)
-        private documentRepository:DocumentRepository
-    ){}
+  public async uploadDocs(data: Partial<IDocument>): Promise<IDocument | null> {
+    const uploadedData = await this.documentRepository.uploadDocuments(data);
+    return uploadedData;
+  }
 
-    public async uploadDocs(data: Partial<IDocument>): 
-    Promise<IDocument|null> 
-    {
-        const uploadedData=await this.documentRepository.uploadDocuments(data);
-        return uploadedData;
-    }
+  public async updateDocs(req: Request, res: Response): Promise<serviceReturnType> {
+    const { dtoData, dtoQuery } = DocumentsDto.updateDoc(req, res);
 
+    const uploadedData: Partial<IDocument | null> = await this.documentRepository.updateDocuments(
+      dtoQuery,
+      dtoData,
+    );
 
-    public async updateDocs(req:Request,res:Response): Promise<serviceReturnType> 
-    {
-        const {dtoData,dtoQuery} = 
-            DocumentsDto.updateDoc(req,res);
+    const respBodyOdds = {
+      message: 'Successfully updated',
+      error: 'Something went error',
+      errMessage: 'Cant update the document',
+      statusCode: 200,
+    };
+    const { status, resBody } = SchoolResponseBody.forUpdate<Partial<IDocument>>(
+      uploadedData,
+      respBodyOdds.error,
+      respBodyOdds.message,
+      respBodyOdds.errMessage,
+      respBodyOdds.statusCode,
+    );
 
-        const uploadedData:Partial<IDocument|null> = 
-            await this.documentRepository.updateDocuments(dtoQuery,dtoData);
-        
-        const respBodyOdds={
-            message:"Successfully updated",
-            error:"Something went error",
-            errMessage:"Cant update the document",
-            statusCode:200
-        }
-        const {status,resBody} = 
-            SchoolResponseBody.forUpdate<Partial<IDocument>> 
-                (
-                    uploadedData,
-                    respBodyOdds.error,
-                    respBodyOdds.message,
-                    respBodyOdds.errMessage,
-                    respBodyOdds.statusCode
-                );
-        
-        return {status,resBody};
-    }
+    return { status, resBody };
+  }
 
+  public async update_NewAddition_Documents(req: Request): Promise<serviceReturnType> {
+    const { dtoData, dtoQuery } = DocumentsDto.updateDocV2(req);
 
-    public async update_NewAddition_Documents(req:Request): Promise<serviceReturnType> 
-    {
-        const {dtoData,dtoQuery} = 
-            DocumentsDto.updateDocV2(req);
+    const uploadedData: Partial<IDocument | null> =
+      await this.documentRepository.updateNEWUploadDocuments(dtoQuery, dtoData);
 
-        const uploadedData:Partial<IDocument|null> = 
-            await this.documentRepository.updateNEWUploadDocuments(dtoQuery,dtoData);
-        
-        const respBodyOdds={
-            message:"Successfully updated",
-            error:"Something went error",
-            errMessage:"Cant update the document",
-            statusCode:200
-        }
-
-        const {status,resBody} = 
-            SchoolResponseBody.forUpdate<Partial<IDocument>> 
-                (
-                    uploadedData,
-                    respBodyOdds.error,
-                    respBodyOdds.message,
-                    respBodyOdds.errMessage,
-                    respBodyOdds.statusCode
-                );
-        
-        return {status,resBody};
+    const respBodyOdds = {
+      message: 'Successfully updated',
+      error: 'Something went error',
+      errMessage: 'Cant update the document',
+      statusCode: 200,
     };
 
+    const { status, resBody } = SchoolResponseBody.forUpdate<Partial<IDocument>>(
+      uploadedData,
+      respBodyOdds.error,
+      respBodyOdds.message,
+      respBodyOdds.errMessage,
+      respBodyOdds.statusCode,
+    );
 
-    public async deleteDocument(req:Request,res:Response): Promise<serviceReturnType> 
-    {
-        const query=DocumentsDto.deleteDoc(req,res);
+    return { status, resBody };
+  }
 
-        const docsDel=await this.documentRepository.deleteDocument(query);
+  public async deleteDocument(req: Request, res: Response): Promise<serviceReturnType> {
+    const query = DocumentsDto.deleteDoc(req, res);
 
-        const {status,resBody}=SchoolResponseBody.handleDeleteOneResBody<Partial<IDocument>>(docsDel);
+    const docsDel = await this.documentRepository.deleteDocument(query);
 
-        return {status,resBody};
-    }
+    const { status, resBody } =
+      SchoolResponseBody.handleDeleteOneResBody<Partial<IDocument>>(docsDel);
 
-    public async deleteAFile(req:Request): Promise<serviceReturnType> 
-    {
-        const {filterQuery,pullQuery}=DocumentsDto.removeOneDocument(req);
+    return { status, resBody };
+  }
 
-        const docsDel=await this.documentRepository.deleteADocumentFile(filterQuery,pullQuery);
+  public async deleteAFile(req: Request): Promise<serviceReturnType> {
+    const { filterQuery, pullQuery } = DocumentsDto.removeOneDocument(req);
 
-        const {status,resBody}=SchoolResponseBody.handleDeleteOneResBody<Partial<IDocument>>(docsDel);
+    const docsDel = await this.documentRepository.deleteADocumentFile(filterQuery, pullQuery);
 
-        return  {status,resBody};
-    }
+    const { status, resBody } =
+      SchoolResponseBody.handleDeleteOneResBody<Partial<IDocument>>(docsDel);
 
+    return { status, resBody };
+  }
 }

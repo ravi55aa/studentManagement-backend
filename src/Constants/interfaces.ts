@@ -1,4 +1,4 @@
-export interface serviceReturnType{
-            status:number,
-            resBody:object
+export interface serviceReturnType {
+  status: number;
+  resBody: object;
 }

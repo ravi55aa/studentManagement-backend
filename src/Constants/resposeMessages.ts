@@ -3,7 +3,7 @@
  */
 export enum GeneralMessage {
   // Success messages
-    DataReturned = "Data returned",
+  DataReturned = 'Data returned',
 }
 
 /**
@@ -11,27 +11,27 @@ export enum GeneralMessage {
  */
 export enum AuthMessage {
   // Error messages
-    EmailExists = "User with email already exists",
-    OtpExpired = "OTP is expired",
-    InvalidOtp = "Invalid OTP",
-    OtpNotVerified = "OTP is not verified",
-    InvalidCredentials = "Invalid credentials",
-    UserBlocked = "Blocked",
-    InvalidRefreshToken = "Invalid refresh token",
-    InvalidAccessToken = "Invalid token",
-    NoAccess = "You have no access",
-    InvalidCurrentPassword = "Current password is invalid",
+  EmailExists = 'User with email already exists',
+  OtpExpired = 'OTP is expired',
+  InvalidOtp = 'Invalid OTP',
+  OtpNotVerified = 'OTP is not verified',
+  InvalidCredentials = 'Invalid credentials',
+  UserBlocked = 'Blocked',
+  InvalidRefreshToken = 'Invalid refresh token',
+  InvalidAccessToken = 'Invalid token',
+  NoAccess = 'You have no access',
+  InvalidCurrentPassword = 'Current password is invalid',
 
   // Success messages
-    OTPResent = "OTP resent",
-    RegisterOtpSent = "OTP sent to your email, verify to complete registration",
-    UserRegistered = "New user created",
-    UserLoggedIn = "Login successful",
-    UserLoggedOut = "User is logged out",
-    ForgetPasswordOtpSent = "OTP sent to your email, verify to reset password",
-    OtpVerified = "OTP is verified",
-    PasswordReset = "Password is updated",
-    TokenRefreshed = "Token refreshed",
+  OTPResent = 'OTP resent',
+  RegisterOtpSent = 'OTP sent to your email, verify to complete registration',
+  UserRegistered = 'New user created',
+  UserLoggedIn = 'Login successful',
+  UserLoggedOut = 'User is logged out',
+  ForgetPasswordOtpSent = 'OTP sent to your email, verify to reset password',
+  OtpVerified = 'OTP is verified',
+  PasswordReset = 'Password is updated',
+  TokenRefreshed = 'Token refreshed',
 }
 
 /**
@@ -39,14 +39,14 @@ export enum AuthMessage {
  */
 export enum UserMessage {
   // Error messages
-    UserNotFound = "User not found",
-    NoProfileImage = "Profile image is not given",
+  UserNotFound = 'User not found',
+  NoProfileImage = 'Profile image is not given',
 
-    // Success messages
-    ProfileImageUpdated = "Profile image is updated",
-    ProfileUpdated = "Profile updated",
-    UserBlocked = "User blocked",
-    UserUnblocked = "User unblocked",
+  // Success messages
+  ProfileImageUpdated = 'Profile image is updated',
+  ProfileUpdated = 'Profile updated',
+  UserBlocked = 'User blocked',
+  UserUnblocked = 'User unblocked',
 }
 
 /**
@@ -54,14 +54,14 @@ export enum UserMessage {
  */
 export enum CategoryMessage {
   // Error messages
-    CategoryExists = "Category already exists",
-    CategoryNotFound = "Category not found",
+  CategoryExists = 'Category already exists',
+  CategoryNotFound = 'Category not found',
 
-    // Success messages
-    CategoryAdded = "New category created",
-    CategoryUpdated = "Category updated",
-    CategoryListed = "Category has been listed",
-    CategoryUnlisted = "Category has been unlisted",
+  // Success messages
+  CategoryAdded = 'New category created',
+  CategoryUpdated = 'Category updated',
+  CategoryListed = 'Category has been listed',
+  CategoryUnlisted = 'Category has been unlisted',
 }
 
 /**
@@ -69,29 +69,28 @@ export enum CategoryMessage {
  */
 export enum DocumentMessage {
   // Error messages
-    DocumentExists = "Document already exists",
-    DocumentNotFound = "Document not found",
+  DocumentExists = 'Document already exists',
+  DocumentNotFound = 'Document not found',
 
-    // Success messages
-    DocumentAdded = "New Document created",
-    DocumentUpdated = "Document updated",
-    DocumentListed = "Document has been listed",
-    DocumentUnlisted = "Document has been unlisted",
+  // Success messages
+  DocumentAdded = 'New Document created',
+  DocumentUpdated = 'Document updated',
+  DocumentListed = 'Document has been listed',
+  DocumentUnlisted = 'Document has been unlisted',
 }
-
 
 /**
  * Address  related messages
  */
 export enum AddressMessage {
   // Error messages
-    AddressExists = "Address already exists",
-    AddressNotFound = "Address not found",
+  AddressExists = 'Address already exists',
+  AddressNotFound = 'Address not found',
 
-    // Success messages
-    AddressAdded = "New Address created",
-    AddressUpdated = "Address updated",
-    AddressListed = "Address has been listed",
+  // Success messages
+  AddressAdded = 'New Address created',
+  AddressUpdated = 'Address updated',
+  AddressListed = 'Address has been listed',
 }
 
 /**
@@ -99,25 +98,25 @@ export enum AddressMessage {
  */
 export enum CourseMessage {
   // Error messages
-    CourseExists = "Course with the same title already exists",
-    CourseNotFound = "Course not found",
-    NoCourseAccess = "You have no access to this course",
-    CourseNoThumbnail = "Course thumbnail not added",
+  CourseExists = 'Course with the same title already exists',
+  CourseNotFound = 'Course not found',
+  NoCourseAccess = 'You have no access to this course',
+  CourseNoThumbnail = 'Course thumbnail not added',
 
-    // Success messages
-    CourseCreated = "New course created",
-    ThumbnailUpdated = "Course thumbnail changed",
-    BasicDetailsUpdated = "Basic details updated",
-    RequirementsUpdated = "Course requirements updated",
-    SkillsCoveredUpdated = "Course skills covered updated",
-    CourseEnrolled = "Course enrolled",
-    CourseOrderCreated = "Order created",
-    CourseAccessGranted = "Course access granted",
-    CourseListed = "Course has been listed",
-    CourseUnlisted = "Course has been unlisted",
-    CourseApproved = "Course has been approved",
-    CourseRejected = "Course has been rejected",
-    CourseAlreadyEnrolled = "User is already enrolled in this course",
+  // Success messages
+  CourseCreated = 'New course created',
+  ThumbnailUpdated = 'Course thumbnail changed',
+  BasicDetailsUpdated = 'Basic details updated',
+  RequirementsUpdated = 'Course requirements updated',
+  SkillsCoveredUpdated = 'Course skills covered updated',
+  CourseEnrolled = 'Course enrolled',
+  CourseOrderCreated = 'Order created',
+  CourseAccessGranted = 'Course access granted',
+  CourseListed = 'Course has been listed',
+  CourseUnlisted = 'Course has been unlisted',
+  CourseApproved = 'Course has been approved',
+  CourseRejected = 'Course has been rejected',
+  CourseAlreadyEnrolled = 'User is already enrolled in this course',
 }
 
 /**
@@ -125,9 +124,9 @@ export enum CourseMessage {
  */
 export enum ModuleMessage {
   // Success messages
-    ModuleAdded = "New module added",
-    ModuleDeleted = "Module deleted",
-    ModuleTitleChanged = "Module title changed",
+  ModuleAdded = 'New module added',
+  ModuleDeleted = 'Module deleted',
+  ModuleTitleChanged = 'Module title changed',
 }
 
 /**
@@ -135,15 +134,15 @@ export enum ModuleMessage {
  */
 export enum LessonMessage {
   // Error messages
-    NoFile = "File is required",
+  NoFile = 'File is required',
 
-    // Success messages
-    LessonDetailsUpdated = "Lesson details updated",
-    LessonFileUpdated = "Lesson file has been updated",
-    LessonCompleted = "Lesson completed",
-    LessonNotCompleted = "Lesson not completed",
-    LessonAdded = "New lesson added",
-    LessonDeleted = "Lesson deleted",
+  // Success messages
+  LessonDetailsUpdated = 'Lesson details updated',
+  LessonFileUpdated = 'Lesson file has been updated',
+  LessonCompleted = 'Lesson completed',
+  LessonNotCompleted = 'Lesson not completed',
+  LessonAdded = 'New lesson added',
+  LessonDeleted = 'Lesson deleted',
 }
 
 /**
@@ -151,11 +150,11 @@ export enum LessonMessage {
  */
 export enum SubscriptionMessage {
   // Error messages
-    NotSubscribed = "You are not subscribed",
-    SubscriptionExpired = "Subscription has expired",
+  NotSubscribed = 'You are not subscribed',
+  SubscriptionExpired = 'Subscription has expired',
 
-    // Success messages
-    SubscriptionAdded = "Subscription added",
+  // Success messages
+  SubscriptionAdded = 'Subscription added',
 }
 
 /**
@@ -163,14 +162,14 @@ export enum SubscriptionMessage {
  */
 export enum ReviewMessage {
   //Error messages
-    ReviewedAlready = "Already reviewed cannot review",
-    NotEnrolledCourse = "You must enroll the course to add review",
+  ReviewedAlready = 'Already reviewed cannot review',
+  NotEnrolledCourse = 'You must enroll the course to add review',
 
-    // Success messages
-    ReviewAdded = "Review has been added",
-    ReviewDeleted = "Review has been deleted",
-    ReplyAdded = "Reply has been added",
-    ReviewUpdated = "Review has been updated",
+  // Success messages
+  ReviewAdded = 'Review has been added',
+  ReviewDeleted = 'Review has been deleted',
+  ReplyAdded = 'Reply has been added',
+  ReviewUpdated = 'Review has been updated',
 }
 
 /**
@@ -178,9 +177,9 @@ export enum ReviewMessage {
  */
 export enum TrainerRequestMessage {
   // Success messages
-    TrainerRequestSent = "Trainer request has been sent",
-    RequestApproved = "Request has been approved",
-    RequestRejected = "Request has been rejected",
+  TrainerRequestSent = 'Trainer request has been sent',
+  RequestApproved = 'Request has been approved',
+  RequestRejected = 'Request has been rejected',
 }
 
 /**
@@ -188,56 +187,51 @@ export enum TrainerRequestMessage {
  */
 export enum ChatMessage {
   //Success messages
-    MediaSent = "Media Sent",
-    NewChat = "New chat created",
+  MediaSent = 'Media Sent',
+  NewChat = 'New chat created',
 }
-
-
 
 /**
  * Wishlist management response messages
  */
 export enum WishlistMessage {
   //Success messages
-    courseAdded = "Course added to wishlist",
-    courseRemoved = "Course removed to wishlist",
+  courseAdded = 'Course added to wishlist',
+  courseRemoved = 'Course removed to wishlist',
 }
-
 
 export enum HomeworkMessage {
   //Success messages
-    HomeworkAdded = "Homework added",
-    HomeworkDeleted = "Homework deleted",
-    HomeworkUpdated = "Homework updated",
-    HomeworkSubmitted = "Homework submitted",
-    HomeworkGraded = "Homework graded",
-    HomeworkUngraded = "Homework ungraded",
-    HomeworkReSubmitted = "Homework resubmitted",
+  HomeworkAdded = 'Homework added',
+  HomeworkDeleted = 'Homework deleted',
+  HomeworkUpdated = 'Homework updated',
+  HomeworkSubmitted = 'Homework submitted',
+  HomeworkGraded = 'Homework graded',
+  HomeworkUngraded = 'Homework ungraded',
+  HomeworkReSubmitted = 'Homework resubmitted',
 }
-
 
 export enum DiscussionMessage {
   //Success messages
-    DiscussionAdded = "Discussion added",
-    DiscussionDeleted = "Discussion deleted",
-    DiscussionUpdated = "Discussion updated",
-    ReplyAdded = "Reply has been added",
+  DiscussionAdded = 'Discussion added',
+  DiscussionDeleted = 'Discussion deleted',
+  DiscussionUpdated = 'Discussion updated',
+  ReplyAdded = 'Reply has been added',
 }
 
 export enum SubscriptionPlanMessage {
   //Success messages
-    SubscriptionPlanAdded = "Subscription plan added",
-    SubscriptionPlanUpdated = "Subscription plan updated",
-    SubscriptionListed = "Subscription plan listed",
-    SubscriptionUnlisted = "Subscription plan unlisted",
+  SubscriptionPlanAdded = 'Subscription plan added',
+  SubscriptionPlanUpdated = 'Subscription plan updated',
+  SubscriptionListed = 'Subscription plan listed',
+  SubscriptionUnlisted = 'Subscription plan unlisted',
 }
 
 export enum TopicMessage {
   //Error Messages
-    TopicExists = "Topic already exists",
-    TopicNotFound = "Topic not found",
-    //Success Messages
-    TopicAdded = "Topic added",
-    TopicUpdated = "Topic updated",
+  TopicExists = 'Topic already exists',
+  TopicNotFound = 'Topic not found',
+  //Success Messages
+  TopicAdded = 'Topic added',
+  TopicUpdated = 'Topic updated',
 }
-

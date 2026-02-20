@@ -1,43 +1,37 @@
-import { model,Schema,Document} from "mongoose";
-
-
+import { model, Schema, Document } from 'mongoose';
 
 export interface IAddress extends Document {
-    userId?: Schema.Types.ObjectId|undefined|string;   
-    tenantId?:Schema.Types.ObjectId|string|undefined;
-    userType?: "Admin" | "Teacher" | "Student"|"School"|"Center";
-    street: string;
-    city: string;
-    state: string;
-    zip: string;
-    country:string;
+  userId?: Schema.Types.ObjectId | undefined | string;
+  tenantId?: Schema.Types.ObjectId | string | undefined;
+  userType?: 'Admin' | 'Teacher' | 'Student' | 'School' | 'Center';
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
 }
 
-
-
 export const AddressSchema = new Schema<IAddress>(
-    {
-        userId: { type: Schema.Types.ObjectId, required: false, refPath: "userType" },
-        
-        tenantId: { type: Schema.Types.ObjectId, required: false, refPath: "School" },
+  {
+    userId: { type: Schema.Types.ObjectId, required: false, refPath: 'userType' },
 
-        userType: {
-        type: String,
-        required: false,
-        enum: ["Admin", "Teacher", "Student","School","Center"],
-        },
+    tenantId: { type: Schema.Types.ObjectId, required: false, refPath: 'School' },
 
-        street: { type: String, required: true },
-        city: { type: String, required: true },
-        state: { type: String, required: true },
-        country: { type: String, required: true },
-        zip: { type: String, required: true }
+    userType: {
+      type: String,
+      required: false,
+      enum: ['Admin', 'Teacher', 'Student', 'School', 'Center'],
     },
-    { timestamps: true }
+
+    street: { type: String, required: true },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    country: { type: String, required: true },
+    zip: { type: String, required: true },
+  },
+  { timestamps: true },
 );
 
-
-
-const AddressModel = model<IAddress>("Address", AddressSchema);
+const AddressModel = model<IAddress>('Address', AddressSchema);
 
 export default AddressModel;

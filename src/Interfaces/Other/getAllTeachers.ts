@@ -1,6 +1,6 @@
-import { ITeacher, ITeacherBio } from "../../Models/teacherModel";
+import { ITeacher, ITeacherBio } from '../../Models/teacherModel';
 
-export interface IGetAllTeachers{
-    teacherBio:ITeacherBio[],
-    teachersSchoolData:ITeacher[]
+export interface IGetAllTeachers {
+  teacherBio: ITeacherBio[];
+  teachersSchoolData: ITeacher[];
 }

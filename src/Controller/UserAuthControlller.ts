@@ -1,89 +1,58 @@
-import { NextFunction, Request,Response } 
-    from "express";
-import { StatusCodes } 
-    from "../Constants/statusCodes";
-import {IResponse} 
-    from "../Interfaces/IResponse"
-import { IUser } 
-    from "../Models/userModel";
-import { jwtTokensGenerator } 
-    from "../Utils/jwt";
-import { AuthUserDTO } 
-    from "../dto/userAuth.dto";
-import { handleResponseBody } 
-    from "../Utils/responseBody";
-import { injectable,inject } from "tsyringe";
-import { UserAuthService } from "../Services/userAuthService";
-
-
+import { NextFunction, Request, Response } from 'express';
+import { StatusCodes } from '../Constants/statusCodes';
+import { IResponse } from '../Interfaces/IResponse';
+import { IUser } from '../Models/userModel';
+import { jwtTokensGenerator } from '../Utils/jwt';
+import { AuthUserDTO } from '../dto/userAuth.dto';
+import { handleResponseBody } from '../Utils/responseBody';
+import { injectable, inject } from 'tsyringe';
+import { UserAuthService } from '../Services/userAuthService';
 
 @injectable()
-export class UserAuthController{
-    
-    constructor(
-        @inject(UserAuthService)
-        private authService: UserAuthService
-    ){}
+export class UserAuthController {
+  constructor(
+    @inject(UserAuthService)
+    private authService: UserAuthService,
+  ) {}
 
+  public async register(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { userSchema, addressSchema } = AuthUserDTO.register(req);
 
+      const newUser = await this.authService.register(userSchema, addressSchema);
+      if (!newUser) {
+        throw new Error('Cant register new user');
+      }
 
-    public async register(req:Request, res:Response,next:NextFunction):Promise<void> {
-        try{
+      //jwt *********
+      const { token, refreshToken } = jwtTokensGenerator(newUser);
 
-            const {userSchema,addressSchema}=AuthUserDTO.register(req);
+      res.cookie('token', token, { httpOnly: true, maxAge: 2 * 60 * 1000, path: '/' });
 
-            const newUser=
-            await this.authService.register(userSchema,addressSchema);
-            if(!newUser){
-                throw new Error("Cant register new user");
-            }
+      req.session.refreshToken = refreshToken;
 
-
-            //jwt *********
-            const {token,refreshToken}=jwtTokensGenerator(newUser);
-            
-
-            res.cookie("token",token,
-                {httpOnly:true,maxAge:2*60*1000,path:"/"}
-            );
-
-            req.session.refreshToken=refreshToken;
-
-            res
-            .status(StatusCodes.CREATED)
-            .json(
-                { 
-                success: true, 
-                message: "User created successfully",
-                data: { id: newUser._id, email: newUser.email },
-                error:null
-                }
-            );
-
-        } catch(err:any){
-            next(err);
-        }
+      res.status(StatusCodes.CREATED).json({
+        success: true,
+        message: 'User created successfully',
+        data: { id: newUser._id, email: newUser.email },
+        error: null,
+      });
+    } catch (err: any) {
+      next(err);
     }
+  }
 
+  public async signIn(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const signInUser: IUser | null = await this.authService.signIn(req, res);
 
+      const responseBody: IResponse<IUser | null> = handleResponseBody(signInUser, res, req);
 
-    public async signIn(req:Request,res:Response,next:NextFunction):Promise<void>{
-        try{
-            const signInUser:IUser|null=
-                await this.authService.signIn(req,res);
+      const status = signInUser ? StatusCodes.OK : StatusCodes.NOT_FOUND;
 
-                const responseBody:IResponse<IUser|null>=handleResponseBody(signInUser,res,req);
-
-
-            const status=signInUser?StatusCodes.OK:StatusCodes.NOT_FOUND;
-            
-            res
-            .status(status)
-            .json(responseBody);
-
-        } catch(err) {
-            next(err);
-        }
+      res.status(status).json(responseBody);
+    } catch (err) {
+      next(err);
     }
+  }
 }
-

@@ -1,9 +1,9 @@
 import mongoose, { Schema, Document, ObjectId } from 'mongoose';
 
 export enum NotifyTo {
-  Teacher="Teacher",
-  Student="Student",
-  Admin="Admin",
+  Teacher = 'Teacher',
+  Student = 'Student',
+  Admin = 'Admin',
 }
 
 export interface IUserNotification extends Document {
@@ -40,16 +40,13 @@ const UserNotificationSchema = new Schema(
       type: Boolean,
       default: false,
     },
-
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export const userNotificationModel = mongoose.model<IUserNotification>(
   'UserNotification',
-  UserNotificationSchema
+  UserNotificationSchema,
 );
-
-

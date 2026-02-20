@@ -8,4 +8,4 @@ export interface IUserRepository {
     create(userData: RegisterData): Promise<User>;
 }
 
-*/ 
+*/

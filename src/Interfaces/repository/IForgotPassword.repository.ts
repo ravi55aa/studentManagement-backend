@@ -1,22 +1,21 @@
-import { FilterQuery } from "mongoose"
-import { IOtp } from "../../Models/otpModel"
-import { ISchool } from "../../Models/schoolModel"
-import { IUser } from "../../Models/userModel"
-import { UserRole } from "../../types/auth.types"
+import { FilterQuery } from 'mongoose';
+import { IOtp } from '../../Models/otpModel';
+import { ISchool } from '../../Models/schoolModel';
+import { IUser } from '../../Models/userModel';
+import { UserRole } from '../../types/auth.types';
 
+export interface IForgotPasswordRepository {
+  findAdmin(email: string): Promise<IUser | null>;
 
-export interface IForgotPasswordRepository{
-    findAdmin(email:string):Promise<IUser|null>,
+  findSchool(email: string): Promise<ISchool | null>;
 
-    findSchool(email:string):Promise<ISchool|null>,
-    
-    isOtpExpired(query:FilterQuery<IOtp>):Promise<IOtp|null>,
+  isOtpExpired(query: FilterQuery<IOtp>): Promise<IOtp | null>;
 
-    storeOtp(email:string,otp:string):Promise<IOtp>
+  storeOtp(email: string, otp: string): Promise<IOtp>;
 
-    updatePassword<T>(role:UserRole, id: string, data: Partial<T>): Promise<T | null>
+  updatePassword<T>(role: UserRole, id: string, data: Partial<T>): Promise<T | null>;
 
-    findAndUpdateAdmin(id:string,newPassword:string):Promise<IUser|null>
+  findAndUpdateAdmin(id: string, newPassword: string): Promise<IUser | null>;
 
-    findAndUpdateSchool(id:string,newPassword:string):Promise<ISchool|null>
+  findAndUpdateSchool(id: string, newPassword: string): Promise<ISchool | null>;
 }

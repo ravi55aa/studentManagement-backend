@@ -1,52 +1,52 @@
-import { FilterQuery } from "mongoose";
-import { IAcademicSubject, IAcademicYear } from "../../Models/academicYear";
+import { FilterQuery } from 'mongoose';
+import { IAcademicSubject, IAcademicYear } from '../../Models/academicYear';
 
-import { BaseRepository } from "../../Repository/BaseRepository"
-import { IAcademicCourse, IAcademicCourseMeta } from "../../Models/courses.model";
+import { BaseRepository } from '../../Repository/BaseRepository';
+import { IAcademicCourse, IAcademicCourseMeta } from '../../Models/courses.model';
 
+export interface ISchoolAcademicYearRepo extends BaseRepository<IAcademicYear> {
+  addAcademicYear(centerData: Partial<IAcademicYear>): Promise<IAcademicYear | null>;
 
+  updateYear(
+    query: FilterQuery<Partial<IAcademicYear>>,
+    data: Partial<IAcademicYear>,
+  ): Promise<IAcademicYear | null>;
 
-
-export interface ISchoolAcademicYearRepo extends BaseRepository<IAcademicYear>
-{
-    addAcademicYear(centerData:Partial<IAcademicYear>):Promise<IAcademicYear|null>
-
-    updateYear(query:FilterQuery<Partial<IAcademicYear>>,
-        data:Partial<IAcademicYear>):Promise<IAcademicYear|null>
-    
-    getAllAcademicYear(query:FilterQuery<Partial<IAcademicYear>>):Promise<IAcademicYear[]>
+  getAllAcademicYear(query: FilterQuery<Partial<IAcademicYear>>): Promise<IAcademicYear[]>;
 }
 
+export interface ISchoolSubjectsRepo extends BaseRepository<IAcademicSubject> {
+  addSubject(payload: Partial<IAcademicSubject>): Promise<IAcademicSubject | null>;
 
+  getAllSubjects(query: FilterQuery<Partial<IAcademicSubject>>): Promise<IAcademicSubject[]>;
 
-
-export interface ISchoolSubjectsRepo extends BaseRepository<IAcademicSubject>
-{
-    addSubject(payload:Partial<IAcademicSubject>):Promise<IAcademicSubject|null>
-    
-    getAllSubjects(query:FilterQuery<Partial<IAcademicSubject>>):Promise<IAcademicSubject[]>
-
-    updateSubject(query:FilterQuery<Partial<IAcademicSubject>>,
-        data:Partial<IAcademicSubject>):Promise<IAcademicSubject|null>
+  updateSubject(
+    query: FilterQuery<Partial<IAcademicSubject>>,
+    data: Partial<IAcademicSubject>,
+  ): Promise<IAcademicSubject | null>;
 }
 
+export interface ISchoolCoursesRepo extends BaseRepository<IAcademicCourse> {
+  addNewCourse(
+    model: string,
+    payload: Partial<IAcademicCourse | IAcademicCourseMeta>,
+  ): Promise<IAcademicCourse | IAcademicCourseMeta | null>;
 
+  addNewCourseMeta(payload: IAcademicCourseMeta): Promise<IAcademicCourseMeta | null>;
 
+  getAllCourses<T>(model: string, query: FilterQuery<Partial<T>>): Promise<T[]>;
 
-export interface ISchoolCoursesRepo extends BaseRepository<IAcademicCourse>
-{
-    addNewCourse(model:string,payload:Partial<IAcademicCourse|IAcademicCourseMeta>):Promise<IAcademicCourse|IAcademicCourseMeta|null>
+  updateCourse(
+    model: string,
+    query: FilterQuery<Partial<IAcademicCourse | IAcademicCourseMeta>>,
+    data: Partial<IAcademicCourse | IAcademicCourseMeta>,
+  ): Promise<IAcademicCourse | IAcademicCourseMeta | null>;
 
-    addNewCourseMeta(payload:IAcademicCourseMeta):Promise<IAcademicCourseMeta|null>
-    
-    getAllCourses<T>(model:string,query:FilterQuery<Partial<T>>):Promise<T[]>
+  deleteCourse<T>(model: string, query: FilterQuery<Partial<T>>): Promise<T | null>;
 
-    updateCourse(model:string,query:FilterQuery<Partial<IAcademicCourse|IAcademicCourseMeta>>,
-        data:Partial<IAcademicCourse|IAcademicCourseMeta>):Promise<IAcademicCourse|IAcademicCourseMeta|null>
+  findOneFromCourse(query: FilterQuery<Partial<IAcademicCourse>>): Promise<IAcademicCourse | null>;
 
-    deleteCourse<T>(model:string,query:FilterQuery<Partial<T>>):Promise<T|null>
-
-    findOneFromCourse(query: FilterQuery<Partial<IAcademicCourse>>): Promise<IAcademicCourse | null>
-
-    findOneFromCourseMeta(query:FilterQuery<Partial<IAcademicCourseMeta>>):Promise<IAcademicCourseMeta|null>
+  findOneFromCourseMeta(
+    query: FilterQuery<Partial<IAcademicCourseMeta>>,
+  ): Promise<IAcademicCourseMeta | null>;
 }

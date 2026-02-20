@@ -1,37 +1,32 @@
-import { serviceReturnType } from "../../Constants/interfaces"
-import {Request,Response} from "express";
+import { serviceReturnType } from '../../Constants/interfaces';
+import { Request, Response } from 'express';
 
+export interface IBatchService {
+  createBatch(req: Request, res: Response): Promise<serviceReturnType>;
 
-export interface IBatchService{
+  getBatchById(req: Request, res: Response): Promise<serviceReturnType>;
 
+  getAllBatches(req: Request, res: Response): Promise<serviceReturnType>;
 
-    createBatch(req:Request,res:Response):Promise<serviceReturnType>
+  updateABatch(req: Request, res: Response): Promise<serviceReturnType>;
 
-    getBatchById(req:Request,res:Response):Promise<serviceReturnType>
+  deleteBatch(req: Request, res: Response): Promise<serviceReturnType>;
 
+  //**📌 Relationship / Business Logic
 
-    getAllBatches(req:Request,res:Response):Promise<serviceReturnType>
+  assignClassTeacher(batchId: string, teacherId: string): Promise<serviceReturnType>;
 
-    updateABatch(req:Request,res:Response):Promise<serviceReturnType>
-    
-    deleteBatch(req:Request,res:Response):Promise<serviceReturnType>
+  // assignAdminToCenter():any
 
-    //**📌 Relationship / Business Logic
+  // removeAdminFromCenter():any
 
-    assignClassTeacher(batchId: string,teacherId: string):Promise<serviceReturnType>
+  // assignSchoolToCenter():any
 
-    // assignAdminToCenter():any
+  // removeSchoolFromCenter():any
 
-    // removeAdminFromCenter():any
+  //** 📌 Status & Lifecycle
 
-    // assignSchoolToCenter():any
+  // activateCenter():any
 
-    // removeSchoolFromCenter():any
-
-
-    //** 📌 Status & Lifecycle
-
-    // activateCenter():any
-
-    // deactivateCenter():any
+  // deactivateCenter():any
 }

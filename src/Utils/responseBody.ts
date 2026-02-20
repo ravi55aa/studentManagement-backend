@@ -1,115 +1,84 @@
-import { AddressMessage, AuthMessage, DocumentMessage } 
-    from "../Constants/resposeMessages";
-import { IUser } 
-    from "../Models/userModel";
-import { Response,Request } 
-    from "express";
-import { jwtTokensGenerator } 
-    from "./jwt";
-import { IResponse } 
-    from "../Interfaces/IResponse";
-import { IAddress } 
-    from "../Models/addressModel";
-import { IDocument } 
-    from "../Models/documentModel";
-import { ISchool } 
-    from "../Models/schoolModel";
+import { AddressMessage, AuthMessage, DocumentMessage } from '../Constants/resposeMessages';
+import { IUser } from '../Models/userModel';
+import { Response, Request } from 'express';
+import { jwtTokensGenerator } from './jwt';
+import { IResponse } from '../Interfaces/IResponse';
+import { IAddress } from '../Models/addressModel';
+import { IDocument } from '../Models/documentModel';
+import { ISchool } from '../Models/schoolModel';
 
+export const handleResponseBody = (signInUser: IUser | null, res: Response, req: Request) => {
+  if (signInUser === null) {
+    return {
+      success: false,
+      message: AuthMessage.InvalidCredentials,
+      data: signInUser,
+      error: AuthMessage.InvalidCredentials,
+    };
+  }
 
+  const { token, refreshToken } = jwtTokensGenerator(signInUser);
 
+  res.cookie('token', token, { httpOnly: true, maxAge: 2 * 60 * 1000, path: '/' });
 
-export const handleResponseBody = 
-(signInUser: IUser | null,res:Response,req:Request)=>
-    {
-        if(signInUser===null){
-            return {
-                success:false,
-                    message:AuthMessage.InvalidCredentials,
-                        data:signInUser,
-                            error:AuthMessage.InvalidCredentials
-            }
-        }
+  req.session.refreshToken = refreshToken;
 
-        const {token,refreshToken} =
-                jwtTokensGenerator(signInUser);
+  return {
+    success: true,
+    message: AuthMessage.UserLoggedIn,
+    data: signInUser,
+    error: null,
+  };
+};
 
-        res.cookie("token",
-                token,
-                    {httpOnly:true,maxAge:2*60*1000,path:"/"});
+export const validateResponseBody = (payload: string): IResponse<typeof payload | null> => {
+  return {
+    success: true,
+    message: payload ? 'School created successfully' : 'School Already exist',
+    data: payload,
+    error: null,
+  };
+};
 
-        req.session.refreshToken=refreshToken; 
+export const handleSchoolRB = (address: IAddress | null): IResponse<IAddress | null> => {
+  return {
+    success: true,
+    data: address,
+    error: null,
+    message: AddressMessage.AddressAdded,
+  };
+};
 
-        return {
-            success:true,
-                message:AuthMessage.UserLoggedIn,
-                    data:signInUser,
-                        error:null
-        }
-    }
+export const handleSchoolResBody = (school: ISchool | null) => {
+  return {
+    success: true,
+    data: school,
+    error: school ? null : AuthMessage.InvalidCredentials,
+    message: school ? AuthMessage.UserLoggedIn : AuthMessage.InvalidCredentials,
+  };
+};
 
-
-
-
-
-    export const validateResponseBody=
-    (payload:string)
-    :IResponse<typeof payload|null>=>{
-
-        return {
-                success: true, 
-                message: payload ?"School created successfully" :"School Already exist" ,
-                data:payload,
-                error: null
-            };
-    }
-
-
-
-
-    export const handleSchoolRB=
-    (address:IAddress|null):IResponse<IAddress|null>=>{
-        return {
-            success:true,
-            data:address,
-            error:null,
-            message:AddressMessage.AddressAdded
-        }
-    }
-
-
-
-
-    export const handleSchoolResBody=(school:ISchool|null)=>{
-        return {
-            success:true,
-            data:school,
-            error:school ?null:AuthMessage.InvalidCredentials,
-            message:school ?AuthMessage.UserLoggedIn:  AuthMessage.InvalidCredentials
-        }
-    }
-
-
-
-
-export const handleDocRespBody 
-    = (payload:Promise<IDocument|null>):IResponse<Promise<IDocument|null>>=>{
-        return{
-            success:true,
-            data:payload,
-            error:null,
-            message:DocumentMessage.DocumentAdded
-        }
-}
-
+export const handleDocRespBody = (
+  payload: Promise<IDocument | null>,
+): IResponse<Promise<IDocument | null>> => {
+  return {
+    success: true,
+    data: payload,
+    error: null,
+    message: DocumentMessage.DocumentAdded,
+  };
+};
 
 //* FPRB = forgot-Password-Response-Body
-export class FPRB{
-    static handleVerifyEmailResBody(document:IUser|ISchool|null):IResponse<IUser|ISchool|null>{
-        return  {
-            success:document?true:false,
-            data:document,
-            error:null,
-            message:"Email Verified successfully"
-        }
-    }
+export class FPRB {
+  static handleVerifyEmailResBody(
+    document: IUser | ISchool | null,
+  ): IResponse<IUser | ISchool | null> {
+    return {
+      success: document ? true : false,
+      data: document,
+      error: null,
+      message: 'Email Verified successfully',
+    };
+  }
 }

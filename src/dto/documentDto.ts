@@ -1,10 +1,8 @@
-// import {Request} 
+// import {Request}
 //     from "express";
-// import { IDocument } 
+// import { IDocument }
 //     from "../Models/documentModel";
-
 
 //     export class DocumentDTO{
 
-        
 //     }

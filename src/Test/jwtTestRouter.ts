@@ -38,12 +38,12 @@
 // })
 
 // router.get("/isExpired",(req:Request,res:Response)=>{
-    
+
 //     const token:string=req.headers.authorization?.split(" ")[1]||req.cookies.token;
 //     const refreshToken:string=req.cookies.refreshToken;
-    
+
 //     const verify=verifyToken(token,env.JWT_ACCESS_TOKEN_SECRET);
-    
+
 //     if(!verify){
 //         const newToken=refreshAccessToken(refreshToken.trim(),dummyObj);
 
@@ -60,7 +60,6 @@
 //     console.log("good token😁")
 //     return res.status(200).json({mission:"success",message:'Authorized'});
 // })
-
 
 // router.get("/home",(req:Request,res:Response)=>{
 //     res.status(200).json({mission:"Success",message:"getHome"});

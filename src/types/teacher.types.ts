@@ -1,6 +1,6 @@
-import { ITeacher, ITeacherBio } from "../Models/teacherModel"
+import { ITeacher, ITeacherBio } from '../Models/teacherModel';
 
 export type TeacherType = {
-    teacherBio:ITeacherBio,
-    teacher:ITeacher
-}
+  teacherBio: ITeacherBio;
+  teacher: ITeacher;
+};

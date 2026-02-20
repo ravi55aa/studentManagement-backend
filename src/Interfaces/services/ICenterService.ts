@@ -1,39 +1,32 @@
-import { serviceReturnType } from "../../Constants/interfaces"
-import {Request,Response} from "express";
+import { serviceReturnType } from '../../Constants/interfaces';
+import { Request, Response } from 'express';
 
+export interface ICenterService {
+  createCenter(req: Request, res: Response): Promise<serviceReturnType>;
 
+  createCenterAddress(req: Request, res: Response): Promise<serviceReturnType>;
 
+  getCenterById(req: Request, res: Response): Promise<serviceReturnType>;
 
-export interface ICenterService{
+  getAllCenters(req: Request, res: Response): Promise<serviceReturnType>;
 
+  updateCenter(req: Request, res: Response): Promise<serviceReturnType>;
 
-    createCenter(req:Request,res:Response):Promise<serviceReturnType>
+  deleteCenter(req: Request, res: Response): Promise<serviceReturnType>;
 
-    createCenterAddress(req:Request,res:Response):Promise<serviceReturnType>
+  //**📌 Relationship / Business Logic
 
-    getCenterById(req:Request,res:Response):Promise<serviceReturnType>
+  // assignAdminToCenter():any
 
+  // removeAdminFromCenter():any
 
-    getAllCenters(req:Request,res:Response):Promise<serviceReturnType>
+  // assignSchoolToCenter():any
 
-    updateCenter(req:Request,res:Response):Promise<serviceReturnType>
-    
-    deleteCenter(req:Request,res:Response):Promise<serviceReturnType>
+  // removeSchoolFromCenter():any
 
-    //**📌 Relationship / Business Logic
+  //** 📌 Status & Lifecycle
 
-    // assignAdminToCenter():any
+  // activateCenter():any
 
-    // removeAdminFromCenter():any
-
-    // assignSchoolToCenter():any
-
-    // removeSchoolFromCenter():any
-
-
-    //** 📌 Status & Lifecycle
-
-    // activateCenter():any
-
-    // deactivateCenter():any
+  // deactivateCenter():any
 }

@@ -1,9 +1,9 @@
-import { Router } from "express";
-const router=Router();
-import { handleOAuth,handleAuthCallback } from "../Config/oAuth.config";
+import { Router } from 'express';
+const router = Router();
+import { handleOAuth, handleAuthCallback } from '../Config/oAuth.config';
 
-router.get("/auth",handleOAuth);
+router.get('/auth', handleOAuth);
 
-router.get("/auth/callback",handleAuthCallback);
+router.get('/auth/callback', handleAuthCallback);
 
 export default router;

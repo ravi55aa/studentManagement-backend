@@ -1,48 +1,45 @@
-import { Server } from "socket.io";
-import { Server as HttpServer } from "http";
+import { Server } from 'socket.io';
+import { Server as HttpServer } from 'http';
 
-let io:Server;
+let io: Server;
 
 export const initSocket = (server: HttpServer) => {
-
-    io = new Server(server, {
+  io = new Server(server, {
     cors: {
-        origin: "http://localhost:5173",
-        methods: ["GET", "POST"],
-        credentials:true
-        },
+      origin: 'http://localhost:5173',
+      methods: ['GET', 'POST'],
+      credentials: true,
+    },
+  });
+
+  io.on('connection', (socket) => {
+    //console.log("User connected:", socket.id);
+
+    const { userId, role } = socket.handshake.auth;
+
+    if (!userId || !role) {
+      //console.log("Invalid socket auth");
+      socket.disconnect();
+      return;
+    }
+
+    // Join unique room
+    socket.join(`${role}-${userId}`);
+
+    //console.log(`User joined room: ${role}-${userId}`);
+
+    socket.on('disconnect', () => {
+      //console.log("User disconnected:", socket.id);
     });
+  });
 
-    io.on("connection", (socket) => {
-
-        //console.log("User connected:", socket.id);
-
-        const { userId, role } = socket.handshake.auth;
-
-        if (!userId || !role) {
-            //console.log("Invalid socket auth");
-            socket.disconnect();
-            return;
-        }
-
-        // Join unique room
-        socket.join(`${role}-${userId}`);
-
-        //console.log(`User joined room: ${role}-${userId}`);
-
-        socket.on("disconnect", () => {
-        //console.log("User disconnected:", socket.id);
-        });
-    });
-
-        //return io;
+  //return io;
 };
 
-
 export const getIO = (): Server => {
-    if (!io) {
-        throw new Error("Socket.io not initialized");
-    } 
-    
-    return io;
+  if (!io) {
+    throw new Error('Socket.io not initialized');
+  }
+
+  return io;
 };
