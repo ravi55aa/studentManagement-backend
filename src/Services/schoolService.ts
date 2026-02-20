@@ -18,6 +18,8 @@ import { injectable, inject } from 'tsyringe';
 import { UserRepository } from '../Repository/userRepository';
 import { AddressRepository } from '../Repository/addressRepository';
 import { DocumentRepository } from '../Repository/documentRepository';
+import bcrypt from "bcrypt";
+
 
 @injectable()
 export class SchoolService implements ISchoolService {
@@ -36,7 +38,9 @@ export class SchoolService implements ISchoolService {
   ) {}
 
   public async createSchool(req: Request, res: Response) {
-    const schoolData: Partial<ISchool> = SchoolDTO.createSchool(req.body);
+    let schoolData: Partial<ISchool> = SchoolDTO.createSchool(req.body);
+    const hashedPassword=await bcrypt.hash(schoolData.password!,10);
+    schoolData.password=hashedPassword;
 
     const adminId: string | undefined = req.user?.userId; //JWT middleware attaches
 
@@ -68,7 +72,10 @@ export class SchoolService implements ISchoolService {
 
   //LOGIN
   async getSchool(req: Request, res: Response) {
-    const query = SchoolDTO.getSchool(req, res);
+    let query = SchoolDTO.getSchool(req, res);
+    const hashedPassword=await bcrypt.hash(query.password!,10);
+    query.password=hashedPassword;
+
     const school = await this.schoolRepository.findOne(query);
 
     if (!school) throw new Error('School not found');

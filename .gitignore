@@ -1,4 +1,5 @@
 node_modules/
+logs/
 dist/
 .vscode/
 
@@ -7,3 +8,9 @@ dist/
 logs
 
 management-accca-firebase-adminsdk-fbsvc-d69349595b.json 
+.prettierrc
+eslint.config.js 
+tsconfig.json
+read.today.md 
+doubt.tldr
+pending.txt

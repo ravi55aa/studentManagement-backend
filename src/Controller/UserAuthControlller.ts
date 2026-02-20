@@ -7,6 +7,8 @@ import { AuthUserDTO } from '../dto/userAuth.dto';
 import { handleResponseBody } from '../Utils/responseBody';
 import { injectable, inject } from 'tsyringe';
 import { UserAuthService } from '../Services/userAuthService';
+import bcrypt from "bcrypt";
+
 
 @injectable()
 export class UserAuthController {
@@ -17,7 +19,8 @@ export class UserAuthController {
 
   public async register(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { userSchema, addressSchema } = AuthUserDTO.register(req);
+      let { userSchema, addressSchema } = AuthUserDTO.register(req);
+      userSchema.password=await bcrypt.hash(userSchema.password,10);
 
       const newUser = await this.authService.register(userSchema, addressSchema);
       if (!newUser) {

@@ -13,7 +13,7 @@ const handleErrorsMiddleware = (err: Error, req: Request, res: Response, next: N
 
   /**
    * ==================================
-   * 1️⃣ Mongo duplicate key error
+   *  Mongo duplicate key error
    * ==================================
    */
   if (err instanceof MongoServerError && err.code === 11000) {
@@ -32,7 +32,7 @@ const handleErrorsMiddleware = (err: Error, req: Request, res: Response, next: N
 
   /**
    * ==================================
-   * 2️⃣ Mongoose validation error
+   *  Mongoose validation error
    * ==================================
    */
   if (err instanceof mongoose.Error.ValidationError) {
@@ -46,7 +46,7 @@ const handleErrorsMiddleware = (err: Error, req: Request, res: Response, next: N
 
   /**
    * ==================================
-   * 3️⃣ CastError (invalid ObjectId)
+   *  CastError (invalid ObjectId)
    * ==================================
    */
   if (err instanceof mongoose.Error.CastError) {

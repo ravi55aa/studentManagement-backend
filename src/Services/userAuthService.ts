@@ -8,50 +8,54 @@ import { Request, Response } from 'express';
 import { handleJwtTokensGenerator, IJwtPayload } from '../Utils/jwt';
 import { injectable, inject } from 'tsyringe';
 import { UserRepository } from '../Repository/userRepository';
+import bcrypt from "bcrypt";
+
 
 @injectable()
 export class UserAuthService implements IUserAuthService {
-    constructor(
-        @inject(UserRepository)
-        private userRepository: UserRepository,
-    ) {}
+  constructor(
+    @inject(UserRepository)
+    private userRepository: UserRepository,
+  ) {}
 
-    async register(userData: Partial<IUser>, address: Partial<IAddress>) {
-        await UserValidator.ensureUserIsTaken(this.userRepository, userData.email!);
+  async register(userData: Partial<IUser>, address: Partial<IAddress>) {
+    await UserValidator.ensureUserIsTaken(this.userRepository, userData.email!);
 
-        const createUser = await this.userRepository.create(userData);
-        if (!createUser) {
-        throw new Error('Cant create the user');
-        }
-
-        await this.userRepository.addAddress({
-        ...AddressFormatter.toPlain(address),
-        userId: createUser._id,
-        userType: 'Admin',
-        });
-        return createUser;
+    const createUser = await this.userRepository.create(userData);
+    if (!createUser) {
+      throw new Error('Cant create the user');
     }
 
-    async signIn(req: Request, res: Response) {
-        try {
-        const userData: IUser = req.body;
+    await this.userRepository.addAddress({
+      ...AddressFormatter.toPlain(address),
+      userId: createUser._id,
+      userType: 'Admin',
+    });
+    return createUser;
+  }
 
-        const isUser: IUser | null = await this.userRepository.findOne({
-            email: userData.email,
-            password: userData.password,
-        });
+  async signIn(req: Request, res: Response) {
+    try {
+      let userData: IUser = req.body;
+      const hashedPassword=await bcrypt.hash(userData.password,10);
+      userData.password = hashedPassword;
 
-        //jwt ****
-        if (isUser) {
-            const payload: IJwtPayload = { userId: isUser._id!, role: 'admin', tenantId: null };
+      const isUser: IUser | null = await this.userRepository.findOne({
+        email: userData.email,
+        password: userData.password
+      });
 
-            handleJwtTokensGenerator(payload, req, res);
-        }
+      //jwt ****
+      if (isUser) {
+        const payload: IJwtPayload = { userId: isUser._id!, role: 'admin', tenantId: null };
 
-        return isUser;
-        } catch (err: unknown) {
-        logger.error(err);
-        throw new Error('Failed to sign in', { cause: err });
-        }
+        handleJwtTokensGenerator(payload, req, res);
+      }
+
+      return isUser;
+    } catch (err: unknown) {
+      logger.error(err);
+      throw new Error('Failed to sign in', { cause: err });
     }
+  }
 }
