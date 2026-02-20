@@ -93,9 +93,7 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
     return !!result;
   }
 
-  /* ----------------------------------------
-        ASSIGN SUBJECTS
-    ---------------------------------------- */
+  /* --------------ASSIGN SUBJECTS---------------------- */
   public async assignSubjects(teacherId: string, subjectIds: string[]): Promise<ITeacher | null> {
     return teacherModel
       .findByIdAndUpdate(
@@ -153,9 +151,7 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
     return unassignedTeachers;
   }
 
-  /* ----------------------------------------
-        REMOVE SUBJECT
-    ---------------------------------------- */
+  /* -----------REMOVE SUBJECT-------------------- */
   public async removeSubject(teacherId: string, subjectId: string): Promise<ITeacher | null> {
     return teacherModel
       .findByIdAndUpdate(

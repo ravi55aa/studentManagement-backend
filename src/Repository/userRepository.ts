@@ -1,4 +1,3 @@
-import { FilterQuery } from 'mongoose';
 import { IUserRepository } from '../Interfaces/repository/IAdminRepository';
 import { addressModel, adminModel } from '../Models';
 import { IAddress } from '../Models/addressModel';

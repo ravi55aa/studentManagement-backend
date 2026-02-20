@@ -12,7 +12,6 @@ import { serviceReturnType } from '../Constants/interfaces';
 import { injectable, inject } from 'tsyringe';
 import { ForgotPasswordService } from '../Services/forgotPassword.service';
 
-
 @injectable()
 export class PasswordResetController {
   constructor(

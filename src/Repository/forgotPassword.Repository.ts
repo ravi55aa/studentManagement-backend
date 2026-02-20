@@ -1,4 +1,4 @@
-import mongoose, { FilterQuery, Schema } from 'mongoose';
+import { FilterQuery, Schema } from 'mongoose';
 import { IForgotPasswordRepository } from '../Interfaces/repository/IForgotPassword.repository';
 import { adminModel } from '../Models';
 import { IOtp, OtpModel } from '../Models/otpModel';
