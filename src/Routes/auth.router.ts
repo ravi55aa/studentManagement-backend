@@ -35,7 +35,7 @@ router.post(
 //*password reset
 
 router.route("/forgot-password/verifyEmail")
-    .get((req,res,next)=>{})
+    .get(()=>{})
     .post(
     (req,res,next)=>
     resetPassController.verifyEmail(req,res,next));
@@ -59,7 +59,7 @@ router.route("/forgot-password/verifyOtp/:id")
 
 
 router.route("/forgot-password/updatePassword/:id")
-    .get((req,res,next)=>{})
+    .get(()=>{})
     .patch(
     (req,res,next)=>
     resetPassController.updateNewPassword(req,res,next));

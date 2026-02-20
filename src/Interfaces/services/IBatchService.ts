@@ -20,18 +20,18 @@ export interface IBatchService{
 
     assignClassTeacher(batchId: string,teacherId: string):Promise<serviceReturnType>
 
-    assignAdminToCenter():any
+    // assignAdminToCenter():any
 
-    removeAdminFromCenter():any
+    // removeAdminFromCenter():any
 
-    assignSchoolToCenter():any
+    // assignSchoolToCenter():any
 
-    removeSchoolFromCenter():any
+    // removeSchoolFromCenter():any
 
 
     //** 📌 Status & Lifecycle
 
-    activateCenter():any
+    // activateCenter():any
 
-    deactivateCenter():any
+    // deactivateCenter():any
 }

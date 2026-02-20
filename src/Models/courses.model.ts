@@ -1,22 +1,22 @@
 import mongoose, { Types,Schema, Document, ObjectId } from 'mongoose';
 
 export interface IAcademicCourse extends Document {
-    name: String | null;
+    name: string | null;
     tenantId: ObjectId | null;
     academicYear: ObjectId | Types.ObjectId|null;
-    code: String | null;
-    description: String | null;
+    code: string | null;
+    description: string | null;
     //level: String | null;
     duration: {
-        value: String | null;
-        unit: String | null;
+        value: string | null;
+        unit: string | null;
     };
     schedule: {
         endDate: Date | null;
         startDate: Date | null;
     };
     adminId: ObjectId | null;
-    status: String | null;
+    status: string | null;
 }
 
 
@@ -114,8 +114,8 @@ export default coursesModel;
 /******************** COURSES_META {BOOKS,References,teachers,etc...} *********************/
 
 export interface IUpload_document {
-                fileName:String; 
-                fileUrl:String
+                fileName:string; 
+                fileUrl:string
     }
 
 enum SubjectType{
@@ -126,20 +126,20 @@ enum SubjectType{
 export interface ICourseSubjects{
     subjectType:SubjectType|null;
     subjectRef:Types.ObjectId[]|null;
-    customSubjectName:String[]|null;
+    customSubjectName:string[]|null;
 }
 
 
 export interface IAcademicCourseMeta extends Document {
     subjects: ICourseSubjects[] | null ;
     coordinators: ObjectId[] | null;
-    eligibilityCriteria: String | null;
+    eligibilityCriteria: string | null;
     attachments: IUpload_document[];
     batches: Types.ObjectId[] | null;
-    syllabusUrl?: String | null;
-    maxStudents: String | null;
+    syllabusUrl?: string | null;
+    maxStudents: string | null;
     courseId: Types.ObjectId | null;
-    enrollmentOpen: String | null;
+    enrollmentOpen: string | null;
 }
 
 

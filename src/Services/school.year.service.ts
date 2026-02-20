@@ -1,5 +1,4 @@
 import {  Types } from "mongoose";
-import { HttpStatusCode } from "axios";
 import { Request,Response } from "express";
 import { StatusCodes } from "../Constants/statusCodes";
 import academicSubjectsModel from "../Models/academicYear";
@@ -9,7 +8,6 @@ import { AcademicYearResponseBody } from "../Utils/ResponseBody/academicYear.res
 import { IBatchRepository } from "../Interfaces/repository/IBatchRepository";
 
 import  { 
-    coursesMetaModel, 
     IAcademicCourse, 
     IAcademicCourseMeta } 
 from "../Models/courses.model";
@@ -31,10 +29,8 @@ import {
     SchoolSubjectsDto } 
 from "../dto/schoolDTO";
 
-import { 
-    ISchoolAcademicYearRepo, 
-    ISchoolCoursesRepo, 
-    ISchoolSubjectsRepo } 
+import {  
+    ISchoolCoursesRepo, ISchoolSubjectsRepo } 
 from "../Interfaces/repository/ISchoolAcademiYear";
 
 import { 
@@ -72,7 +68,8 @@ export class SchoolYear implements ISchoolAcademicYear{
 
         handleValidationOF(schoolAcademicYearSchema,dtoData,res);
         
-        const newAYearDoc=await this.yearRepo.addAcademicYear(dtoData);
+        const data:Partial<IAcademicYear>={...dtoData};
+        const newAYearDoc=await this.yearRepo.addAcademicYear(data);
 
         const {status,resBody}=AcademicYearResponseBody.newAcademicYear(newAYearDoc);
         
@@ -81,11 +78,9 @@ export class SchoolYear implements ISchoolAcademicYear{
 
 
 
-    async listAllAcademicYears(req:Request,res:Response):Promise<serviceReturnType>{
+    async listAllAcademicYears():Promise<serviceReturnType>{
         
-        const {tenantId,adminId}=SchoolAcademicYearDto.getTenantId(req,res);
-        
-        const arrOfDoc=await this.yearRepo.getAllAcademicYear({tenantId:tenantId,adminId:adminId});
+        const arrOfDoc=await this.yearRepo.getAllAcademicYear();
 
         const {status,resBody}=AcademicYearResponseBody.listAll<IAcademicYear>(arrOfDoc);
 
@@ -93,7 +88,7 @@ export class SchoolYear implements ISchoolAcademicYear{
     }
 
 
-    async getAAcademicYear(req:Request,res:Response):Promise<serviceReturnType>{
+    async getAAcademicYear(req:Request):Promise<serviceReturnType>{
 
         const {id}=req.params;
         
@@ -133,7 +128,7 @@ export class SchoolYear implements ISchoolAcademicYear{
     }
 
 
-    async deleteAcademicYear(req:Request,res:Response):Promise<serviceReturnType>{
+    async deleteAcademicYear(req:Request):Promise<serviceReturnType>{
         const {id} =  req.params
         
         const doc=await academicYearModel.deleteOne({_id:id});
@@ -195,7 +190,7 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer{
     }
 
 
-    async getAnAcademicSubject(req:Request,res:Response):Promise<serviceReturnType>{
+    async getAnAcademicSubject(req:Request):Promise<serviceReturnType>{
 
         const {id}=req.params;
         const doc:Partial<IAcademicSubject|null>=await this.repo.findById(id!);
@@ -229,7 +224,7 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer{
     }
 
 
-    async deleteAnAcademicSubject(req:Request,res:Response):Promise<serviceReturnType>{
+    async deleteAnAcademicSubject(req:Request):Promise<serviceReturnType>{
         const {id} =  req.params
         
         const doc=await academicSubjectsModel.deleteOne({_id:id});
@@ -268,8 +263,8 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
 
         const {courseDto,courseMetaDto}=SchoolCoursesDto.addNewCourse(req,res);
 
-        let allowedBatchesToAttendCourse:Types.ObjectId[]=[];
-        let allowedSubjects:Types.ObjectId[]=[];
+        const allowedBatchesToAttendCourse:Types.ObjectId[]=[];
+        const allowedSubjects:Types.ObjectId[]=[];
 
 
         /**LATER UPDATE THE MULTIPLES LOOPS BELOW;
@@ -290,7 +285,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
         */
 
         //Baches to follow
-        for(let batch of courseMetaDto.batches){
+        for(const batch of courseMetaDto.batches){
             
             const isBatch=await this.batchRepo.findOne({code:batch}); 
             
@@ -302,7 +297,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
 
         //Subject of course  ?optional
         if(courseMetaDto.subjects.subjectType=="ACADEMIC"){
-            for(let subjectCode of courseMetaDto.subjects.subjectRef){
+            for(const subjectCode of courseMetaDto.subjects.subjectRef){
                 
                 const isSub=await this.subjectRepo.findOne({code:subjectCode}); 
                 
@@ -385,7 +380,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
         const query={_id:id,tenantId:tenantId,adminId:adminId};
         const {courseDto, courseMetaDto }=SchoolCoursesDto.updateCourse(req,res);
 
-        let allowedBatchesToAttendCourse:Types.ObjectId[]=[];
+        const allowedBatchesToAttendCourse:Types.ObjectId[]=[];
 
 
         /**LATER UPDATE THE MULTIPLES LOOPS BELOW;
@@ -407,7 +402,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
 
         //Baches to follow
         if(courseMetaDto?.batches){
-            for(let batch of courseMetaDto?.batches){
+            for(const batch of courseMetaDto.batches){
                 
                 const isBatch=await this.batchRepo.findOne({code:batch}); 
                 
@@ -421,7 +416,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
         
         if(courseMetaDto?.subjects){
 
-        for (const subject of courseMetaDto?.subjects) {
+        for (const subject of courseMetaDto.subjects) {
 
             if (subject.subjectType === "ACADEMIC") {
 

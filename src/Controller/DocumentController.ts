@@ -32,7 +32,7 @@ export class DocumentController{
             //service_call
             //res + catchError
 
-            let dto
+            const dto
                 = DocumentsDto.handleDtoOfDoc(req);
             dto.userId=dto.tenantId
 
@@ -92,7 +92,7 @@ export class DocumentController{
         try{
 
             const {status,resBody}
-            = await this.documentService.deleteAFile(req,res);
+            = await this.documentService.deleteAFile(req);
 
             res
             .status(status)
@@ -109,7 +109,7 @@ export class DocumentController{
         try{
 
             const {status,resBody}
-            = await this.documentService.update_NewAddition_Documents(req,res);
+            = await this.documentService.update_NewAddition_Documents(req);
 
             res
             .status(status)

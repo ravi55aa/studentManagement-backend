@@ -1,9 +1,8 @@
 import { Request,Response } from "express";
 import { IBatches } from "../Models/batchModel";
-import { handleTokenVerification, refreshAccessToken, verifyToken } from "../Utils/jwt";
-import { env } from "../Config";
+import { handleTokenVerification } from "../Utils/jwt";
 import { FilterQuery } from "mongoose";
-import { idToObjectId } from "../Repository/forgotPassword.Repository";
+
 
 export class BatchDto {
 
@@ -15,7 +14,7 @@ export class BatchDto {
         code,
         isActive,
         center,
-        academicYear,
+        // academicYear,
         startDate,
         endDate,
         counselor

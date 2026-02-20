@@ -64,7 +64,7 @@ export class BatchService implements IBatchService {
 
 
 
-    async getBatchById(req:Request,res:Response):Promise<serviceReturnType>{
+    async getBatchById(req:Request):Promise<serviceReturnType>{
         const {id}=req.params;
         const doc:Partial<IBatches|null>=await this.batchRepo.findById(id!);
         
@@ -118,7 +118,7 @@ export class BatchService implements IBatchService {
     }
 
 
-    async deleteBatch(req:Request,res:Response):Promise<serviceReturnType>{
+    async deleteBatch(req:Request):Promise<serviceReturnType>{
         const {id} =  req.params
         
         const doc=await batchModel.deleteOne({_id:id});

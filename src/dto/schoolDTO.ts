@@ -58,15 +58,14 @@ export class SchoolDTO{
                 throw new Error("School Id is not found");
             }
 
-            let {
+            const {
                 adminName,
                 schoolName,
-                profile,
                 phone,
             } = req.body;
+            let {profile}=req.body;
 
             if(req.file){
-                console.log("@schoolDTO req.file",req.file)
                 profile=req.file.path;
             }
 
@@ -185,7 +184,7 @@ export class SchoolSubjectsDto{
              */
 
             const batchesToFollowArray=[];
-            for(let code of batchesToFollow.split(",")){
+            for(const code of batchesToFollow.split(",")){
                 const isBatch=await batchModel.findOne({code:code});
                 if(!isBatch) continue;
 
@@ -247,7 +246,7 @@ export class SchoolSubjectsDto{
                 };
 
                 const batchesToFollowArray=[];
-                for(let batchCode of batchesToFollow.split(",")){
+                for(const batchCode of batchesToFollow.split(",")){
                     const isBatch=await batchModel.findOne({code:batchCode});
                     if(!isBatch) continue;
 
@@ -269,13 +268,14 @@ export class SchoolCoursesDto{
 
     
     static addNewCourse(req:Request,res:Response){
-            let {
+            const {
                 code,name,status,
                 schedule,academicYear,batches,duration,
                 description,maxStudents,enrollmentOpen,
-                subjects,coordinators,eligibilityCriteria,
+                coordinators,eligibilityCriteria,
             } = req.body;
-            console.log("dto course", req.body);
+
+            let { subjects}=req.body;
             
             const decoded=handleTokenVerification(req,res);
             const courseScheduleDates={
@@ -307,7 +307,7 @@ export class SchoolCoursesDto{
                 });
             }
 
-            let s_subjects=subjects;
+            const s_subjects=subjects;
             subjects={
                 subjectType:s_subjects[0]=="other"?"CUSTOM":"ACADEMIC",
                 subjectRef:s_subjects,
@@ -326,7 +326,7 @@ export class SchoolCoursesDto{
 
     static updateCourse(req: Request, res: Response) {
             
-        let {
+        const {
                 code,
                 name,
                 //level,
@@ -338,10 +338,11 @@ export class SchoolCoursesDto{
                 description,
                 maxStudents,
                 enrollmentOpen,
-                subjects,
                 coordinators,
                 eligibilityCriteria
             } = req.body;
+
+            let {subjects}=req.body;
 
             const decoded = handleTokenVerification(req, res);
 
@@ -380,7 +381,7 @@ export class SchoolCoursesDto{
                 }));
             }
 
-            let s_subjects=[...subjects];
+            const s_subjects=[...subjects];
             subjects=[{
                 subjectType:s_subjects[0]=="other"?"CUSTOM":"ACADEMIC",
                 subjectRef:s_subjects,
@@ -445,9 +446,7 @@ export class DocumentsDto{
             return {dtoData,dtoQuery};
         }
 
-        static updateDocV2(req:Request,res:Response){
-
-            const decoded=handleTokenVerification(req,res);
+        static updateDocV2(req:Request){
             const {userId}=req.params;
 
             const {docs}=this.handleDtoOfDoc(req);
@@ -483,7 +482,7 @@ export class DocumentsDto{
         }
 
 
-        static removeOneDocument=(req:Request,res:Response)=>{
+        static removeOneDocument=(req:Request)=>{
             /**
              * Destructure properties
              * HandleTokenVerification

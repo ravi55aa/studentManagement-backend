@@ -15,12 +15,12 @@ export const initSocket = (server: HttpServer) => {
 
     io.on("connection", (socket) => {
 
-        console.log("User connected:", socket.id);
+        //console.log("User connected:", socket.id);
 
         const { userId, role } = socket.handshake.auth;
 
         if (!userId || !role) {
-            console.log("Invalid socket auth");
+            //console.log("Invalid socket auth");
             socket.disconnect();
             return;
         }
@@ -28,10 +28,10 @@ export const initSocket = (server: HttpServer) => {
         // Join unique room
         socket.join(`${role}-${userId}`);
 
-        console.log(`User joined room: ${role}-${userId}`);
+        //console.log(`User joined room: ${role}-${userId}`);
 
         socket.on("disconnect", () => {
-        console.log("User disconnected:", socket.id);
+        //console.log("User disconnected:", socket.id);
         });
     });
 

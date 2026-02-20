@@ -5,7 +5,7 @@ export interface IUser extends Document {
     email: string;
     password: string | null;
     phone?: string | null;
-    profile?: null | any;
+    profile?: null | string;
     tenantId?: string | null | Types.ObjectId;
     role?: string | null;
 }
@@ -50,5 +50,5 @@ const adminSchema = new Schema<IUser>(
     { timestamps: true }
 );
 
-let userModel = model<IUser>("Admin", adminSchema);
+const userModel = model<IUser>("Admin", adminSchema);
 export default userModel;

@@ -33,7 +33,7 @@ export class AddressController{
     Promise<void>{    
         try{
             const {id}=req.params;
-            const address=await this.addressService.getSchoolAddress(id);
+            const address=await this.addressService.getSchoolAddress(id!);
 
             //pending responseBody
             const responseBody = 

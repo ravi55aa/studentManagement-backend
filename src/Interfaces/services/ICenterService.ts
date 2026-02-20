@@ -22,18 +22,18 @@ export interface ICenterService{
 
     //**📌 Relationship / Business Logic
 
-    assignAdminToCenter():any
+    // assignAdminToCenter():any
 
-    removeAdminFromCenter():any
+    // removeAdminFromCenter():any
 
-    assignSchoolToCenter():any
+    // assignSchoolToCenter():any
 
-    removeSchoolFromCenter():any
+    // removeSchoolFromCenter():any
 
 
     //** 📌 Status & Lifecycle
 
-    activateCenter():any
+    // activateCenter():any
 
-    deactivateCenter():any
+    // deactivateCenter():any
 }

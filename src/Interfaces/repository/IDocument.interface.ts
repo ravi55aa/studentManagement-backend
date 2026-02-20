@@ -4,7 +4,7 @@ import { BaseRepository } from "../../Repository/BaseRepository"
 
 
 export interface IDocumentRepository extends BaseRepository<IDocument>{
-        uploadDocuments(data:IDocument):Promise<IDocument|null>
+        uploadDocuments(data:Partial<IDocument>):Promise<IDocument|null>
 
         updateDocuments(query:FilterQuery<Partial<IDocument>>,data:IUploadedDoc[]) : Promise<Partial<IDocument>|null> 
 

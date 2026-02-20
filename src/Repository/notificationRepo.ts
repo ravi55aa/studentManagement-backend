@@ -41,10 +41,3 @@ export class NotificationRepo
 
 }
 
-
-
-
-/**** Notification receive repo ****/
-// class UserNotificationRepo implements BaseRepository<IUserNotification>{
-    
-// }

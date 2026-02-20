@@ -6,7 +6,7 @@ config();
 
 
 
-const env:any={
+const env={
     PORT:process.env.PORT ?? 4000,
 
     SESSION_SECRET:process.env.SESSION_SECRET,

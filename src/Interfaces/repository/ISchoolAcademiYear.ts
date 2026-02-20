@@ -35,16 +35,16 @@ export interface ISchoolSubjectsRepo extends BaseRepository<IAcademicSubject>
 
 export interface ISchoolCoursesRepo extends BaseRepository<IAcademicCourse>
 {
-    addNewCourse(model:String,payload:Partial<IAcademicCourse|IAcademicCourseMeta>):Promise<IAcademicCourse|IAcademicCourseMeta|null>
+    addNewCourse(model:string,payload:Partial<IAcademicCourse|IAcademicCourseMeta>):Promise<IAcademicCourse|IAcademicCourseMeta|null>
 
     addNewCourseMeta(payload:IAcademicCourseMeta):Promise<IAcademicCourseMeta|null>
     
-    getAllCourses<T>(model:String,query:FilterQuery<Partial<T>>):Promise<T[]>
+    getAllCourses<T>(model:string,query:FilterQuery<Partial<T>>):Promise<T[]>
 
-    updateCourse(model:String,query:FilterQuery<Partial<IAcademicCourse|IAcademicCourseMeta>>,
+    updateCourse(model:string,query:FilterQuery<Partial<IAcademicCourse|IAcademicCourseMeta>>,
         data:Partial<IAcademicCourse|IAcademicCourseMeta>):Promise<IAcademicCourse|IAcademicCourseMeta|null>
 
-    deleteCourse<T>(model:String,query:FilterQuery<Partial<T>>):Promise<T|null>
+    deleteCourse<T>(model:string,query:FilterQuery<Partial<T>>):Promise<T|null>
 
     findOneFromCourse(query: FilterQuery<Partial<IAcademicCourse>>): Promise<IAcademicCourse | null>
 

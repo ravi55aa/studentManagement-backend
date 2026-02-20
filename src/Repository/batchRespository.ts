@@ -15,7 +15,7 @@ implements IBatchRepository{
         super(batchModel);
     }
 
-    async addBatch(batchData:IBatches):Promise<IBatches|null> {
+    async addBatch(batchData:Partial<IBatches>):Promise<IBatches|null> {
         return await batchModel.create(batchData);
     }
 

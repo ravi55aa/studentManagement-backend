@@ -1,5 +1,5 @@
 import { Router } from "express";
-let router=Router();
+const router=Router();
 import { handleOAuth,handleAuthCallback } from "../Config/oAuth.config";
 
 router.get("/auth",handleOAuth);

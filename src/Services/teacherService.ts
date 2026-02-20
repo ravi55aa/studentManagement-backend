@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 
 import {Request,Response} from "express";
-import { ITeacher, ITeacherBio, teacherBioModel } from "../Models/teacherModel";
+import { ITeacher, ITeacherBio } from "../Models/teacherModel";
 import { teacherModel } from "../Models";
 import { TeacherDTO, TeacherValidation } from "../dto/teacherDto";
 import { serviceReturnType } from "../Constants/interfaces";
@@ -31,7 +31,7 @@ export class TeacherService implements ITeacherService{
         ): Promise<serviceReturnType> {
 
             
-            const dataToValidate = TeacherValidation.teacherBio(req,res);            
+            //const dataToValidate = TeacherValidation.teacherBio(req,res);            
             
             const data=TeacherDTO.createBio(req,res);
             
@@ -88,7 +88,7 @@ export class TeacherService implements ITeacherService{
 
         const allTeachers:IGetAllTeachers|null=await this.teacherRepo.getAllTeachers();
 
-        let {teacherBio}=allTeachers;
+        const {teacherBio}=allTeachers;
         
         if(teacherBio.length<=0){
             const{status,resBody} = ApiResponse.notFound("No Teachers Found, Kindly add teacher");
@@ -283,7 +283,7 @@ export class TeacherService implements ITeacherService{
         } = {}
     ): Promise<ITeacher[]> {
 
-        const query: any = { tenantId };
+        const query:any = { tenantId, };
 
         if (filters.academicYearId)
         query.academicYearId = filters.academicYearId;

@@ -1,4 +1,4 @@
-/// <reference path="./types/express/index.d.ts" />
+
 
 import express from "express";
 const app=express();
@@ -19,6 +19,7 @@ import {
     stripeRouter,
     feesRouter
     } from "./Routes/index"; 
+import logger from "./Utils/logger";
 
 
 
@@ -51,7 +52,7 @@ app.use("/fee",feesRouter);
 
 
 app.use((req, res) => {
-    console.error("❌ Route not found:", req.method, req.originalUrl);
+    logger.error("❌ Route not found:", req.method, req.originalUrl);
     res.status(404).json({ message: "Route not found" });
     });
 

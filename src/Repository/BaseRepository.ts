@@ -27,7 +27,7 @@ export class BaseRepository
         }
 
 
-        public async findMany(filter:FilterQuery<T>):Promise<T|{}>{
+        public async findMany(filter:FilterQuery<T>):Promise<T[]|[]>{
             return this.model.find(filter).exec();
         }
 

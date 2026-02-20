@@ -15,7 +15,7 @@ export class NotificationController {
 
     async addNewNotification(req:Request,res:Response,next:NextFunction){
         try {
-            const {}=await this.notificationService.addNotification(req,res);
+            await this.notificationService.addNotification(req,res);
 
             res
             .status(StatusCodes.CREATED)

@@ -4,10 +4,8 @@ import centerModel, { ICenter } from "../Models/centerModel";
 import { AddressDTO } from "../dto/addressDTO";
 import { IAddress } from "../Models/addressModel";
 import { serviceReturnType } from "../Constants/interfaces";
-import { IAddressRepository } from "../Interfaces/repository/IAddressRepository";
 import { IResponse } from "../Interfaces/IResponse";
 import { StatusCodes } from "../Constants/statusCodes";
-import { ICenterRepository } from "../Interfaces/repository/ICenterRepository";
 import { CenterResponseBody } from "../Utils/ResponseBody/center.responsebody";
 import { ICenterService } from "../Interfaces/services/ICenterService";
 import { addressModel } from "../Models";
@@ -72,7 +70,7 @@ export class CentersService implements ICenterService{
     }
 
 
-    async getCenterById(req:Request,res:Response):Promise<serviceReturnType>{
+    async getCenterById(req:Request):Promise<serviceReturnType>{
             const {id}=req.params;
             const doc:Partial<ICenter|null>=await this.centerRepo.findById(id!);
             
@@ -132,7 +130,7 @@ export class CentersService implements ICenterService{
 
 
 
-    async deleteCenter(req:Request,res:Response):Promise<serviceReturnType>{
+    async deleteCenter(req:Request):Promise<serviceReturnType>{
         const {id} =  req.params
         
         const doc=await centerModel.deleteOne({_id:id});

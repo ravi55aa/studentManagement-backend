@@ -8,9 +8,8 @@ export interface IAddressService{
     //tenantId:"schoolId"
     //role:"school"
 
-    getUserAddress(query:FilterQuery<{}>):Promise<IAddress|{}>
-    //userId=paramId
-    //tenantId=schoolId
+    getUserAddress(query:FilterQuery<Partial<IAddress>>):Promise<IAddress|[]>
+    //query : { userId=paramId, tenantId=schoolId}
 
     createAddress(address:Partial<IAddress>):Promise<IAddress|null>
     

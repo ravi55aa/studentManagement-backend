@@ -75,7 +75,7 @@ export class FeeController {
         try {
 
             const { status, resBody } =
-                await this.feeService.getAllFees(req);
+                await this.feeService.getAllFees();
 
             res.status(status).json(resBody);
 

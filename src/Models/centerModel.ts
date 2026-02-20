@@ -5,17 +5,17 @@ from "mongoose";
 
 
 export interface ICenter extends Document{
-    name:String|null,
-    code:String|null,
-    phone: String | null;
-    email: String | null;
+    name:string|null,
+    code:string|null,
+    phone: string | null;
+    email: string | null;
     tenantId:ObjectId|null,
     adminId:ObjectId|null,
     headInCharge:ObjectId|null,
-    currentStrength: Number | null;
-    totalCapacity: Number | null;
-    isMain: Boolean | null;
-    isActive: Boolean | null;
+    currentStrength: number | null;
+    totalCapacity: number | null;
+    isMain: boolean | null;
+    isActive: boolean | null;
 }
 
 

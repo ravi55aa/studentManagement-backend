@@ -65,10 +65,7 @@ export class FeeService implements IFeeService {
     }
 
 
-    public async getAllFees(
-        req: Request
-    ): Promise<serviceReturnType> {
-
+    public async getAllFees(): Promise<serviceReturnType> {
         const fees =
             await this.feeRepo.findMany({});
 

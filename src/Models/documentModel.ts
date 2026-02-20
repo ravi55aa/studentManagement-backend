@@ -22,9 +22,9 @@ const uploadedDocSchema = new mongoose.Schema<IUploadedDoc>(
 
 
 export interface IDocument extends Document {
-    tenantId?: mongoose.Types.ObjectId|String|undefined;
-    userId?: mongoose.Types.ObjectId|String|undefined;
-    role?: String|null;
+    tenantId?: mongoose.Types.ObjectId|string|undefined;
+    userId?: mongoose.Types.ObjectId|string|undefined;
+    role?: string|null;
     docs: IUploadedDoc[];
 }
 

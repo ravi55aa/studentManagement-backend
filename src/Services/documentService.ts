@@ -1,6 +1,5 @@
 
 import { serviceReturnType } from "../Constants/interfaces";
-import { IDocumentRepository } from "../Interfaces/repository/IDocument.interface";
 import { IDocumentService } 
     from "../Interfaces/services/IDocument.service";
 import { IDocument } from "../Models/documentModel";
@@ -17,10 +16,10 @@ export class DocumentService implements IDocumentService{
 
     constructor(
         @inject(DocumentRepository)
-        private documentRepository:DocumentRepository)
-        {}
+        private documentRepository:DocumentRepository
+    ){}
 
-    public async uploadDocs(data: IDocument): 
+    public async uploadDocs(data: Partial<IDocument>): 
     Promise<IDocument|null> 
     {
         const uploadedData=await this.documentRepository.uploadDocuments(data);
@@ -56,10 +55,10 @@ export class DocumentService implements IDocumentService{
     }
 
 
-    public async update_NewAddition_Documents(req:Request,res:Response): Promise<serviceReturnType> 
+    public async update_NewAddition_Documents(req:Request): Promise<serviceReturnType> 
     {
         const {dtoData,dtoQuery} = 
-            DocumentsDto.updateDocV2(req,res);
+            DocumentsDto.updateDocV2(req);
 
         const uploadedData:Partial<IDocument|null> = 
             await this.documentRepository.updateNEWUploadDocuments(dtoQuery,dtoData);
@@ -96,9 +95,9 @@ export class DocumentService implements IDocumentService{
         return {status,resBody};
     }
 
-    public async deleteAFile(req:Request,res:Response): Promise<serviceReturnType> 
+    public async deleteAFile(req:Request): Promise<serviceReturnType> 
     {
-        const {filterQuery,pullQuery}=DocumentsDto.removeOneDocument(req,res);
+        const {filterQuery,pullQuery}=DocumentsDto.removeOneDocument(req);
 
         const docsDel=await this.documentRepository.deleteADocumentFile(filterQuery,pullQuery);
 

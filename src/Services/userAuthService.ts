@@ -13,6 +13,7 @@ import { handleJwtTokensGenerator, IJwtPayload}
     from "../Utils/jwt";
 import { injectable,inject } from "tsyringe";
 import { UserRepository } from "../Repository/userRepository";
+import logger from "../Utils/logger";
 
 
 @injectable()
@@ -25,8 +26,8 @@ export class UserAuthService implements IUserAuthService {
 
 
 
-    async register(userData:IUser,address:IAddress){
-        await UserValidator.ensureUserIsTaken(this.userRepository,userData.email);
+    async register(userData:Partial<IUser>,address:Partial<IAddress>){
+        await UserValidator.ensureUserIsTaken(this.userRepository,userData.email!);
 
         const createUser = await this.userRepository.create(userData);
         if(!createUser){
@@ -55,7 +56,7 @@ export class UserAuthService implements IUserAuthService {
             //jwt ****
             if(isUser){
                 const payload:IJwtPayload=
-                {   userId:isUser?._id!,
+                {   userId:isUser._id!,
                     role:"admin",
                     tenantId:null
                 }
@@ -64,9 +65,9 @@ export class UserAuthService implements IUserAuthService {
             }
             
             return isUser;
-        } catch(err:any){
-            console.log(err,{cause:err.message});
-            throw new Error(err);
+        } catch(err:unknown){
+            logger.error(err);
+            throw new Error("Failed to sign in",{cause:err});
         }
     }
 

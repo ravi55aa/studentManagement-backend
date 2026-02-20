@@ -11,7 +11,6 @@ import {
 
 import { handleValidationOF } from "../Middlewares/validateUser.middleware";
 import { NotificationPayloadSchema } from "../Validators/notifications";
-import { INotificationRepo } from "../Interfaces/repository/INotificationRepo";
 
 import { INotification } from "../Models/notificaitonModel";
 import { getIO } from "../Config/socket.config";

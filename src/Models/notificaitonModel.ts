@@ -1,4 +1,4 @@
-import mongoose, { Document, ObjectId, Schema, Types } from 'mongoose';
+import mongoose, { Document, ObjectId, Schema } from 'mongoose';
 
 export enum NotificationType {
     GENERAL = "GENERAL",
@@ -23,12 +23,12 @@ export enum NotificationStatus {
 }
 
 export interface ISender {
-    model:String,
-    id:String
+    model:string,
+    id:string
 }
 
 export interface iRecipients {
-    model:String,
+    model:string,
     ids:ObjectId
 }
 

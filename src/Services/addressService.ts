@@ -27,7 +27,7 @@ export class AddressService implements IAddressService{
         return await this.addressRepository.findById(id);
     }
 
-    getUserAddress(query:FilterQuery<{}>):Promise<IAddress|{}>{
+    getUserAddress(query:FilterQuery<Partial<IAddress>>):Promise<IAddress|[]>{
         return this.addressRepository.findMany(query);
     }
     

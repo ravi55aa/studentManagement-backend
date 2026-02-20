@@ -12,7 +12,7 @@ export class AcademicYearRepository extends BaseRepository<IAcademicYear> implem
             super(academicYearModel);
         }
 
-        async addAcademicYear(centerData:IAcademicYear):Promise<IAcademicYear|null> {
+        async addAcademicYear(centerData:Partial<IAcademicYear>):Promise<IAcademicYear|null> {
             return await academicYearModel.create(centerData);
         }
     
@@ -60,7 +60,7 @@ implements ISchoolCoursesRepo {
 
 
 
-        async addNewCourse(model:String,payload:Partial<IAcademicCourse|IAcademicCourseMeta>):Promise<IAcademicCourse|IAcademicCourseMeta|null> {
+        async addNewCourse(model:string,payload:Partial<IAcademicCourse|IAcademicCourseMeta>):Promise<IAcademicCourse|IAcademicCourseMeta|null> {
             if(model=="AcademicCourse"){
                 return await coursesModel.create(payload);
             }else{
@@ -74,7 +74,7 @@ implements ISchoolCoursesRepo {
         }
     
 
-        async getAllCourses<T>(model:String,query:FilterQuery<Partial<T>>):Promise<T[]>{
+        async getAllCourses<T>(model:string,query:FilterQuery<Partial<T>>):Promise<T[]>{
 
             if(model=="AcademicCourse"){
                 return await coursesModel.find(query).lean<T[]>();
@@ -84,7 +84,7 @@ implements ISchoolCoursesRepo {
         }
 
 
-        async deleteCourse<T>(model:String,query:FilterQuery<Partial<T>>): Promise<T | null> 
+        async deleteCourse<T>(model:string,query:FilterQuery<Partial<T>>): Promise<T | null> 
         {
             if(model=="AcademicCourse"){
                 return await coursesModel.deleteOne(query).lean<T>();
@@ -104,7 +104,7 @@ implements ISchoolCoursesRepo {
         };
 
 
-        async updateCourse(model:String,query:FilterQuery<Partial<IAcademicCourse|IAcademicCourseMeta>>,
+        async updateCourse(model:string,query:FilterQuery<Partial<IAcademicCourse|IAcademicCourseMeta>>,
         data:Partial<IAcademicCourse|IAcademicCourseMeta>):Promise<IAcademicCourse|IAcademicCourseMeta|null> {
             if(model=="AcademicCourse"){
                 return await coursesModel.updateOne(query,data).lean<IAcademicCourse>();

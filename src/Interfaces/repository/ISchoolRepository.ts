@@ -1,4 +1,4 @@
-import { IAddress } from "../../Models/addressModel"
+
 import { ISchool } from "../../Models/schoolModel"
 import { BaseRepository } from "../../Repository/BaseRepository"
 

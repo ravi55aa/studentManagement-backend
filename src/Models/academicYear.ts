@@ -1,11 +1,11 @@
-import mongoose, {model,Types,Schema, Document, ObjectId } from 'mongoose';
+import mongoose, {Types,Schema, Document, ObjectId } from 'mongoose';
 
 export interface IAcademicYear extends Document {
-    code: String | null;
-    year?:String|null
+    code: string | null;
+    year?:string|null
     startDate: Date | null;
     endDate: Date | null;
-    status: String | null;
+    status: string | null;
     tenantId: ObjectId | null;
     adminId:ObjectId|null
 }

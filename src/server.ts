@@ -4,6 +4,7 @@ import http from "http";
 import { initSocket } from "./Config/socket.config"; 
 import { env } from "./Config";
 import app from "./app"; //express.server
+import logger from "./Utils/logger";
 
 
 const server = http.createServer(app);
@@ -13,5 +14,5 @@ const server = http.createServer(app);
 const PORT = env.PORT || 5000;
 
 server.listen(PORT,()=>{
-    console.log(`http://localhost:${PORT}`);
+    logger.info(`http://localhost:${PORT}`);
 });

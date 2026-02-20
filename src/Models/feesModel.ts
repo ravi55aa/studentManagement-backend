@@ -10,24 +10,24 @@ export enum FeeType {
 
 
 export interface IFee extends Document {
-        name: String | null;
-        code: String | null;
-        status: String | null;
-        totalAmount: Number | null;
+        name: string | null;
+        code: string | null;
+        status: string | null;
+        totalAmount: number | null;
         dueDate: Date | null;
-        currency: String | null;
-        isDeleted:Boolean | null;
+        currency: string | null;
+        isDeleted:boolean | null;
         
         type:FeeType|null,
         appliesTo: {
-            model:String,
+            model:string,
             id:ObjectId
         }
 
         tenantId: ObjectId | null;
         autoReminder: {
-            daysBeforeDue: Number | null;
-            enabled: Boolean | null;
+            daysBeforeDue: number | null;
+            enabled: boolean | null;
         };
     }
 

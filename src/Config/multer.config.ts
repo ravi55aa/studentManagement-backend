@@ -6,7 +6,6 @@ const storage = multer.diskStorage({
         cb(null, 'src/images')
     },
     filename: function (req, file, cb) {
-        console.log("multer file_type",file.mimetype)
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
         const addEndPoint=uniqueSuffix+"."+file.originalname.split(".")[1];
         cb(null, file.fieldname + '-' + addEndPoint)

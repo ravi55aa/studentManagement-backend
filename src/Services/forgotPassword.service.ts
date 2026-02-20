@@ -1,9 +1,7 @@
-import { Request,Response } 
+import { Request } 
     from "express";
 import { IForgotPasswordService } 
     from "../Interfaces/services/IForgotPasswordService.";
-import { IForgotPasswordRepository } 
-    from "../Interfaces/repository/IForgotPassword.repository";
 import { sendMail, SendMailOptions } 
     from "../Constants/nodemail";
 import { otp } 
@@ -56,7 +54,7 @@ export class ForgotPasswordService implements IForgotPasswordService{
         const {id}=req.params;
         const newOtp=otp;
 
-        let mailOptions:SendMailOptions={
+        const mailOptions:SendMailOptions={
             to:"raviaa912@gmail.com",
             subject:"Password change otp",
             html:`<P>You're otp is ${newOtp}</p>1}
@@ -156,7 +154,7 @@ export class ForgotPasswordService implements IForgotPasswordService{
     }
     
 
-    async updatePasswordV2(req: Request, res:Response): Promise<serviceReturnType> {
+    async updatePasswordV2(req: Request): Promise<serviceReturnType> {
         
         const {role,id,password} = ForgotPasswordDTO.changePassword(req) 
         

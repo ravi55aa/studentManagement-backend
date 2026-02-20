@@ -19,7 +19,7 @@ export class DocumentRepository
         }
 
 
-        public async uploadDocuments(data: IDocument) 
+        public async uploadDocuments(data: Partial<IDocument>) 
         : Promise<IDocument|null> 
         {
             const newDoc=new documentModel(data); 
@@ -42,9 +42,7 @@ export class DocumentRepository
             )
             .lean<IDocument>();
             } catch (error) {
-                throw new Error(
-                `Failed to update document: ${(error as Error).message}`
-                );
+                throw new Error("Failed to update document:" ,{cause :error} );
             }
         }
 
@@ -63,9 +61,7 @@ export class DocumentRepository
             )
             .lean<IDocument>();
             } catch (error) {
-                throw new Error(
-                `Failed to update document: ${(error as Error).message}`
-                );
+                throw new Error("Failed to update document:" ,{cause :error});
             }
         }
 
@@ -78,9 +74,7 @@ export class DocumentRepository
                 .findOneAndDelete(query)
                 .lean<IDocument>();
             } catch (error) {
-                throw new Error(
-                `Failed to delete document: ${(error as Error).message}`
-                );
+                throw new Error("Failed to delete document:" ,{cause :error});
             }
         }
 
@@ -99,9 +93,7 @@ export class DocumentRepository
             } 
             catch (error) 
             {
-                throw new Error(
-                `Failed to delete document: ${(error as Error).message}`
-                );
+                throw new Error("Failed to delete document:" ,{cause :error});
             }
         }
 

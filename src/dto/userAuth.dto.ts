@@ -1,8 +1,5 @@
 
 import { Request } from "express";
-import { Document } from "mongoose";
-import { IUser } from "../Models/userModel";
-import { IAddress } from "../Models/addressModel";
 
 export class AuthUserDTO{
     static register(req:Request){

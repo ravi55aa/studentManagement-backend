@@ -10,14 +10,14 @@ import { IUploadedDoc } from "./documentModel";
 
 
 export interface ITeacherBio extends Document {
-    firstName: String | null;
-    lastName: String | null;
-    email: String | null;
-    phone: String | null;
-    qualification: String | null;
+    firstName: string | null;
+    lastName: string | null;
+    email: string | null;
+    phone: string | null;
+    qualification: string | null;
     dateOfBirth: Date | null;
-    profilePhoto: String | null;
-    experience: Number | null;
+    profilePhoto: string | null;
+    experience: number | null;
     gender: Gender_types;
     documents:IUploadedDoc[];
     tenantId:ObjectId|null;
@@ -106,7 +106,7 @@ export const teacherBioModel = mongoose.model<ITeacherBio>('TeacherBio', Teacher
 export interface ITeacher  {
     teacherId: Types.ObjectId|null;
     academicYearId: Types.ObjectId | null;
-    employeeId: String | null;
+    employeeId: string | null;
     employmentStatus: EmploymentStatus | null;
     assignedSubjects: IAcademicSubject[];
     designation: TeacherDesignation | null;

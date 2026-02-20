@@ -2,6 +2,7 @@ import { Request,Response,NextFunction } from "express";
 import { verifyToken,refreshAccessToken } from "../Utils/jwt";
 import { env } from "../Config";
 import handleErrorsMiddleware from "./error.middleware";
+import logger from "../Utils/logger";
 
 export const authMiddleware = 
     async (req: Request, res: Response, next: NextFunction) => {
@@ -42,13 +43,13 @@ export const authMiddleware =
         decoded = verifyToken(newToken, env.JWT_ACCESS_TOKEN_SECRET);
         req.user = decoded||{};
         
-        console.log("NewTokenGenerated🆕🎫");
+        logger.info("NewTokenGenerated🆕🎫");
         next();
 
 
     } 
-    catch (err: any) {
-        console.log("AUTH MIDDLEWARE ERROR:", err.message);
+    catch (err:any) {
+        logger.error("AUTH MIDDLEWARE ERROR:", err.message);
         return handleErrorsMiddleware(err, req, res, next);
     }
 };

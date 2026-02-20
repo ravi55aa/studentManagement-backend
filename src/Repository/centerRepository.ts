@@ -1,4 +1,4 @@
-import { FilterQuery } from "mongoose";
+
 import { ICenterRepository } 
     from "../Interfaces/repository/ICenterRepository";
 import centerModel, { ICenter } 
@@ -15,7 +15,7 @@ export class CenterRepository extends BaseRepository<ICenter> implements ICenter
         super(centerModel);
     }
     
-    async addCenter(centerData:ICenter):Promise<ICenter|null> {
+    async addCenter(centerData:Partial<ICenter>):Promise<ICenter|null> {
         return await centerModel.create(centerData);
     }
 

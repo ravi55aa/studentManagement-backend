@@ -12,7 +12,6 @@ import { AuthUserDTO }
     from "../dto/userAuth.dto";
 import { handleResponseBody } 
     from "../Utils/responseBody";
-import logger from "../Utils/logger";
 import { injectable,inject } from "tsyringe";
 import { UserAuthService } from "../Services/userAuthService";
 
@@ -76,13 +75,13 @@ export class UserAuthController{
                 const responseBody:IResponse<IUser|null>=handleResponseBody(signInUser,res,req);
 
 
-            let status=signInUser?StatusCodes.OK:StatusCodes.NOT_FOUND;
+            const status=signInUser?StatusCodes.OK:StatusCodes.NOT_FOUND;
             
             res
             .status(status)
             .json(responseBody);
 
-        } catch(err:any) {
+        } catch(err) {
             next(err);
         }
     }

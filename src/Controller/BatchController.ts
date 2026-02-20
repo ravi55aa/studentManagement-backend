@@ -44,7 +44,7 @@ export class BatchController{
     async getASchoolBatch(req:Request,res:Response,next:NextFunction){
         try{
 
-            const {status,resBody}=await this.batchService.getBatchById(req,res);
+            const {status,resBody}=await this.batchService.getBatchById(req);
 
             res.status(status).json(resBody);
         }catch(err){
@@ -90,7 +90,7 @@ export class BatchController{
     async deleteASchoolBatch(req:Request,res:Response,next:NextFunction){
         try{
 
-            const {status,resBody}=await this.batchService.deleteBatch(req,res);
+            const {status,resBody}=await this.batchService.deleteBatch(req);
 
             res.status(status).json(resBody);
         }catch(err){

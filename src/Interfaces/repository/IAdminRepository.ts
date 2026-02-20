@@ -3,7 +3,7 @@ import { IUser } from "../../Models/userModel"
 import { BaseRepository } from "../../Repository/BaseRepository"
 
 export interface IUserRepository extends BaseRepository<IUser> {
-    findByEmail(email:string) : Promise <IUser|null>,
+    findByEmail(email:Partial<IUser>) : Promise <IUser|null>,
     //create(address:Partial<IAddress>):Promise<IAddress>
 
     addAddress(address:Partial<IAddress>):Promise<IAddress>

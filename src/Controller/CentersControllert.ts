@@ -48,7 +48,7 @@ export class CentersController{
 
     async getASchoolCenter(req:Request,res:Response,next:NextFunction){
         try{
-            const {status,resBody}=await this.centerService.getCenterById(req,res);
+            const {status,resBody}=await this.centerService.getCenterById(req);
 
             res.status(status).json(resBody);
         }catch(err){
@@ -70,7 +70,7 @@ export class CentersController{
     async deleteASchoolCenter(req:Request,res:Response,next:NextFunction){
         try{
 
-            const {status,resBody}=await this.centerService.deleteCenter(req,res);
+            const {status,resBody}=await this.centerService.deleteCenter(req);
 
             res.status(status).json(resBody);
         }catch(err){

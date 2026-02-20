@@ -87,7 +87,7 @@ export class TeacherDTO {
 
         const data:Partial<ITeacher>=req.body;
         const {id}=req.params;
-        let dto= {
+        const dto= {
             teacherId:new mongoose.Types.ObjectId(id!),
             academicYearId: data.academicYearId!,
             employeeId: data.employeeId!,
@@ -103,10 +103,12 @@ export class TeacherDTO {
         const yearDoc = await academicYearModel.findOne({code:dto.academicYearId!});
 
 
-        dto.academicYearId = yearDoc?._id!;
+        if(yearDoc?.id){
+            dto.academicYearId = yearDoc._id;
+        }
 
         const subjectToFollowArray=[];
-            for(let code of data.assignedSubjects!){
+            for(const code of data.assignedSubjects!){
                 const isSub=await academicSubjectsModel.findOne({code:code});
                 if(!isSub) continue;
 

@@ -9,14 +9,14 @@ export interface IBatches extends Document {
     academicYear: ObjectId | null;
     batchCounselor: ObjectId | null;
 
-    name: String | null;
-    code: String | null;
-    status: String | null;
-    course?: String | null;
+    name: string | null;
+    code: string | null;
+    status: string | null;
+    course?: string | null;
 
     schedule: {
-        endTime: String | null;
-        startTime: String | null;
+        endTime: string | null;
+        startTime: string | null;
     };
 }
 

@@ -50,14 +50,6 @@ export class SchoolService implements ISchoolService {
     public async createSchool(
         req:Request,res:Response,
     ) {
-
-        // schoolData-dto
-        // polish schoolData
-        // createSchool
-        // update adminDoc
-        // create {token, refreshToken}
-
-
         const schoolData:Partial<ISchool> = SchoolDTO.createSchool(req.body);
             
         const adminId:string|undefined = req.user?.userId;  //JWT middleware attaches 

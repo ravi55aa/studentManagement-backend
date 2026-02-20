@@ -14,7 +14,7 @@ export class NotificationDto {
 
         const fields= Object.keys(req.body);
         
-        for(let field of fields){
+        for(const field of fields){
             if(field == "link" || 
                 field=="attachmentUrl") continue;
 

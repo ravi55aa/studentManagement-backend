@@ -4,7 +4,7 @@ import {Request,Response} from "express";
 
 
 export interface IDocumentService{
-    uploadDocs(data:Partial<IDocument>):Promise<IDocument|null>
+    uploadDocs(data:Partial<Partial<IDocument>>):Promise<IDocument|null>
 
     updateDocs(req:Request,res:Response): Promise<serviceReturnType>
 

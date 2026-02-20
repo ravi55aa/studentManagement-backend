@@ -1,7 +1,8 @@
 import express from "express";
 import { stripe } from "../Config/stripe.config";
-import { env } from "process";
-import schoolModel from "../Models/schoolModel";
+import logger from "../Utils/logger";
+// import { env } from "process";
+// import schoolModel from "../Models/schoolModel";
 
 const router = express.Router();
 
@@ -38,13 +39,14 @@ router.post(
             process.env.STRIPE_WEBHOOK_SECRET!
         );
         } catch (err) {
-            return res.status(400).send(`Webhook Error`);
+            logger.error(err)
+            return res.status(400).send(`Webhook Error, ${err}`);
         }
 
         if (event.type === "payment_intent.succeeded") {
-            const paymentIntent = event.data.object;
-            console.log("Payment successful:", paymentIntent.id);
-            console.log("@stripe_route Payment intent success object:", paymentIntent);
+            //const paymentIntent = event.data.object;
+            // console.log("Payment successful:", paymentIntent.id);
+            // console.log("@stripe_route Payment intent success object:", paymentIntent);
 
             //! Update DB here
         }

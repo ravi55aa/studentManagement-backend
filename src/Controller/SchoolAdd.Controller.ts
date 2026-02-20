@@ -51,7 +51,7 @@ export class SchoolController {
             
             res.status(StatusCodes.CREATED).json(responseBody)
 
-        } catch(err:any){
+        } catch(err){
             next(err);
         }
     }
@@ -59,9 +59,6 @@ export class SchoolController {
     //*update
     public async updateSchoolMeta(req: Request, res: Response, next: NextFunction) {
         try {
-
-            console.log("req.body",req.body,"\nreq.file",req.file,"\n req.files",req.files)
-
             const {status,resBody} = 
                 await this.schoolService.updateSchoolMeta(req,res);
             
@@ -110,8 +107,8 @@ export class SchoolController {
     }
 
 
-    public async updateSchool(req:Request,res:Response):Promise<void>{}
+    // public async updateSchool(req:Request,res:Response):Promise<void>{}
 
-    public async deleteSchool(req:Request,res:Response):Promise<void>{}
+    // public async deleteSchool(req:Request,res:Response):Promise<void>{}
 
 }

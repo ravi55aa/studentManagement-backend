@@ -7,7 +7,7 @@ import { IAddress }
     from "../Models/addressModel";
 import { BaseRepository } 
     from "./BaseRepository";
-import { inject, injectable } from "tsyringe";
+import { injectable } from "tsyringe";
 
 
 @injectable()
@@ -31,9 +31,7 @@ implements IAddressRepository {
             }
             ).lean<IAddress>();
         }catch (error) {
-            throw new Error(
-            `AddressRepository.updateAddress failed: ${(error as Error).message}`
-            );
+            throw new Error("AddressRepository.updateAddress failed",{cause:error});
         }
     }
 
