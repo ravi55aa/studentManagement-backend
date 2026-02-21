@@ -133,7 +133,7 @@ export interface IAcademicCourseMeta extends Document {
   syllabusUrl?: string | null;
   maxStudents: string | null;
   courseId: Types.ObjectId | null;
-  enrollmentOpen: string | null;
+  enrollmentOpen: boolean | null;
 }
 
 const AcademicCourseMetaSchema = new Schema<IAcademicCourseMeta>(

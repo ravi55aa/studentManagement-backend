@@ -6,7 +6,7 @@ import { IAcademicCourse, IAcademicCourseMeta, IUpload_document } from '../Model
 import { IAcademicSubject } from '../Models/academicYear';
 import { batchModel } from '../Models/batchModel';
 import { IDocument, IUploadedDoc } from '../Models/documentModel';
-import bcrypt from "bcrypt";
+import bcrypt from 'bcrypt';
 
 export class SchoolDTO {
   static createSchool(reqBody: Partial<ISchool>): Partial<ISchool> {

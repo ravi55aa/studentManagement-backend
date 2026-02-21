@@ -8,7 +8,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
   try {
     const token = req.cookies.token; //expired token back-listing
 
-    let decoded = verifyToken(token, env.JWT_ACCESS_TOKEN_SECRET);
+    let decoded = verifyToken(token, env.JWT_ACCESS_TOKEN_SECRET!);
     req.user = decoded || {};
 
     if (decoded) return next();
@@ -30,7 +30,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
       maxAge: 2 * 60 * 1000, //can't set the env.token.expiryTime;
     });
 
-    decoded = verifyToken(newToken, env.JWT_ACCESS_TOKEN_SECRET);
+    decoded = verifyToken(newToken, env.JWT_ACCESS_TOKEN_SECRET!);
     req.user = decoded || {};
 
     logger.info('NewTokenGenerated🆕🎫');

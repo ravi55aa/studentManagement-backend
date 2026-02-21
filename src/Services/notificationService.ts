@@ -22,6 +22,7 @@ import { handleTokenVerification } from '../Utils/jwt';
 import { NotificationDto } from '../dto/notificatoinDto';
 import { injectable, inject } from 'tsyringe';
 import { NotificationRepo } from '../Repository/notificationRepo';
+import { INotificationRepo } from '../Interfaces/repository/INotificationRepo';
 
 /**
     from  -> one writer (Admin | Teacher)
@@ -31,11 +32,49 @@ import { NotificationRepo } from '../Repository/notificationRepo';
     Teacher -> Student
 */
 
+export class UserNotificationService {
+  async distribute(
+    notification: INotification,
+    recipients: {
+      userId: Types.ObjectId;
+      userModel: string;
+    }[],
+  ) {
+    const bulkDocs: any[] = [];
+
+    for (const user of recipients) {
+      // Save DB record
+      bulkDocs.push({
+        userId: user.userId,
+        userModel: user.userModel,
+        notificationId: notification._id,
+        isRead: false,
+      });
+
+      const io = getIO();
+
+      // Emit via socket
+      io.to(`Admin-78hsKi67`).emit('notification:new', {
+        type: notification.type,
+        title: notification.title,
+        message: notification.message,
+        link: notification.link,
+        attachmentUrl: notification.attachmentUrl,
+        createdAt: notification.createdAt,
+      });
+    }
+
+    if (bulkDocs.length) {
+      await userNotificationModel.insertMany(bulkDocs);
+    }
+  }
+}
+
 @injectable()
 export class NotificationService implements INotificationService {
   constructor(
     @inject(NotificationRepo)
-    private notificationRepo: NotificationRepo,
+    private notificationRepo: INotificationRepo,
 
     private userNotificationService: UserNotificationService,
   ) {}
@@ -130,44 +169,6 @@ export class AdminNotificationSender implements INotificationSender {
     // Admin → Teacher | School | Center only
     if (payload.sender.model !== 'Admin') {
       throw new Error('Invalid sender type for AdminNotificationSender');
-    }
-  }
-}
-
-export class UserNotificationService {
-  async distribute(
-    notification: INotification,
-    recipients: {
-      userId: Types.ObjectId;
-      userModel: string;
-    }[],
-  ) {
-    const bulkDocs: any[] = [];
-
-    for (const user of recipients) {
-      // Save DB record
-      bulkDocs.push({
-        userId: user.userId,
-        userModel: user.userModel,
-        notificationId: notification._id,
-        isRead: false,
-      });
-
-      const io = getIO();
-
-      // Emit via socket
-      io.to(`Admin-78hsKi67`).emit('notification:new', {
-        type: notification.type,
-        title: notification.title,
-        message: notification.message,
-        link: notification.link,
-        attachmentUrl: notification.attachmentUrl,
-        createdAt: notification.createdAt,
-      });
-    }
-
-    if (bulkDocs.length) {
-      await userNotificationModel.insertMany(bulkDocs);
     }
   }
 }

@@ -25,8 +25,13 @@ import {
   ISchoolAcademicSubjectSer,
   ISchoolAcademicYear,
 } from '../Interfaces/services/ISchoolAcademicYear';
-import { AcademicYearRepository } from '../Repository/academicYear.Respository';
+import {
+  AcademicCourseRepository,
+  AcademicSubjectRepository,
+  AcademicYearRepository,
+} from '../Repository/academicYear.Respository';
 import { injectable, inject } from 'tsyringe';
+import { BatchRepository } from '../Repository/batchRespository';
 
 // Page level dependencies
 export interface IFullCourses {
@@ -124,14 +129,15 @@ export class SchoolYear implements ISchoolAcademicYear {
 
 //** SCHOOL ACADEMIC SUBJECT */
 
+@injectable()
 export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
-  private repo: ISchoolSubjectsRepo;
-  private batchRepo: IBatchRepository;
+  constructor(
+    @inject(AcademicSubjectRepository)
+    private repo: ISchoolSubjectsRepo,
 
-  constructor(s: ISchoolSubjectsRepo, b: IBatchRepository) {
-    this.repo = s;
-    this.batchRepo = b;
-  }
+    @inject(BatchRepository)
+    private batchRepo: IBatchRepository,
+  ) {}
 
   async addAcademicSubject(req: Request, res: Response): Promise<serviceReturnType> {
     const dtoData = await SchoolSubjectsDto.addNewSubject(req, res);
@@ -207,19 +213,24 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
   }
 }
 
+/**
+ *
+ */
 //** SCHOOL ACADEMIC COURSE */
 //!validation is pending;
 
+@injectable()
 export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
-  private courseRepo: ISchoolCoursesRepo;
-  private batchRepo: IBatchRepository;
-  private subjectRepo: ISchoolSubjectsRepo;
+  constructor(
+    @inject(AcademicCourseRepository)
+    private courseRepo: ISchoolCoursesRepo,
 
-  constructor(c: ISchoolCoursesRepo, b: IBatchRepository, s: ISchoolSubjectsRepo) {
-    this.courseRepo = c;
-    this.batchRepo = b;
-    this.subjectRepo = s;
-  }
+    @inject(BatchRepository)
+    private batchRepo: IBatchRepository,
+
+    @inject(AcademicSubjectRepository)
+    private subjectRepo: ISchoolSubjectsRepo,
+  ) {}
 
   async createNewCourse(req: Request, res: Response): Promise<serviceReturnType> {
     const { courseDto, courseMetaDto } = SchoolCoursesDto.addNewCourse(req, res);

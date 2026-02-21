@@ -1,4 +1,4 @@
-import { sign, verify, JwtPayload } from 'jsonwebtoken';
+import { sign, verify, JwtPayload, SignOptions } from 'jsonwebtoken';
 
 import { env } from '../Config';
 import { Types } from 'mongoose';
@@ -11,18 +11,34 @@ export interface IJwtPayload {
   userId: string | Types.ObjectId | null;
   tenantId?: string | null | Types.ObjectId;
   role?: JwtROle;
-} //update types, keep only necessary one;
+} // update types, keep only necessary one;
 
-export const generateAccessToken = (user: IJwtPayload) => {
-  return sign(user, env.JWT_ACCESS_TOKEN_SECRET, {
-    expiresIn: env.JWT_TOKEN_EXPIRES_IN,
-  });
+export const generateAccessToken = (user: IJwtPayload): string => {
+  if (!env.JWT_ACCESS_TOKEN_SECRET) {
+    throw new Error('Missing JWT refresh secret');
+  }
+
+  if (!env.JWT_TOKEN_EXPIRES_IN) {
+    throw new Error('Missing JWT refresh expires value');
+  }
+
+  return sign(user, env.JWT_ACCESS_TOKEN_SECRET!, {
+    expiresIn: env.JWT_TOKEN_EXPIRES_IN!,
+  } as SignOptions);
 };
 
 export const generateRefreshToken = (user: IJwtPayload): string => {
+  if (!env.JWT_REFRESH_TOKEN_SECRET) {
+    throw new Error('Missing JWT refresh secret');
+  }
+
+  if (!env.JWT_REFRESH_TOKEN_EXPIRES_IN) {
+    throw new Error('Missing JWT refresh expires value');
+  }
+
   return sign(user, env.JWT_REFRESH_TOKEN_SECRET, {
     expiresIn: env.JWT_REFRESH_TOKEN_EXPIRES_IN,
-  });
+  } as SignOptions);
 };
 
 export const verifyToken = (token: string, secret: string): JwtPayload | null => {
@@ -37,7 +53,7 @@ export const verifyToken = (token: string, secret: string): JwtPayload | null =>
 };
 
 export const refreshAccessToken = (refreshToken: string): string | null => {
-  const decoded = verifyToken(refreshToken, env.JWT_REFRESH_TOKEN_SECRET);
+  const decoded = verifyToken(refreshToken, env.JWT_REFRESH_TOKEN_SECRET!);
 
   const user: IJwtPayload = {
     userId: decoded?.userId,
@@ -54,7 +70,7 @@ export const refreshAccessToken = (refreshToken: string): string | null => {
 };
 
 export const jwtTokensGenerator = (userCred: IUser): TGeneratesTokens => {
-  const jwtData: IJwtPayload = { userId: userCred._id, tenantId: null, role: 'admin' };
+  const jwtData: IJwtPayload = { userId: userCred._id, tenantId: null, role: 'Admin' };
 
   const token = generateAccessToken(jwtData);
   const refreshToken = generateRefreshToken(jwtData);
@@ -84,7 +100,7 @@ export const handleJwtTokensGenerator = (
 export const handleTokenVerification = (req: Request, res: Response) => {
   let token = req.cookies.token;
 
-  let decoded = verifyToken(token, env.JWT_ACCESS_TOKEN_SECRET);
+  let decoded = verifyToken(token, env.JWT_ACCESS_TOKEN_SECRET!);
 
   if (decoded == null) {
     const refreshToken = req.session.refreshToken;
@@ -97,7 +113,7 @@ export const handleTokenVerification = (req: Request, res: Response) => {
 
     res.cookie('token', token, { httpOnly: true, maxAge: 10 * 60 * 1000, path: '/' });
 
-    decoded = verifyToken(token, env.JWT_ACCESS_TOKEN_SECRET);
+    decoded = verifyToken(token, env.JWT_ACCESS_TOKEN_SECRET!);
 
     if (!decoded) {
       throw new Error('AUTH_ERROR: Token refresh failed');

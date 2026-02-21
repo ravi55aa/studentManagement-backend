@@ -1,5 +1,4 @@
 import 'reflect-metadata';
-
 import http from 'http';
 import { initSocket } from './Config/socket.config';
 import { env } from './Config';

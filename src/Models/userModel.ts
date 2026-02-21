@@ -8,6 +8,7 @@ export interface IUser extends Document {
   profile?: null | string;
   tenantId?: string | null | Types.ObjectId;
   role?: string | null;
+  googleId?: string | null;
 }
 
 const adminSchema = new Schema<IUser>(
@@ -34,6 +35,8 @@ const adminSchema = new Schema<IUser>(
       type: String,
       required: true,
     },
+
+    googleId: { type: String, trim: true, unique: true },
 
     tenantId: {
       type: String,

@@ -2,6 +2,13 @@ import env from './env.config';
 import { Request, Response } from 'express';
 import axios, { AxiosResponse } from 'axios';
 import logger from '../Utils/logger';
+import userModel, { IUser } from '../Models/userModel';
+import {
+  handleJwtTokensGenerator,
+  handleTokenVerification,
+  IJwtPayload,
+  verifyToken,
+} from '../Utils/jwt';
 
 const REDIRECT_URI = 'http://localhost:4000/google/auth/callback';
 
@@ -59,7 +66,26 @@ export const handleAuthCallback = async (req: Request, res: Response) => {
       name: userInfo.data.name,
       picture: userInfo.data.picture,
     };
+
     req.session.user = user;
+    let userInDB = await userModel.findOne({ googleId: user.id }).lean<IUser>();
+    if (!userInDB) {
+      const newGUser: Partial<IUser> = {
+        name: user.name,
+        googleId: user.id,
+        profile: user.picture,
+        password: user.id,
+        email: user.email,
+        phone: userInfo.data.phone || 'NA',
+        role: 'Admin',
+      };
+
+      userInDB = await userModel.create(newGUser);
+    }
+
+    //generate the token
+    const payload: IJwtPayload = { userId: userInDB._id, tenantId: userInDB._id, role: 'Admin' };
+    handleJwtTokensGenerator(payload, req, res);
 
     res.redirect('http://localhost:5173/createSchool');
   } catch (error: any) {

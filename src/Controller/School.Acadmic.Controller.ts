@@ -31,10 +31,8 @@ export class SchoolAcademicController {
 
   async getASchoolAcademicYear(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody }: serviceReturnType = await this.academicService.getAAcademicYear(
-        req,
-        res,
-      );
+      const { status, resBody }: serviceReturnType =
+        await this.academicService.getAAcademicYear(req);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -44,7 +42,7 @@ export class SchoolAcademicController {
 
   async listAllAcademicYear(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this.academicService.listAllAcademicYears(req, res);
+      const { status, resBody } = await this.academicService.listAllAcademicYears();
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -64,7 +62,7 @@ export class SchoolAcademicController {
 
   async deleteAnSchoolAcademicYearById(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this.academicService.deleteAcademicYear(req, res);
+      const { status, resBody } = await this.academicService.deleteAcademicYear(req);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -108,10 +106,7 @@ export class SchoolAcademicSubjectController {
 
   async getASchoolAcademicSubject(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody }: serviceReturnType = await this.service.getAnAcademicSubject(
-        req,
-        res,
-      );
+      const { status, resBody }: serviceReturnType = await this.service.getAnAcademicSubject(req);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -131,7 +126,7 @@ export class SchoolAcademicSubjectController {
 
   async deleteASchoolAcademicSubject(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this.service.deleteAnAcademicSubject(req, res);
+      const { status, resBody } = await this.service.deleteAnAcademicSubject(req);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -167,7 +162,7 @@ export class SchoolAcademicCourseController {
       const courses_meta = await coursesMetaModel.find().lean();
 
       res.status(200).json({
-        message: 'fetched Sucessfullly',
+        message: 'fetched Successfully',
         success: true,
         error: null,
         data: { courses, courses_meta },
