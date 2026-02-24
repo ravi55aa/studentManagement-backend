@@ -64,7 +64,7 @@ router.delete('/document/delete', authMiddleware, (req, res, next) =>
 );
 
 //*get login
-router.get('/register', (req, res, next) => schoolController.getSchool(req, res, next));
+router.get('/login', (req, res, next) => schoolController.getSchool(req, res, next));
 
 /******************** Centers ********************/
 

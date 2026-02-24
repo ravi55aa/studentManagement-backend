@@ -15,10 +15,10 @@ export interface IDocumentRepository extends BaseRepository<IDocument> {
     data: IUploadedDoc[],
   ): Promise<Partial<IDocument> | null>;
 
-  deleteDocument(query: FilterQuery<Partial<IDocument>>): Promise<IDocument | null>;
+  deleteDocument(query: FilterQuery<Partial<IDocument>>): Promise<boolean>;
 
   deleteADocumentFile(
     filter: FilterQuery<Partial<IDocument>>,
-    pullQuery: FilterQuery<Partial<IDocument>>,
-  ): Promise<IDocument | null>;
+    pullQuery: Partial<IDocument>,
+  ): Promise<boolean>;
 }

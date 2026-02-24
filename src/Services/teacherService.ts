@@ -6,13 +6,14 @@ import { teacherModel } from '../Models';
 import { TeacherDTO, TeacherValidation } from '../dto/teacherDto';
 import { serviceReturnType } from '../Constants/interfaces';
 import { ITeacherService } from '../Interfaces/services/ITeacherService';
-import { TeacherResponseBody } from '../Utils/ResponseBody/teacher.responseBody';
-import { IGetAllTeachers } from '../Interfaces/Other/getAllTeachers';
+// import { TeacherResponseBody } from '../Utils/ResponseBody/teacher.responseBody';
+// import { IGetAllTeachers } from '../Interfaces/Other/getAllTeachers';
 import { ApiResponse } from '../Constants/apiResponse';
-import { TeacherType } from '../types/teacher.types';
+// import { TeacherType } from '../types/teacher.types';
 import logger from '../Utils/logger';
 import { injectable, inject } from 'tsyringe';
 import { TeacherRepository } from '../Repository/teacherRepo';
+import { TeacherMessage } from '../Constants/resposeMessages';
 
 @injectable()
 export class TeacherService implements ITeacherService {
@@ -21,109 +22,139 @@ export class TeacherService implements ITeacherService {
     private teacherRepo: TeacherRepository,
   ) {}
 
-  /* ----------------------------------------
-        CREATE TEACHER
-  ---------------------------------------- */
+  /* -------------CREATE TEACHER------------------- */
 
   public async createTeacherBio(req: Request, res: Response): Promise<serviceReturnType> {
-    //const dataToValidate = TeacherValidation.teacherBio(req,res);
+    try {
+      const data = TeacherDTO.createBio(req, res);
 
-    const data = TeacherDTO.createBio(req, res);
+      if (data.email && data.phone) {
+        const exists = await this.teacherRepo.findOne({
+          email: data.email,
+          phone: data.phone,
+        });
 
-    if (data.email && data.phone) {
-      const exists = await this.teacherRepo.findOne({
-        email: data.email,
-        phone: data.phone,
+        if (exists) {
+          return ApiResponse.badRequest(TeacherMessage.TeacherExists);
+        }
+      }
+
+      const created = await this.teacherRepo.create(data);
+
+      if (!created) {
+        return ApiResponse.failure(TeacherMessage.TeacherCreateFailed);
+      }
+
+      return ApiResponse.success(created, TeacherMessage.TeacherBioCreated);
+    } catch (error) {
+      logger.error('CreateTeacherBio failed', {
+        layer: 'service',
+        module: 'teacher',
+        error,
       });
 
-      if (exists) {
-        throw new Error('Class teacher already Exist with the provided credentials');
-      }
+      return ApiResponse.failure('Internal server error');
     }
-
-    const newTeacher: ITeacherBio | null = await this.teacherRepo.create(data);
-
-    const { status, resBody } = TeacherResponseBody.createTeacher<ITeacherBio>(newTeacher);
-
-    return { status, resBody };
   }
 
   public async createTeacher(req: Request, res: Response): Promise<serviceReturnType> {
-    TeacherValidation.teacher(req, res);
+    try {
+      TeacherValidation.teacher(req, res);
 
-    const data = await TeacherDTO.create(req);
+      const data = await TeacherDTO.create(req, res);
 
-    if (data.academicYearId) {
-      const exists = await this.teacherRepo.findOne({
-        academicYearId: data.academicYearId,
-        employmentStatus: 'active',
+      if (data.academicYearId) {
+        const exists = await this.teacherRepo.findOneProfessional({
+          academicYearId: data.academicYearId,
+          employmentStatus: 'active',
+        });
+
+        if (exists) {
+          return ApiResponse.badRequest(TeacherMessage.ClassTeacherAlreadyAssigned);
+        }
+
+        if (data.teacherId) {
+          await this.teacherRepo.softDelete(data.teacherId.toString());
+        }
+      }
+
+      const created = await this.teacherRepo.createProfessional(data);
+
+      if (!created) {
+        return ApiResponse.failure(TeacherMessage.TeacherCreateFailed);
+      }
+
+      return ApiResponse.success(created, TeacherMessage.TeacherCreated);
+    } catch (error) {
+      logger.error('CreateTeacher failed', {
+        layer: 'service',
+        module: 'teacher',
+        error,
       });
 
-      await this.teacherRepo.softDelete({ _id: data.teacherId! });
-
-      if (exists) {
-        throw new Error('Class teacher already assigned for this batch');
-      }
+      return ApiResponse.failure('Internal server error');
     }
-
-    const newTeacher: ITeacher | null = await this.teacherRepo.createProfessional(data);
-
-    const { status, resBody } = TeacherResponseBody.createTeacher<ITeacher>(newTeacher);
-
-    return { status, resBody };
   }
 
   public async getAllTeachers(): Promise<serviceReturnType> {
-    const allTeachers: IGetAllTeachers | null = await this.teacherRepo.getAllTeachers();
+    try {
+      const result = await this.teacherRepo.getAllTeachers();
 
-    const { teacherBio } = allTeachers;
+      if (!result || !result.teacherBio || result.teacherBio.length === 0) {
+        return ApiResponse.notFound(TeacherMessage.NoTeachersFound);
+      }
 
-    if (teacherBio.length <= 0) {
-      const { status, resBody } = ApiResponse.notFound('No Teachers Found, Kindly add teacher');
+      return ApiResponse.success(result, TeacherMessage.TeachersListed);
+    } catch (error) {
+      logger.error('GetAllTeachers failed', {
+        layer: 'service',
+        module: 'teacher',
+        error,
+      });
 
-      return { status, resBody };
+      return ApiResponse.failure('Internal server error');
     }
-
-    const { status, resBody } = TeacherResponseBody.getAllTeachers(allTeachers);
-
-    return { status, resBody };
   }
 
+  /* =================================================
+      GET TEACHER BY ID
+  ================================================= */
   public async getTeacherById(teacherId: string): Promise<serviceReturnType> {
-    if (!teacherId) {
-      const { status, resBody } = ApiResponse.badRequest('Teacher ID is required');
-      return { status, resBody };
+    try {
+      if (!Types.ObjectId.isValid(teacherId)) {
+        return ApiResponse.badRequest(TeacherMessage.InvalidTeacherId);
+      }
+
+      const bio = await this.teacherRepo.findById(teacherId);
+
+      const professional = await this.teacherRepo.findProfessionalById(teacherId);
+
+      if (!bio || !professional) {
+        return ApiResponse.notFound(TeacherMessage.TeacherNotFound);
+      }
+
+      return ApiResponse.success(
+        { teacherBio: bio, teacher: professional },
+        TeacherMessage.TeacherFetched,
+      );
+    } catch (error) {
+      logger.error('GetTeacherById failed', {
+        layer: 'service',
+        module: 'teacher',
+        error,
+      });
+
+      return ApiResponse.failure('Internal server error');
     }
-
-    const teacherBio = await this.teacherRepo.findById(teacherId);
-    const teacher = await this.teacherRepo.getTeacherById(teacherId);
-
-    if (!teacherBio || !teacher) {
-      const { status, resBody } = ApiResponse.notFound('Teacher not found');
-      return { status, resBody };
-    }
-
-    const combineTeacher: TeacherType = {
-      teacher: teacher,
-      teacherBio: teacherBio,
-    };
-
-    const { status, resBody } = TeacherResponseBody.createTeacher(combineTeacher);
-
-    return { status, resBody };
   }
 
+  /* =================================================
+      UPDATE TEACHER BIO
+  ================================================= */
   public async updateTeacherBio(teacherId: string, req: Request): Promise<serviceReturnType> {
     try {
       if (!Types.ObjectId.isValid(teacherId)) {
-        return ApiResponse.badRequest('Invalid Teacher ID');
-      }
-
-      /* ------EXTRACT BODY---------  */
-      const existingTeacher = await this.teacherRepo.findById(teacherId);
-
-      if (!existingTeacher) {
-        return ApiResponse.notFound('Teacher not found');
+        return ApiResponse.badRequest(TeacherMessage.InvalidTeacherId);
       }
 
       const updatePayload = TeacherDTO.updateBio(req);
@@ -131,24 +162,65 @@ export class TeacherService implements ITeacherService {
       const updated = await this.teacherRepo.updateBioById(teacherId, updatePayload);
 
       if (!updated) {
-        return ApiResponse.failure('Failed to update teacher');
+        return ApiResponse.notFound(TeacherMessage.TeacherNotFound);
       }
 
-      return ApiResponse.success(updated, 'Teacher bio updated successfully');
+      return ApiResponse.success(updated, TeacherMessage.TeacherUpdated);
     } catch (error) {
-      logger.error(error);
-      return ApiResponse.failure('Something went wrong');
+      logger.error('UpdateTeacherBio failed', {
+        layer: 'service',
+        module: 'teacher',
+        error,
+      });
+
+      return ApiResponse.failure('Internal server error');
     }
   }
 
+  /* =================================================
+      ASSIGN CLASS
+  ================================================= */
   public async assignClassToTeacher(req: Request): Promise<serviceReturnType> {
-    const dto = TeacherDTO.assignClass(req);
+    try {
+      const dto = TeacherDTO.assignClass(req);
 
-    const upTeacher = await this.teacherRepo.assignClass(dto.teacherId, dto.batchId);
+      const updated = await this.teacherRepo.assignClass(dto.teacherId, dto.batchId);
 
-    const { status, resBody } = TeacherResponseBody.createTeacher<ITeacher>(upTeacher);
+      if (!updated) {
+        return ApiResponse.failure(TeacherMessage.TeacherUpdateFailed);
+      }
 
-    return { status, resBody };
+      return ApiResponse.success(updated, TeacherMessage.ClassAssigned);
+    } catch (error) {
+      logger.error('AssignClass failed', {
+        layer: 'service',
+        module: 'teacher',
+        error,
+      });
+
+      return ApiResponse.failure('Internal server error');
+    }
+  }
+
+  /* ---------DELETE TEACHER (SOFT DELETE)---------- */
+  public async deleteTeacher(teacherId: string): Promise<serviceReturnType> {
+    try {
+      const deleted = await this.teacherRepo.softDelete(teacherId);
+
+      if (!deleted) {
+        return ApiResponse.notFound(TeacherMessage.TeacherNotFound);
+      }
+
+      return ApiResponse.success(null, TeacherMessage.TeacherDeleted);
+    } catch (error) {
+      logger.error('DeleteTeacher failed', {
+        layer: 'service',
+        module: 'teacher',
+        error,
+      });
+
+      return ApiResponse.failure('Internal server error');
+    }
   }
 
   /* ----------------------------------------
@@ -191,24 +263,6 @@ export class TeacherService implements ITeacherService {
     }
 
     return ApiResponse.success(teachers, 'Unassigned teachers fetched successfully');
-  }
-
-  /* ---------DELETE TEACHER (SOFT DELETE)---------- */
-  static async deleteTeacher(teacherId: string): Promise<void> {
-    if (!Types.ObjectId.isValid(teacherId)) {
-      throw new Error('Invalid teacher id');
-    }
-
-    const deleted = await teacherModel.findByIdAndUpdate(teacherId, {
-      $set: {
-        employmentStatus: 'terminated',
-        dateOfLeaving: new Date(),
-      },
-    });
-
-    if (!deleted) {
-      throw new Error('Teacher not found');
-    }
   }
 
   /* ----------------------------------------

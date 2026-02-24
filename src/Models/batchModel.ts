@@ -1,9 +1,15 @@
+//Add pre, if batch already exist, while promoting
+
 import { model, Types, Schema, Document, ObjectId } from 'mongoose';
+import { string } from 'zod';
 
 export interface IBatches extends Document {
   tenantId: ObjectId | null;
   adminId: ObjectId | null;
+
+  modelType: 'School' | 'Centers';
   center: Types.ObjectId | null;
+
   academicYear: ObjectId | null;
   batchCounselor: ObjectId | null;
 
@@ -45,9 +51,15 @@ const batchSchema = new Schema<IBatches>(
       trim: true,
     },
 
+    modelType: {
+      type: String,
+      enum: ['School', 'Centers'],
+      default: 'School',
+    },
+
     center: {
       type: Types.ObjectId,
-      ref: 'Centers ',
+      refPath: 'modelType',
       default: null,
     },
 

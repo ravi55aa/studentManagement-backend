@@ -1,4 +1,3 @@
-import { FilterQuery } from 'mongoose';
 import { ITeacher, ITeacherBio } from '../../Models/teacherModel';
 import { BaseRepository } from '../../Repository/BaseRepository';
 import { IGetAllTeachers } from '../Other/getAllTeachers';
@@ -6,13 +5,13 @@ import { IGetAllTeachers } from '../Other/getAllTeachers';
 export interface ITeacherRepo extends BaseRepository<ITeacherBio> {
   createProfessional(data: Partial<ITeacher>): Promise<ITeacher | null>;
 
-  softDelete(query: FilterQuery<Partial<ITeacher>>): Promise<boolean>;
+  getAllTeachers(): Promise<IGetAllTeachers | null>;
 
-  getAllTeachers(): Promise<IGetAllTeachers>;
-
-  getTeacherById(teacherId: string): Promise<ITeacher | null>;
+  // getTeacherById(teacherId: string): Promise<ITeacher | null>;
 
   assignSubjects(teacherId: string, subjectIds: string[]): Promise<ITeacher | null>;
+
+  softDelete(teacherId: string): Promise<boolean>;
 
   assignClass(teacherId: string, batchId: string): Promise<ITeacher | null>;
 

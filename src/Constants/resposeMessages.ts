@@ -34,6 +34,59 @@ export enum AuthMessage {
   TokenRefreshed = 'Token refreshed',
 }
 
+export enum AcademicCourseMessage {
+  // Errors
+  InvalidCourseId = 'Invalid course ID',
+  CourseCreateFailed = 'Failed to create course',
+  CourseMetaCreateFailed = 'Failed to create course metadata',
+  CourseNotFound = 'Academic course not found',
+  NoCoursesFound = 'No academic courses found',
+
+  AcademicYearNotFound = 'Academic year not found',
+  SubjectNotFound = 'One or more subjects not found',
+
+  // Success
+  CourseCreated = 'Academic course created successfully',
+  CoursesListed = 'Academic courses fetched successfully',
+  CourseFetched = 'Academic course fetched successfully',
+  CourseDeleted = 'Academic course deleted successfully',
+  CourseUpdated = 'Academic course updated successfully',
+}
+
+export enum AcademicSubjectMessage {
+  // Errors
+  InvalidSubjectId = 'Invalid subject ID',
+  SubjectNotFound = 'Academic subject not found',
+  SubjectCreateFailed = 'Failed to create subject',
+  SubjectUpdateFailed = 'Failed to update subject',
+  SubjectDeleteFailed = 'Failed to delete subject',
+  NoSubjectsFound = 'No academic subjects found',
+
+  // Success
+  SubjectCreated = 'Academic subject created successfully',
+  SubjectUpdated = 'Academic subject updated successfully',
+  SubjectDeleted = 'Academic subject deleted successfully',
+  SubjectFetched = 'Academic subject fetched successfully',
+  SubjectsListed = 'Academic subjects fetched successfully',
+}
+
+export enum AcademicYearMessage {
+  // Errors
+  InvalidYearId = 'Invalid academic year ID',
+  YearNotFound = 'Academic year not found',
+  YearCreateFailed = 'Failed to create academic year',
+  YearUpdateFailed = 'Failed to update academic year',
+  YearDeleteFailed = 'Failed to delete academic year',
+  NoYearsFound = 'No academic years found',
+
+  // Success
+  YearCreated = 'Academic year created successfully',
+  YearUpdated = 'Academic year updated successfully',
+  YearDeleted = 'Academic year deleted successfully',
+  YearFetched = 'Academic year fetched successfully',
+  YearsListed = 'Academic years fetched successfully',
+}
+
 /**
  * User profile and account related messages
  */
@@ -68,31 +121,33 @@ export enum CategoryMessage {
  * Category management related messages
  */
 export enum DocumentMessage {
-  // Error messages
-  DocumentExists = 'Document already exists',
+  // Error
   DocumentNotFound = 'Document not found',
+  DocumentUploadFailed = 'Failed to upload document',
+  DocumentUpdateFailed = 'Failed to update document',
+  FileNotFound = 'File not found in document',
 
-  // Success messages
-  DocumentAdded = 'New Document created',
-  DocumentUpdated = 'Document updated',
-  DocumentListed = 'Document has been listed',
-  DocumentUnlisted = 'Document has been unlisted',
+  // Success
+  DocumentUploaded = 'Document uploaded successfully',
+  DocumentUpdated = 'Document updated successfully',
+  DocumentDeleted = 'Document deleted successfully',
+  FileDeleted = 'File deleted successfully',
 }
 
 /**
  * Address  related messages
  */
 export enum AddressMessage {
-  // Error messages
-  AddressExists = 'Address already exists',
+  // Error
   AddressNotFound = 'Address not found',
+  AddressCreateFailed = 'Failed to create address',
 
-  // Success messages
-  AddressAdded = 'New Address created',
-  AddressUpdated = 'Address updated',
-  AddressListed = 'Address has been listed',
+  // Success
+  AddressCreated = 'Address created successfully',
+  AddressUpdated = 'Address updated successfully',
+  AddressFetched = 'Address fetched successfully',
+  AddressListed = 'Addresses fetched successfully',
 }
-
 /**
  * Course management and enrollment related messages
  */
@@ -234,4 +289,120 @@ export enum TopicMessage {
   //Success Messages
   TopicAdded = 'Topic added',
   TopicUpdated = 'Topic updated',
+}
+
+export enum FeesMessage {
+  // Error messages
+  FeesExists = 'Fees record already exists',
+  FeesNotFound = 'Fees record not found',
+
+  // Success messages
+  FeesAdded = 'New fees record created',
+  FeesUpdated = 'Fees record updated',
+  FeesListed = 'Fees record has been listed',
+  FeesUnlisted = 'Fees record has been unlisted',
+}
+
+export enum BatchMessage {
+  // ======================
+  // Error Messages
+  // ======================
+  BatchExists = 'Batch already exists',
+  BatchNotFound = 'Batch not found',
+  BatchCreateFailed = 'Failed to create batch',
+  BatchUpdateFailed = 'Failed to update batch',
+  BatchDeleteFailed = 'Failed to delete batch',
+
+  BatchAlreadyHasTeacher = 'Batch already has a class teacher',
+  TeacherAlreadyAssigned = 'Teacher is already assigned to another batch',
+
+  // ======================
+  // Success Messages
+  // ======================
+  BatchAdded = 'New batch created successfully',
+  BatchUpdated = 'Batch updated successfully',
+  BatchDeleted = 'Batch deleted successfully',
+  BatchFetched = 'Batch fetched successfully',
+  BatchListed = 'Batches fetched successfully',
+  BatchUnlisted = 'Batch has been unlisted',
+  TeacherAssigned = 'Teacher assigned successfully',
+}
+
+export enum TeacherMessage {
+  // ======================
+  // Error Messages
+  // ======================
+
+  TeacherExists = 'Teacher already exists with provided credentials',
+  TeacherNotFound = 'Teacher not found',
+  InvalidTeacherId = 'Invalid teacher ID',
+
+  TeacherCreateFailed = 'Failed to create teacher',
+  TeacherUpdateFailed = 'Failed to update teacher',
+  TeacherDeleteFailed = 'Failed to delete teacher',
+
+  ClassTeacherAlreadyAssigned = 'Another teacher is already assigned as class teacher for this batch',
+
+  TeacherAlreadyAssignedToBatch = 'Teacher is already assigned to another batch',
+
+  SubjectAssignmentFailed = 'Failed to assign subjects to teacher',
+  SubjectRemovalFailed = 'Failed to remove subject from teacher',
+
+  NoTeachersFound = 'No teachers found',
+  NoUnassignedTeachersFound = 'No unassigned teachers found',
+
+  // ======================
+  // Success Messages
+  // ======================
+
+  TeacherBioCreated = 'Teacher bio created successfully',
+  TeacherCreated = 'Teacher created successfully',
+  TeacherUpdated = 'Teacher updated successfully',
+  TeacherDeleted = 'Teacher deleted successfully',
+
+  TeacherFetched = 'Teacher fetched successfully',
+  TeachersListed = 'Teachers fetched successfully',
+
+  ClassAssigned = 'Class assigned to teacher successfully',
+
+  SubjectsAssigned = 'Subjects assigned successfully',
+  SubjectRemoved = 'Subject removed successfully',
+
+  UnassignedTeachersFetched = 'Unassigned teachers fetched successfully',
+}
+
+export enum CenterMessage {
+  // Error messages
+  CenterExists = 'Center already exists',
+  CenterNotFound = 'Center not found',
+
+  // Success messages
+  CenterAdded = 'New center created',
+  CenterUpdated = 'Center updated',
+  CenterListed = 'Center has been listed',
+  CenterUnlisted = 'Center has been unlisted',
+  CenterDeleted = 'Center deleted successfully',
+}
+
+export enum SubjectMessage {
+  // Error messages
+  SubjectExists = 'Subject already exists',
+  SubjectNotFound = 'Subject not found',
+
+  // Success messages
+  SubjectAdded = 'New subject created',
+  SubjectUpdated = 'Subject updated',
+  SubjectListed = 'Subject has been listed',
+  SubjectUnlisted = 'Subject has been unlisted',
+}
+
+export enum NotificationMessage {
+  // Error messages
+  NotificationNotFound = 'Notification not found',
+
+  // Success messages
+  NotificationCreated = 'Notification created successfully',
+  NotificationUpdated = 'Notification updated successfully',
+  NotificationDeleted = 'Notification deleted successfully',
+  NotificationSent = 'Notification sent successfully',
 }

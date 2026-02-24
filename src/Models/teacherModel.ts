@@ -106,7 +106,8 @@ export interface ITeacher {
   department: EDepartment[] | null;
   dateOfLeaving?: Date | null;
   dateOfJoining: Date | null;
-  centerId: ObjectId | null;
+  center: ObjectId | null;
+  modelType: 'School' | 'Centers';
 }
 
 const TeacherSchema: Schema = new Schema(
@@ -151,9 +152,14 @@ const TeacherSchema: Schema = new Schema(
     ],
     dateOfJoining: { type: Date, required: true },
     dateOfLeaving: { type: Date, default: null },
-    centerId: {
+    modelType: {
+      type: String,
+      enum: ['School', 'Centers'],
+      default: 'School',
+    },
+    center: {
       type: Schema.Types.ObjectId,
-      ref: 'Centers',
+      refPath: 'modelType',
       required: true,
     },
   },

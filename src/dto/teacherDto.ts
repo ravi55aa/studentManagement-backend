@@ -80,9 +80,11 @@ export class TeacherDTO {
     return { docs, profile };
   }
 
-  static async create(req: Request): Promise<Partial<ITeacher>> {
+  static async create(req: Request, res: Response): Promise<Partial<ITeacher>> {
     const data: Partial<ITeacher> = req.body;
+    const decoded = handleTokenVerification(req, res);
     const { id } = req.params;
+
     const dto = {
       teacherId: new mongoose.Types.ObjectId(id!),
       academicYearId: data.academicYearId!,
@@ -93,10 +95,11 @@ export class TeacherDTO {
       department: data.department ?? [],
       dateOfJoining: data.dateOfJoining!,
       dateOfLeaving: data?.dateOfLeaving ?? null,
-      centerId: data.centerId!,
+      modelType: data.modelType!,
+      center: data.modelType == 'School' ? decoded.tenantId : data.center!,
     };
 
-    const yearDoc = await academicYearModel.findOne({ code: dto.academicYearId! });
+    const yearDoc = await academicYearModel.findOne({ code: data.academicYearId! });
 
     if (yearDoc?.id) {
       dto.academicYearId = yearDoc._id;
@@ -164,7 +167,8 @@ export class TeacherValidation {
       designation: data.designation!,
       department: data.department ?? [],
       dateOfJoining: data.dateOfJoining!,
-      centerId: data.centerId!,
+      modelType: data.modelType!,
+      center: data.modelType == 'School' ? data.centerId! : data.centerId!,
     };
 
     //MOVE THIS DB-CODE into repository

@@ -6,6 +6,8 @@ import { DocumentsDto } from '../dto/schoolDTO';
 import { SchoolResponseBody } from '../Utils/ResponseBody/school.responce.body';
 import { inject, injectable } from 'tsyringe';
 import { DocumentRepository } from '../Repository/documentRepository';
+import { ApiResponse } from '../Constants/apiResponse';
+import { DocumentMessage } from '../Constants/resposeMessages';
 
 @injectable()
 export class DocumentService implements IDocumentService {
@@ -14,79 +16,91 @@ export class DocumentService implements IDocumentService {
     private documentRepository: DocumentRepository,
   ) {}
 
-  public async uploadDocs(data: Partial<IDocument>): Promise<IDocument | null> {
-    const uploadedData = await this.documentRepository.uploadDocuments(data);
-    return uploadedData;
+  //  Upload Documents
+  async uploadDocs(data: Partial<IDocument>): Promise<serviceReturnType> {
+    try {
+      const uploaded = await this.documentRepository.uploadDocuments(data);
+
+      if (!uploaded) {
+        return ApiResponse.failure(DocumentMessage.DocumentUploadFailed);
+      }
+
+      return ApiResponse.success(uploaded, DocumentMessage.DocumentUploaded);
+    } catch (error) {
+      console.error('Error uploading document:', error);
+      return ApiResponse.failure('Internal server error');
+    }
   }
 
-  public async updateDocs(req: Request, res: Response): Promise<serviceReturnType> {
-    const { dtoData, dtoQuery } = DocumentsDto.updateDoc(req, res);
+  // Update Document
+  async updateDocs(req: Request, res: Response): Promise<serviceReturnType> {
+    try {
+      const { dtoData, dtoQuery } = DocumentsDto.updateDoc(req, res);
 
-    const uploadedData: Partial<IDocument | null> = await this.documentRepository.updateDocuments(
-      dtoQuery,
-      dtoData,
-    );
+      const updated = await this.documentRepository.updateDocuments(dtoQuery, dtoData);
 
-    const respBodyOdds = {
-      message: 'Successfully updated',
-      error: 'Something went error',
-      errMessage: 'Cant update the document',
-      statusCode: 200,
-    };
-    const { status, resBody } = SchoolResponseBody.forUpdate<Partial<IDocument>>(
-      uploadedData,
-      respBodyOdds.error,
-      respBodyOdds.message,
-      respBodyOdds.errMessage,
-      respBodyOdds.statusCode,
-    );
+      if (!updated) {
+        return ApiResponse.notFound(DocumentMessage.DocumentNotFound);
+      }
 
-    return { status, resBody };
+      return ApiResponse.success(updated, DocumentMessage.DocumentUpdated);
+    } catch (error) {
+      console.error('Error updating document:', error);
+      return ApiResponse.failure('Internal server error');
+    }
   }
 
-  public async update_NewAddition_Documents(req: Request): Promise<serviceReturnType> {
-    const { dtoData, dtoQuery } = DocumentsDto.updateDocV2(req);
+  //  Update New Addition Documents
+  async update_NewAddition_Documents(req: Request): Promise<serviceReturnType> {
+    try {
+      const { dtoData, dtoQuery } = DocumentsDto.updateDocV2(req);
 
-    const uploadedData: Partial<IDocument | null> =
-      await this.documentRepository.updateNEWUploadDocuments(dtoQuery, dtoData);
+      const updated = await this.documentRepository.updateNEWUploadDocuments(dtoQuery, dtoData);
 
-    const respBodyOdds = {
-      message: 'Successfully updated',
-      error: 'Something went error',
-      errMessage: 'Cant update the document',
-      statusCode: 200,
-    };
+      if (!updated) {
+        return ApiResponse.notFound(DocumentMessage.DocumentNotFound);
+      }
 
-    const { status, resBody } = SchoolResponseBody.forUpdate<Partial<IDocument>>(
-      uploadedData,
-      respBodyOdds.error,
-      respBodyOdds.message,
-      respBodyOdds.errMessage,
-      respBodyOdds.statusCode,
-    );
-
-    return { status, resBody };
+      return ApiResponse.success(updated, DocumentMessage.DocumentUpdated);
+    } catch (error) {
+      console.error('Error updating additional documents:', error);
+      return ApiResponse.failure('Internal server error');
+    }
   }
 
-  public async deleteDocument(req: Request, res: Response): Promise<serviceReturnType> {
-    const query = DocumentsDto.deleteDoc(req, res);
+  //  Delete Entire Document
+  async deleteDocument(req: Request, res: Response): Promise<serviceReturnType> {
+    try {
+      const query = DocumentsDto.deleteDoc(req, res);
 
-    const docsDel = await this.documentRepository.deleteDocument(query);
+      const deleted = await this.documentRepository.deleteDocument(query);
 
-    const { status, resBody } =
-      SchoolResponseBody.handleDeleteOneResBody<Partial<IDocument>>(docsDel);
+      if (!deleted) {
+        return ApiResponse.notFound(DocumentMessage.DocumentNotFound);
+      }
 
-    return { status, resBody };
+      return ApiResponse.success(null, DocumentMessage.DocumentDeleted);
+    } catch (error) {
+      console.error('Error deleting document:', error);
+      return ApiResponse.failure('Internal server error');
+    }
   }
 
-  public async deleteAFile(req: Request): Promise<serviceReturnType> {
-    const { filterQuery, pullQuery } = DocumentsDto.removeOneDocument(req);
+  //  Delete Single File From Document
+  async deleteAFile(req: Request): Promise<serviceReturnType> {
+    try {
+      const { filterQuery, pullQuery } = DocumentsDto.removeOneDocument(req);
 
-    const docsDel = await this.documentRepository.deleteADocumentFile(filterQuery, pullQuery);
+      const deleted = await this.documentRepository.deleteADocumentFile(filterQuery, pullQuery);
 
-    const { status, resBody } =
-      SchoolResponseBody.handleDeleteOneResBody<Partial<IDocument>>(docsDel);
+      if (!deleted) {
+        return ApiResponse.notFound(DocumentMessage.FileNotFound);
+      }
 
-    return { status, resBody };
+      return ApiResponse.success(null, DocumentMessage.FileDeleted);
+    } catch (error) {
+      console.error('Error deleting document file:', error);
+      return ApiResponse.failure('Internal server error');
+    }
   }
 }

@@ -16,7 +16,12 @@ import coursesModel, {
   IAcademicCourseMeta,
 } from '../Models/courses.model';
 import { injectable } from 'tsyringe';
+import logger from '../Utils/logger';
 
+/**
+ *
+ * ACADEMIC-YEAR
+ */
 @injectable()
 export class AcademicYearRepository
   extends BaseRepository<IAcademicYear>
@@ -26,22 +31,90 @@ export class AcademicYearRepository
     super(academicYearModel);
   }
 
-  async addAcademicYear(centerData: Partial<IAcademicYear>): Promise<IAcademicYear | null> {
-    return await academicYearModel.create(centerData);
+  /* =========CREATE YEAR============ */
+  async addAcademicYear(data: Partial<IAcademicYear>): Promise<IAcademicYear | null> {
+    try {
+      return await this.create(data);
+    } catch (error) {
+      logger.error('AddAcademicYear failed', {
+        layer: 'repository',
+        module: 'academicYear',
+        error,
+      });
+      return null;
+    }
   }
 
+  /* ===========GET ALL YEARS============== */
   async getAllAcademicYear(): Promise<IAcademicYear[]> {
-    return await academicYearModel.find().lean<IAcademicYear[]>();
+    try {
+      return await this.model.find().lean<IAcademicYear[]>();
+    } catch (error) {
+      logger.error('GetAllAcademicYear failed', {
+        layer: 'repository',
+        module: 'academicYear',
+        error,
+      });
+      return [];
+    }
   }
 
+  /* ==========UPDATE YEAR=============*/
   async updateYear(
     query: FilterQuery<Partial<IAcademicYear>>,
     data: Partial<IAcademicYear>,
   ): Promise<IAcademicYear | null> {
-    return await academicYearModel.updateOne(query, data).lean<IAcademicYear>();
+    try {
+      if (!query || Object.keys(query).length === 0) {
+        return null;
+      }
+
+      return await this.model
+        .findOneAndUpdate(
+          query,
+          { $set: data },
+          {
+            new: true,
+            runValidators: true,
+          },
+        )
+        .lean<IAcademicYear>();
+    } catch (error) {
+      logger.error('UpdateYear failed', {
+        layer: 'repository',
+        module: 'academicYear',
+        error,
+      });
+      return null;
+    }
+  }
+
+  /* ===========DELETE YEAR==============*/
+  async deleteYear(id: string): Promise<boolean> {
+    try {
+      if (!id) return false;
+
+      const result = await this.model.deleteOne({
+        _id: id,
+      });
+
+      return result.deletedCount === 1;
+    } catch (error) {
+      logger.error('DeleteYear failed', {
+        layer: 'repository',
+        module: 'academicYear',
+        error,
+      });
+      return false;
+    }
   }
 }
 
+/**
+ *
+ * ACADEMIC-SUBJECT
+ */
+@injectable()
 export class AcademicSubjectRepository
   extends BaseRepository<IAcademicSubject>
   implements ISchoolSubjectsRepo
@@ -50,22 +123,90 @@ export class AcademicSubjectRepository
     super(academicSubjectsModel);
   }
 
-  async addSubject(payload: IAcademicSubject): Promise<IAcademicSubject | null> {
-    return await academicSubjectsModel.create(payload);
+  /* ==============CREATE SUBJECT============= */
+  async addSubject(payload: Partial<IAcademicSubject>): Promise<IAcademicSubject | null> {
+    try {
+      return await this.create(payload);
+    } catch (error) {
+      logger.error('AddSubject failed', {
+        layer: 'repository',
+        module: 'academicSubject',
+        error,
+      });
+      return null;
+    }
   }
 
-  async getAllSubjects(): Promise<IAcademicSubject[]> {
-    return await academicSubjectsModel.find().sort({ createdAt: -1 }).lean<IAcademicSubject[]>();
+  /* ==========GET ALL SUBJECTS (WITH FILTER)=========== */
+  async getAllSubjects(
+    query: FilterQuery<Partial<IAcademicSubject>> = {},
+  ): Promise<IAcademicSubject[]> {
+    try {
+      return await this.model.find(query).sort({ createdAt: -1 }).lean<IAcademicSubject[]>();
+    } catch (error) {
+      logger.error('GetAllSubjects failed', {
+        layer: 'repository',
+        module: 'academicSubject',
+        error,
+      });
+      return [];
+    }
   }
 
+  /* ==============UPDATE SUBJECT============= */
   async updateSubject(
     query: FilterQuery<Partial<IAcademicSubject>>,
     data: Partial<IAcademicSubject>,
   ): Promise<IAcademicSubject | null> {
-    return await academicSubjectsModel.updateOne(query, data).lean<IAcademicSubject>();
+    try {
+      if (!query || Object.keys(query).length === 0) {
+        return null;
+      }
+
+      return await this.model
+        .findOneAndUpdate(
+          query,
+          { $set: data },
+          {
+            new: true,
+            runValidators: true,
+          },
+        )
+        .lean<IAcademicSubject>();
+    } catch (error) {
+      logger.error('UpdateSubject failed', {
+        layer: 'repository',
+        module: 'academicSubject',
+        error,
+      });
+      return null;
+    }
+  }
+
+  /* ===============DELETE SUBJECT===============*/
+  async deleteSubject(id: string): Promise<boolean> {
+    try {
+      if (!id) return false;
+
+      const result = await this.model.deleteOne({ _id: id });
+
+      return result.deletedCount === 1;
+    } catch (error) {
+      logger.error('DeleteSubject failed', {
+        layer: 'repository',
+        module: 'academicSubject',
+        error,
+      });
+      return false;
+    }
   }
 }
 
+/**
+ *
+ * ACADEMIC-COURSE
+ */
+@injectable()
 export class AcademicCourseRepository
   extends BaseRepository<IAcademicCourse>
   implements ISchoolCoursesRepo
@@ -74,64 +215,163 @@ export class AcademicCourseRepository
     super(coursesModel);
   }
 
-  async addNewCourse(
-    model: string,
-    payload: Partial<IAcademicCourse | IAcademicCourseMeta>,
-  ): Promise<IAcademicCourse | IAcademicCourseMeta | null> {
-    if (model == 'AcademicCourse') {
-      return await coursesModel.create(payload);
-    } else {
-      return await coursesMetaModel.create(payload);
+  /* ==============CREATE COURSE=============== */
+  async createCourse(payload: Partial<IAcademicCourse>): Promise<IAcademicCourse | null> {
+    try {
+      return await this.model.create(payload);
+    } catch (error) {
+      logger.error('CreateCourse failed', {
+        layer: 'repository',
+        module: 'academicCourse',
+        error,
+      });
+      return null;
     }
   }
 
-  async addNewCourseMeta(
+  /* ==============CREATE COURSE META=============== */
+  async createCourseMeta(
     payload: Partial<IAcademicCourseMeta>,
   ): Promise<IAcademicCourseMeta | null> {
-    return await coursesMetaModel.create(payload);
-  }
-
-  async getAllCourses<T>(model: string, query: FilterQuery<Partial<T>>): Promise<T[]> {
-    if (model == 'AcademicCourse') {
-      return await coursesModel.find(query).lean<T[]>();
-    } else {
-      return await coursesMetaModel.find(query).lean<T[]>();
+    try {
+      return await coursesMetaModel.create(payload);
+    } catch (error) {
+      logger.error('CreateCourseMeta failed', {
+        layer: 'repository',
+        module: 'academicCourse',
+        error,
+      });
+      return null;
     }
   }
 
-  async deleteCourse<T>(model: string, query: FilterQuery<Partial<T>>): Promise<T | null> {
-    if (model == 'AcademicCourse') {
-      return await coursesModel.deleteOne(query).lean<T>();
-    } else {
-      return await coursesMetaModel.deleteOne(query).lean<T>();
+  /* ==============GET ALL COURSES=============== */
+  async getAllCourses(query: FilterQuery<Partial<IAcademicCourse>>): Promise<IAcademicCourse[]> {
+    try {
+      return await this.model.find(query).lean<IAcademicCourse[]>();
+    } catch (error) {
+      logger.error('GetAllCourses failed', {
+        layer: 'repository',
+        module: 'academicCourse',
+        error,
+      });
+      return [];
     }
   }
 
-  async findOneFromCourse(
+  /* ==============GET ALL META=============== */
+  async getAllCourseMeta(
+    query: FilterQuery<Partial<IAcademicCourseMeta>>,
+  ): Promise<IAcademicCourseMeta[]> {
+    try {
+      return await coursesMetaModel.find(query).lean<IAcademicCourseMeta[]>();
+    } catch (error) {
+      logger.error('GetAllCourseMeta failed', {
+        layer: 'repository',
+        module: 'academicCourse',
+        error,
+      });
+      return [];
+    }
+  }
+
+  /* ==============FIND ONE COURSE=============== */
+  async findOneCourse(
     query: FilterQuery<Partial<IAcademicCourse>>,
   ): Promise<IAcademicCourse | null> {
-    return await coursesModel.findOne(query).populate('academicYear').lean<IAcademicCourse>();
-  } //later update
-  // ["batches","subjects"] = ["batches","subjects","coordinators","attachment(doubt)"];
-
-  async findOneFromCourseMeta(
-    query: FilterQuery<Partial<IAcademicCourseMeta>>,
-  ): Promise<IAcademicCourseMeta | null> {
-    return await coursesMetaModel
-      .findOne(query)
-      .populate('batches subjects')
-      .lean<IAcademicCourseMeta>();
+    try {
+      return await this.model.findOne(query).populate('academicYear').lean<IAcademicCourse>();
+    } catch (error) {
+      logger.error('FindOneCourse failed', {
+        layer: 'repository',
+        module: 'academicCourse',
+        error,
+      });
+      return null;
+    }
   }
 
+  /* ==============FIND ONE META=============== */
+  async findOneCourseMeta(
+    query: FilterQuery<Partial<IAcademicCourseMeta>>,
+  ): Promise<IAcademicCourseMeta | null> {
+    try {
+      return await coursesMetaModel.findOne(query).lean<IAcademicCourseMeta>();
+    } catch (error) {
+      logger.error('FindOneCourseMeta failed', {
+        layer: 'repository',
+        module: 'academicCourse',
+        error,
+      });
+      return null;
+    }
+  }
+
+  /* ==============UPDATE COURSE=============== */
   async updateCourse(
-    model: string,
-    query: FilterQuery<Partial<IAcademicCourse | IAcademicCourseMeta>>,
-    data: Partial<IAcademicCourse | IAcademicCourseMeta>,
-  ): Promise<IAcademicCourse | IAcademicCourseMeta | null> {
-    if (model == 'AcademicCourse') {
-      return await coursesModel.updateOne(query, data).lean<IAcademicCourse>();
-    } else {
-      return await coursesMetaModel.updateOne(query, data).lean<IAcademicCourseMeta>();
+    query: FilterQuery<Partial<IAcademicCourse>>,
+    data: Partial<IAcademicCourse>,
+  ): Promise<IAcademicCourse | null> {
+    try {
+      return await this.model
+        .findOneAndUpdate(query, { $set: data }, { new: true, runValidators: true })
+        .lean<IAcademicCourse>();
+    } catch (error) {
+      logger.error('UpdateCourse failed', {
+        layer: 'repository',
+        module: 'academicCourse',
+        error,
+      });
+      return null;
+    }
+  }
+
+  /* ==============UPDATE META=============== */
+  async updateCourseMeta(
+    query: FilterQuery<Partial<IAcademicCourseMeta>>,
+    data: Partial<IAcademicCourseMeta>,
+  ): Promise<IAcademicCourseMeta | null> {
+    try {
+      return await coursesMetaModel
+        .findOneAndUpdate(query, { $set: data }, { new: true, runValidators: true })
+        .lean<IAcademicCourseMeta>();
+    } catch (error) {
+      logger.error('UpdateCourseMeta failed', {
+        layer: 'repository',
+        module: 'academicCourse',
+        error,
+      });
+      return null;
+    }
+  }
+
+  /* ==============DELETE COURSE=============== */
+  async deleteCourse(query: FilterQuery<Partial<IAcademicCourse>>): Promise<boolean> {
+    try {
+      const result = await this.model.deleteOne(query);
+      return result.deletedCount === 1;
+    } catch (error) {
+      logger.error('DeleteCourse failed', {
+        layer: 'repository',
+        module: 'academicCourse',
+        error,
+      });
+      return false;
+    }
+  }
+
+  /* ==============DELETE META=============== */
+  async deleteCourseMeta(query: FilterQuery<Partial<IAcademicCourseMeta>>): Promise<boolean> {
+    try {
+      const result = await coursesMetaModel.deleteOne(query);
+      return result.deletedCount === 1;
+    } catch (error) {
+      logger.error('DeleteCourseMeta failed', {
+        layer: 'repository',
+        module: 'academicCourse',
+        error,
+      });
+      return false;
     }
   }
 }

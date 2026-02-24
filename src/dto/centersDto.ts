@@ -4,13 +4,14 @@ import { handleTokenVerification } from '../Utils/jwt';
 
 export class CenterDto {
   static handleNewCenterDto(req: Request, res: Response) {
-    const { name, code, email, phone, totalCapacity, isMain, isActive } = req.body;
+    const { name, code, email, phone, totalCapacity, isMain, isActive, userModel, headInCharge } =
+      req.body;
 
     const decodedToken = handleTokenVerification(req, res);
 
     const newCenterDto: Partial<ICenter> = {
       name,
-      code,
+      code: 'CEN-' + code,
       email,
       phone,
       totalCapacity,
@@ -20,7 +21,9 @@ export class CenterDto {
       currentStrength: 0,
       tenantId: decodedToken?.tenantId,
       adminId: decodedToken?.userId,
-      headInCharge: decodedToken?.userId,
+      userModel,
+
+      headInCharge: userModel == 'Admin' ? decodedToken?.userId : headInCharge,
     };
 
     return newCenterDto;

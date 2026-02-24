@@ -78,7 +78,7 @@ export interface IAcademicSubject extends Document {
   description: string;
   department?: string;
 
-  batchesToFollow: Types.ObjectId[];
+  // batchesToFollow: Types.ObjectId[];
 
   credits?: number;
   level?: 'primary' | 'secondary' | 'higher-secondary' | 'degree' | null;
@@ -159,13 +159,8 @@ const AcademicSubjectsSchema = new Schema<IAcademicSubject>(
       trim: true,
     },
 
-    batchesToFollow: [
-      {
-        type: Types.ObjectId,
-        ref: 'Batch',
-        required: true,
-      },
-    ],
+    // batchesToFollow: [
+    //   {type: Types.ObjectId,ref: 'Batch',required: true,},],
 
     credits: {
       type: Number,

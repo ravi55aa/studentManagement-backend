@@ -46,13 +46,9 @@ export class UserAuthController {
 
   public async signIn(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const signInUser: IUser | null = await this.authService.signIn(req, res);
+      const { status, resBody } = await this.authService.signIn(req, res);
 
-      const responseBody: IResponse<IUser | null> = handleResponseBody(signInUser, res, req);
-
-      const status = signInUser ? StatusCodes.OK : StatusCodes.NOT_FOUND;
-
-      res.status(status).json(responseBody);
+      res.status(status).json(resBody);
     } catch (err) {
       next(err);
     }

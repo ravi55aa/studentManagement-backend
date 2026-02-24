@@ -3,7 +3,7 @@ import { IDocument } from '../../Models/documentModel';
 import { Request, Response } from 'express';
 
 export interface IDocumentService {
-  uploadDocs(data: Partial<Partial<IDocument>>): Promise<IDocument | null>;
+  uploadDocs(data: Partial<IDocument>): Promise<serviceReturnType>;
 
   updateDocs(req: Request, res: Response): Promise<serviceReturnType>;
 

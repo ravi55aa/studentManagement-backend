@@ -11,23 +11,29 @@ export class AddressRepository extends BaseRepository<IAddress> implements IAddr
     super(addressModel);
   }
 
+  // Update Address by Query (userId, etc...)
   async updateAddress(
     query: FilterQuery<Partial<IAddress>>,
     data: Partial<IAddress>,
   ): Promise<IAddress | null> {
     try {
-      return await addressModel
+      if (!query || Object.keys(query).length === 0) {
+        return null;
+      }
+
+      return await this.model
         .findOneAndUpdate(
           query,
           { $set: data },
           {
-            new: true, // return updated document
-            runValidators: true, // enforce schema validation
+            new: true,
+            runValidators: true,
           },
         )
         .lean<IAddress>();
     } catch (error) {
-      throw new Error('AddressRepository.updateAddress failed', { cause: error });
+      console.error('Error updating address:', error);
+      return null;
     }
   }
 }

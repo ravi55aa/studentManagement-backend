@@ -4,6 +4,10 @@ import { IAcademicSubject, IAcademicYear } from '../../Models/academicYear';
 import { BaseRepository } from '../../Repository/BaseRepository';
 import { IAcademicCourse, IAcademicCourseMeta } from '../../Models/courses.model';
 
+/**
+ *
+ * ACADEMIC-YEAR
+ */
 export interface ISchoolAcademicYearRepo extends BaseRepository<IAcademicYear> {
   addAcademicYear(centerData: Partial<IAcademicYear>): Promise<IAcademicYear | null>;
 
@@ -13,8 +17,14 @@ export interface ISchoolAcademicYearRepo extends BaseRepository<IAcademicYear> {
   ): Promise<IAcademicYear | null>;
 
   getAllAcademicYear(query: FilterQuery<Partial<IAcademicYear>>): Promise<IAcademicYear[]>;
+
+  deleteYear(id: string): Promise<boolean>;
 }
 
+/**
+ *
+ * ACADEMIC-SUBJECT
+ */
 export interface ISchoolSubjectsRepo extends BaseRepository<IAcademicSubject> {
   addSubject(payload: Partial<IAcademicSubject>): Promise<IAcademicSubject | null>;
 
@@ -24,29 +34,42 @@ export interface ISchoolSubjectsRepo extends BaseRepository<IAcademicSubject> {
     query: FilterQuery<Partial<IAcademicSubject>>,
     data: Partial<IAcademicSubject>,
   ): Promise<IAcademicSubject | null>;
+
+  deleteSubject(id: string): Promise<boolean>;
 }
 
+/**
+ *
+ * ACADEMIC-COURSE
+ */
 export interface ISchoolCoursesRepo extends BaseRepository<IAcademicCourse> {
-  addNewCourse(
-    model: string,
-    payload: Partial<IAcademicCourse | IAcademicCourseMeta>,
-  ): Promise<IAcademicCourse | IAcademicCourseMeta | null>;
+  createCourse(payload: Partial<IAcademicCourse>): Promise<IAcademicCourse | null>;
 
-  addNewCourseMeta(payload: IAcademicCourseMeta): Promise<IAcademicCourseMeta | null>;
+  createCourseMeta(payload: Partial<IAcademicCourseMeta>): Promise<IAcademicCourseMeta | null>;
 
-  getAllCourses<T>(model: string, query: FilterQuery<Partial<T>>): Promise<T[]>;
+  getAllCourses(query: FilterQuery<Partial<IAcademicCourse>>): Promise<IAcademicCourse[]>;
+
+  getAllCourseMeta(
+    query: FilterQuery<Partial<IAcademicCourseMeta>>,
+  ): Promise<IAcademicCourseMeta[]>;
 
   updateCourse(
-    model: string,
-    query: FilterQuery<Partial<IAcademicCourse | IAcademicCourseMeta>>,
-    data: Partial<IAcademicCourse | IAcademicCourseMeta>,
-  ): Promise<IAcademicCourse | IAcademicCourseMeta | null>;
+    query: FilterQuery<Partial<IAcademicCourse>>,
+    data: Partial<IAcademicCourse>,
+  ): Promise<IAcademicCourse | null>;
 
-  deleteCourse<T>(model: string, query: FilterQuery<Partial<T>>): Promise<T | null>;
+  updateCourseMeta(
+    query: FilterQuery<Partial<IAcademicCourseMeta>>,
+    data: Partial<IAcademicCourseMeta>,
+  ): Promise<IAcademicCourseMeta | null>;
 
-  findOneFromCourse(query: FilterQuery<Partial<IAcademicCourse>>): Promise<IAcademicCourse | null>;
+  deleteCourse(query: FilterQuery<Partial<IAcademicCourse>>): Promise<boolean>;
 
-  findOneFromCourseMeta(
+  deleteCourseMeta(query: FilterQuery<Partial<IAcademicCourseMeta>>): Promise<boolean>;
+
+  findOneCourse(query: FilterQuery<Partial<IAcademicCourse>>): Promise<IAcademicCourse | null>;
+
+  findOneCourseMeta(
     query: FilterQuery<Partial<IAcademicCourseMeta>>,
   ): Promise<IAcademicCourseMeta | null>;
 }

@@ -25,6 +25,18 @@ export class ApiResponse {
     };
   }
 
+  static noContent(message = 'No content') {
+    return {
+      status: StatusCodes.NO_CONTENT,
+      resBody: {
+        success: true,
+        data: null,
+        error: null,
+        message,
+      },
+    };
+  }
+
   static created<T>(data: T) {
     return {
       status: StatusCodes.CREATED,

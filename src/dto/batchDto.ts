@@ -10,6 +10,7 @@ export class BatchDto {
       code,
       isActive,
       center,
+      modelType,
       // academicYear,
       startDate,
       endDate,
@@ -21,7 +22,8 @@ export class BatchDto {
     const newBatchDto: Partial<IBatches> = {
       name,
       code,
-      center: center,
+      modelType,
+      center: modelType == 'Centers' ? center : decodedToken?.tenantId,
       status: isActive ? 'active' : 'inActive',
       schedule: {
         startTime: startDate,

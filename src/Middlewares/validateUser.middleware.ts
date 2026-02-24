@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from '../Constants/statusCodes';
 import { IResponse } from '../Interfaces/IResponse';
 import { ZodSchema, ZodError } from 'zod';
+import { ApiResponse } from '../Constants/apiResponse';
 
 const handleValidationErrors = (err: any, res: Response) => {
   if (err instanceof ZodError) {
@@ -14,12 +15,7 @@ const handleValidationErrors = (err: any, res: Response) => {
     } as IResponse<null>);
   }
 
-  return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-    success: false,
-    message: 'Unexpected error',
-    error: err.issues,
-    data: null,
-  } as IResponse<null>);
+  return ApiResponse.failure(`Validation Error ${err.issues}`);
 };
 
 export const validateData =

@@ -13,6 +13,7 @@ import { IBatchService } from '../Interfaces/services/IBatchService';
 import { ApiResponse } from '../Constants/apiResponse';
 import { injectable, inject } from 'tsyringe';
 import { BatchRepository } from '../Repository/batchRespository';
+import { BatchMessage } from '../Constants/resposeMessages';
 
 @injectable()
 export class BatchService implements IBatchService {
@@ -22,143 +23,144 @@ export class BatchService implements IBatchService {
   ) {}
 
   async createBatch(req: Request, res: Response): Promise<serviceReturnType> {
-    const dto: Partial<IBatches> = BatchDto.handleNewBatchDto(req, res);
+    try {
+      const dto: Partial<IBatches> = BatchDto.handleNewBatchDto(req, res);
 
-    const existing = await this.batchRepo.findOne({
-      tenantId: dto.tenantId,
-      name: dto.name,
-      code: dto.code,
-    });
+      const existing = await this.batchRepo.findOne({
+        tenantId: dto.tenantId,
+        name: dto.name,
+        code: dto.code,
+      });
 
-    if (existing) {
-      return ApiResponse.badRequest('Batch already exists with same name and code');
+      if (existing) {
+        return ApiResponse.badRequest(BatchMessage.BatchExists);
+      }
+
+      const newBatchDoc = await this.batchRepo.addBatch(dto);
+
+      if (!newBatchDoc) {
+        return ApiResponse.failure(BatchMessage.BatchCreateFailed);
+      }
+
+      return ApiResponse.success(newBatchDoc, BatchMessage.BatchAdded);
+    } catch (error) {
+      console.error('Error creating batch:', error);
+      return ApiResponse.failure('Internal server error');
     }
-
-    const newBatchDoc: IBatches | null = await this.batchRepo.addBatch(dto);
-
-    if (!newBatchDoc) {
-      return ApiResponse.failure('Failed to create batch');
-    }
-
-    const { status, resBody } = BatchResponseBody.createBatch(newBatchDoc);
-
-    return { status, resBody };
   }
 
   async getBatchById(req: Request): Promise<serviceReturnType> {
-    const { id } = req.params;
-    const doc: Partial<IBatches | null> = await this.batchRepo.findById(id!);
+    try {
+      const { id } = req.params;
 
-    //handleResBody
-    const status = doc ? 200 : 404;
-    const resBody: IResponse<Partial<IBatches | null>> = {
-      success: status == 200 ? true : false,
-      data: doc,
-      error: status == 200 ? null : 'Something went error',
-      message: status == 200 ? 'Fetched' : 'Not-fetched',
-    };
+      const doc = await this.batchRepo.findById(id!);
 
-    //const {status,resBody}=AcademicYearResponseBody.newAcademicYear(newAYearDoc);
+      if (!doc) {
+        return ApiResponse.notFound(BatchMessage.BatchNotFound);
+      }
 
-    return { status, resBody };
+      return ApiResponse.success(doc, BatchMessage.BatchFetched);
+    } catch (error) {
+      console.error('Error fetching batch:', error);
+      return ApiResponse.failure('Internal server error');
+    }
   }
 
   async getAllBatches(req: Request, res: Response): Promise<serviceReturnType> {
-    const query = BatchDto.handleGetAllBatchesDto(req, res);
+    try {
+      const query = BatchDto.handleGetAllBatchesDto(req, res);
 
-    const arrayOfCentersDoc: IBatches[] = await this.batchRepo.getAllBatches(query);
+      const docs = await this.batchRepo.getAllBatches(query);
 
-    const status: number = StatusCodes.OK;
-
-    const responseBody: IResponse<IBatches[]> = {
-      data: arrayOfCentersDoc,
-      error: null,
-      message: 'Centers Data fetched Successfully',
-      success: true,
-    };
-
-    return { status, resBody: responseBody };
+      return ApiResponse.success(docs, BatchMessage.BatchListed);
+    } catch (error) {
+      console.error('Error fetching batches:', error);
+      return ApiResponse.failure('Internal server error');
+    }
   }
 
   async updateABatch(req: Request, res: Response): Promise<serviceReturnType> {
-    const { id } = req.params;
-    const dto = BatchDto.handleNewBatchDto(req, res);
+    try {
+      const { id } = req.params;
+      const dto = BatchDto.handleNewBatchDto(req, res);
 
-    //repo call
-    //const doc=await this.batchRepo.updateSubject({_id:id},dto);
+      const updated = await this.batchRepo.updateBatch(id!, dto);
 
-    const doc: Partial<IBatches> = await batchModel.updateOne({ _id: id }, dto).lean<IBatches>();
+      if (!updated) {
+        return ApiResponse.notFound(BatchMessage.BatchNotFound);
+      }
 
-    const { status, resBody } = BatchResponseBody.createBatch(doc);
-
-    return { status, resBody };
+      return ApiResponse.success(updated, BatchMessage.BatchUpdated);
+    } catch (error) {
+      console.error('Error updating batch:', error);
+      return ApiResponse.failure('Internal server error');
+    }
   }
 
   async deleteBatch(req: Request): Promise<serviceReturnType> {
-    const { id } = req.params;
+    try {
+      const { id } = req.params;
 
-    const doc = await batchModel.deleteOne({ _id: id });
+      const deleted = await this.batchRepo.deleteBatch(id!);
 
-    const status = doc ? StatusCodes.OK : StatusCodes.CONFLICT;
+      if (!deleted) {
+        return ApiResponse.notFound(BatchMessage.BatchNotFound);
+      }
 
-    const resBody: IResponse<null> = {
-      success: status == 200 ? true : false,
-      data: null,
-      error: status == 200 ? null : 'Something went error',
-      message: status == 200 ? 'Deleted' : 'Not-deleted',
-    };
-    //const {status,resBody}=AcademicYearResponseBody.newAcademicYear(newAYearDoc);
-
-    return { status, resBody };
+      return ApiResponse.success(null, BatchMessage.BatchDeleted);
+    } catch (error) {
+      console.error('Error deleting batch:', error);
+      return ApiResponse.failure('Internal server error');
+    }
   }
 
-  public async assignClassTeacher(batchId: string, teacherId: string): Promise<serviceReturnType> {
-    if (!batchId || !teacherId) {
-      return ApiResponse.badRequest('Invalid ID');
+  async assignClassTeacher(batchId: string, teacherId: string): Promise<serviceReturnType> {
+    try {
+      if (!batchId || !teacherId) {
+        return ApiResponse.badRequest('Invalid ID');
+      }
+
+      const batch = await this.batchRepo.findById(batchId);
+
+      if (!batch) {
+        return ApiResponse.notFound(BatchMessage.BatchNotFound);
+      }
+
+      if (batch.batchCounselor) {
+        return ApiResponse.badRequest(BatchMessage.BatchAlreadyHasTeacher);
+      }
+
+      const teacherAlreadyAssigned = await this.batchRepo.findByTeacherId(teacherId);
+
+      if (teacherAlreadyAssigned) {
+        return ApiResponse.badRequest(BatchMessage.TeacherAlreadyAssigned);
+      }
+
+      const updated = await this.batchRepo.assignTeacher(batchId, teacherId);
+
+      if (!updated) {
+        return ApiResponse.failure(BatchMessage.BatchUpdateFailed);
+      }
+
+      return ApiResponse.success(updated, BatchMessage.TeacherAssigned);
+    } catch (error) {
+      console.error('Error assigning teacher:', error);
+      return ApiResponse.failure('Internal server error');
     }
-
-    // Check batch exists
-    const batch = await this.batchRepo.findById(batchId);
-
-    if (!batch) {
-      return ApiResponse.notFound('Batch not found');
-    }
-
-    // Check batch already has teacher
-    if (batch.batchCounselor) {
-      return ApiResponse.badRequest('Batch already has a class teacher');
-    }
-
-    //  Check teacher already assigned somewhere
-    const teacherAlreadyAssigned = await this.batchRepo.findByTeacherId(teacherId);
-
-    if (teacherAlreadyAssigned) {
-      return ApiResponse.badRequest('Teacher is already assigned to another batch');
-    }
-
-    //  Assign
-    const updated = await this.batchRepo.assignTeacher(batchId, teacherId);
-
-    if (!updated) {
-      return ApiResponse.failure('Failed to assign teacher');
-    }
-
-    return ApiResponse.success(updated, 'Teacher assigned successfully');
   }
-
-  //**📌 Relationship / Business Logic
-
-  assignAdminToCenter() {}
-
-  removeAdminFromCenter() {}
-
-  assignSchoolToCenter() {}
-
-  removeSchoolFromCenter() {}
-
-  //** 📌 Status & Lifecycle
-
-  activateCenter() {}
-
-  deactivateCenter() {}
 }
+
+// //** Relationship / Business Logic
+// assignAdminToCenter() {}
+
+// removeAdminFromCenter() {}
+
+// assignSchoolToCenter() {}
+
+// removeSchoolFromCenter() {}
+
+// //** 📌 Status & Lifecycle
+
+// activateCenter() {}
+
+// deactivateCenter() {}

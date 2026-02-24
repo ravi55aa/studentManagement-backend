@@ -1,67 +1,76 @@
-import { NextFunction, Request, Response } from 'express';
-import { MongoServerError } from 'mongodb';
+
+import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import mongoose from 'mongoose';
+import { MongoServerError } from 'mongodb';
+import logger from '../Utils/logger';
+import { StatusCodes } from '../Constants/statusCodes';
 
-const handleErrorsMiddleware = (err: Error, req: Request, res: Response, next: NextFunction) => {
+
+export const handleErrorsMiddleware: ErrorRequestHandler = (
+  err,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   if (res.headersSent) {
-    return next(err); // let Express handle it
+    return next(err);
   }
 
-  if (req.statusCode == 401) {
-    return res.status(401).json({ description: 'Un_Authorized', error: err, message: err.message });
+  logger.error('Unhandled application error', {
+    layer: 'middleware',
+    path: req.originalUrl,
+    method: req.method,
+    error: err,
+  });
+
+  /* ==============Unauthorized=================*/
+  if (res.statusCode === StatusCodes.UNAUTHORIZED) {
+    return res.status(StatusCodes.UNAUTHORIZED).json({
+      success: false,
+      message: 'Unauthorized',
+    });
   }
 
-  /**
-   * ==================================
-   *  Mongo duplicate key error
-   * ==================================
-   */
+  /* ==============Mongo Duplicate Key Error=================*/
   if (err instanceof MongoServerError && err.code === 11000) {
-    const field = Object.keys(err.keyValue)[1];
-    let value = '';
-    if (field) {
-      value = err.keyValue[field];
-    }
+    const field = Object.keys(err.keyValue ?? {})[0];
+    const value = field ? err.keyValue[field] : '';
 
-    return res.status(409).json({
+    return res.status(StatusCodes.CONFLICT).json({
       success: false,
       message: `${field} '${value}' already exists`,
       field,
     });
   }
 
-  /**
-   * ==================================
-   *  Mongoose validation error
-   * ==================================
-   */
+  /* ==============Mongoose Validation Error=================*/
   if (err instanceof mongoose.Error.ValidationError) {
     const errors = Object.values(err.errors).map((e) => e.message);
 
-    return res.status(400).json({
+    return res.status(StatusCodes.BAD_REQUEST).json({
       success: false,
       message: errors[0],
+      errors,
     });
   }
 
-  /**
-   * ==================================
-   *  CastError (invalid ObjectId)
-   * ==================================
-   */
+  /* ==============Invalid ObjectId (CastError)=================*/
   if (err instanceof mongoose.Error.CastError) {
-    return res.status(400).json({
+    return res.status(StatusCodes.BAD_REQUEST).json({
       success: false,
       message: `Invalid ${err.path}`,
     });
   }
 
-  const status = res.statusCode !== 200 ? res.statusCode : 500;
+  /* ==============Fallback Error=================*/
+  const status =
+    res.statusCode && res.statusCode !== 200
+      ? res.statusCode
+      : StatusCodes.INTERNAL_SERVER_ERROR;
 
-  res.status(status).json({
+  return res.status(status).json({
     success: false,
     message: err.message || 'Internal Server Error',
-    error: err,
   });
 };
 

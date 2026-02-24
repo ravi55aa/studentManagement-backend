@@ -9,6 +9,7 @@ import { handleJwtTokensGenerator, IJwtPayload } from '../Utils/jwt';
 import { injectable, inject } from 'tsyringe';
 import { UserRepository } from '../Repository/userRepository';
 import bcrypt from 'bcrypt';
+import { ApiResponse } from '../Constants/apiResponse';
 
 @injectable()
 export class UserAuthService implements IUserAuthService {
@@ -36,22 +37,24 @@ export class UserAuthService implements IUserAuthService {
   async signIn(req: Request, res: Response) {
     try {
       let userData = req.body;
-      const hashedPassword = await bcrypt.hash(userData.password, 10);
-      userData.password = hashedPassword;
 
       const isUser: IUser | null = await this.userRepository.findOne({
         email: userData.email,
-        password: userData.password,
       });
 
-      //jwt ****
-      if (isUser) {
-        const payload: IJwtPayload = { userId: isUser._id!, role: 'Admin', tenantId: null };
-
-        handleJwtTokensGenerator(payload, req, res);
+      if (!isUser) {
+        return ApiResponse.notFound('AdminNotFound, invalid credentials');
       }
 
-      return isUser;
+      const comparePasswords: boolean = await bcrypt.compare(userData.password, isUser.password!);
+
+      if (!comparePasswords) {
+        return ApiResponse.notFound('AdminNotFound, Password is incorrect');
+      }
+      const payload: IJwtPayload = { userId: isUser._id!, role: 'Admin', tenantId: null };
+      handleJwtTokensGenerator(payload, req, res);
+
+      return ApiResponse.success(isUser, 'Admin Login successfully');
     } catch (err: unknown) {
       logger.error(err);
       throw new Error('Failed to sign in', { cause: err });

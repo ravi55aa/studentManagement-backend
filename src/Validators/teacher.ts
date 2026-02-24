@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { Gender_types } from '../types/enum';
 
 /* -------`ENUMS (keep in sync with backend)--- */
 
@@ -29,27 +28,49 @@ const isObjectId = (val: string) => /^[0-9a-fA-F]{24}$/.test(val);
 
 /* -------------CREATE TEACHER SCHEMA------------- */
 
-export const createTeacherSchema = z.object({
-  teacherId: z.string().refine(isObjectId, 'Invalid tenant ID'),
-  academicYearId: z.string().refine(isObjectId, 'Invalid academic year ID'),
-  centerId: z.string().refine(isObjectId, 'Invalid center ID'),
+export const createTeacherSchema = z
+  .object({
+    teacherId: z.string().refine(isObjectId, 'Invalid tenant ID'),
+    academicYearId: z.string().refine(isObjectId, 'Invalid academic year ID'),
+    center: z.string('Center is required'),
 
-  employeeId: z.string().min(3, 'Employee ID is required'),
+    modelType: z.enum(['School', 'Centers']),
 
-  employmentStatus: employmentStatusEnum.optional(), // default handled in backend
+    employeeId: z.string().min(3, 'Employee ID is required'),
 
-  assignedSubjects: z
-    .array(z.string().refine(isObjectId, 'Invalid Subject ID'))
-    .min(1, 'At least one subject must be assigned'),
+    employmentStatus: employmentStatusEnum.optional(),
 
-  designation: designationEnum,
+    designation: designationEnum.optional(),
 
-  department: z.array(departmentEnum).min(1, 'At least one department is required'),
+    assignedSubjects: z.array(z.string().refine(isObjectId, 'Invalid Subject ID')).optional(),
 
-  dateOfJoining: z.coerce.date(),
+    department: z.array(departmentEnum).optional(),
 
-  dateOfLeaving: z.coerce.date().nullable().optional(),
-});
+    dateOfJoining: z.coerce.date(),
+
+    dateOfLeaving: z.coerce.date().nullable().optional(),
+  })
+  .superRefine((data, ctx) => {
+    const isHOD = data.designation === 'head_Master';
+
+    if (!isHOD) {
+      if (!data.assignedSubjects || data.assignedSubjects.length === 0) {
+        ctx.addIssue({
+          path: ['assignedSubjects'],
+          code: z.ZodIssueCode.custom,
+          message: 'At least one subject must be assigned',
+        });
+      }
+
+      if (!data.department || data.department.length === 0) {
+        ctx.addIssue({
+          path: ['department'],
+          code: z.ZodIssueCode.custom,
+          message: 'Department is required',
+        });
+      }
+    }
+  });
 
 export const teacherBioFormSchema = z.object({
   firstName: z

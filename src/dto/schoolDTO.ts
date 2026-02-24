@@ -74,7 +74,7 @@ export class SchoolAcademicYearDto {
 
     const decoded = handleTokenVerification(req, res);
     const dtoData = {
-      code,
+      code: 'YEAR-' + code,
       startDate,
       endDate,
       year,
@@ -104,7 +104,7 @@ export class SchoolAcademicYearDto {
     const decoded = handleTokenVerification(req, res);
 
     const updateYearDto = {
-      ...(code !== undefined && { code }),
+      ...(code !== undefined && { code: 'YEAR-' + code }),
       ...(startDate !== undefined && { startDate }),
       ...(year !== undefined && { year }),
       ...(endDate !== undefined && { endDate }),
@@ -135,18 +135,19 @@ export class SchoolSubjectsDto {
       endDate,
       academicYear,
       department,
-      batchesToFollow,
+      // batchesToFollow,
       maxMarks,
       passMarks,
       credits,
       referenceBooks,
       description,
+      modelType,
     } = req.body;
 
     const decoded = handleTokenVerification(req, res);
 
     const dtoData = {
-      code,
+      code: 'SUB-' + code,
       name,
       className,
       level,
@@ -161,7 +162,8 @@ export class SchoolSubjectsDto {
       endDate,
       academicYear,
       department,
-      batchesToFollow: batchesToFollow.split(','),
+      modelType,
+      // batchesToFollow: batchesToFollow.split(','),
       adminId: decoded.userId,
       tenantId: decoded.tenantId,
     };
@@ -170,14 +172,14 @@ export class SchoolSubjectsDto {
      * batchesToFollow=batchCodes[];
      */
 
-    const batchesToFollowArray = [];
-    for (const code of batchesToFollow.split(',')) {
-      const isBatch = await batchModel.findOne({ code: code });
-      if (!isBatch) continue;
+    // const batchesToFollowArray = [];
+    // for (const code of batchesToFollow.split(',')) {
+    //   const isBatch = await batchModel.findOne({ code: code });
+    //   if (!isBatch) continue;
 
-      batchesToFollowArray.push(isBatch._id);
-    }
-    dtoData.batchesToFollow = batchesToFollowArray;
+    //   batchesToFollowArray.push(isBatch._id);
+    // }
+    // dtoData.batchesToFollow = batchesToFollowArray;
 
     return dtoData;
   }
@@ -194,7 +196,7 @@ export class SchoolSubjectsDto {
       endDate,
       academicYear,
       department,
-      batchesToFollow,
+      // batchesToFollow,
       maxMarks,
       passMarks,
       credits,
@@ -205,7 +207,7 @@ export class SchoolSubjectsDto {
     const decoded = handleTokenVerification(req, res);
 
     const updateSubjectDto: IAcademicSubject = {
-      ...(code && { code }),
+      ...(code && { code: 'SUB-' + code }),
       ...(name && { name }),
       ...(className && { className }),
       ...(level && { level }),
@@ -218,7 +220,7 @@ export class SchoolSubjectsDto {
       ...(academicYear && { academicYear }),
       ...(department && { department }),
 
-      ...(batchesToFollow && { batchesToFollow }),
+      // ...(batchesToFollow && { batchesToFollow }),
 
       ...(maxMarks !== undefined && { maxMarks }),
       ...(passMarks !== undefined && { passMarks }),
@@ -231,14 +233,14 @@ export class SchoolSubjectsDto {
       tenantId: decoded.tenantId,
     };
 
-    const batchesToFollowArray = [];
-    for (const batchCode of batchesToFollow.split(',')) {
-      const isBatch = await batchModel.findOne({ code: batchCode });
-      if (!isBatch) continue;
+    // const batchesToFollowArray = [];
+    // for (const batchCode of batchesToFollow.split(',')) {
+    //   const isBatch = await batchModel.findOne({ code: batchCode });
+    //   if (!isBatch) continue;
 
-      batchesToFollowArray.push(isBatch._id);
-    }
-    updateSubjectDto.batchesToFollow = batchesToFollowArray;
+    //   batchesToFollowArray.push(isBatch._id);
+    // }
+    // updateSubjectDto.batchesToFollow = batchesToFollowArray;
 
     return updateSubjectDto;
   }
@@ -255,12 +257,14 @@ export class SchoolCoursesDto {
       status,
       schedule,
       academicYear,
-      batches,
+      classes,
       duration,
       description,
       maxStudents,
       enrollmentOpen,
       coordinators,
+      modelType,
+      center,
       eligibilityCriteria,
     } = req.body;
 
@@ -276,9 +280,11 @@ export class SchoolCoursesDto {
       unit: duration.unit,
     };
     const courseDto = {
-      code,
+      code: 'COU-' + code,
       name,
       status,
+      modelType,
+      center: modelType == 'School' ? decoded.tenantId : center,
       description,
       academicYear,
       schedule: courseScheduleDates,
@@ -305,7 +311,7 @@ export class SchoolCoursesDto {
     };
 
     const courseMetaDto = {
-      batches,
+      classes,
       attachments: arrayOfAttachMents,
       maxStudents,
       enrollmentOpen,
@@ -325,13 +331,15 @@ export class SchoolCoursesDto {
       status,
       schedule,
       academicYear,
-      batches,
+      classes,
       duration,
       description,
       maxStudents,
       enrollmentOpen,
       coordinators,
       eligibilityCriteria,
+      modelType,
+      center,
     } = req.body;
 
     let { subjects } = req.body;
@@ -339,12 +347,14 @@ export class SchoolCoursesDto {
     const decoded = handleTokenVerification(req, res);
 
     const courseDto: Partial<IAcademicCourse> = {
-      ...(code && { code }),
+      ...(code && { code: 'COU-' + code }),
       ...(name && { name }),
       //...(level && { level }),
       ...(status && { status }),
       ...(description && { description }),
       ...(academicYear && { academicYear }),
+      ...(modelType && { modelType }),
+      ...(center && { center }),
 
       ...(schedule && {
         schedule: {
@@ -383,7 +393,7 @@ export class SchoolCoursesDto {
     ];
 
     const courseMetaDto: Partial<IAcademicCourseMeta> = {
-      ...(batches && { batches }),
+      ...(classes && { classes }),
       ...(arrayOfAttachMents.length && { attachments: arrayOfAttachMents }),
       ...(maxStudents !== undefined && { maxStudents }),
       ...(enrollmentOpen !== undefined && { enrollmentOpen }),

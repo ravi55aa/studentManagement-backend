@@ -14,172 +14,179 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
     super(teacherBioModel);
   }
 
-  /* --------CREATE----------- */
-
-  public async createProfessional(data: Partial<ITeacher>): Promise<ITeacher | null> {
+  /* ===============================
+    CREATE PROFESSIONAL TEACHER
+  ================================= */
+  async createProfessional(data: Partial<ITeacher>): Promise<ITeacher | null> {
     try {
-      const teacher = new teacherModel(data);
-      await teacher.save();
-
-      return teacher.toObject();
-    } catch (err) {
-      logger.error(err);
-      throw new Error(`Cannot create the teacher Error:${err}`);
-    }
-  }
-
-  static async create(data: Partial<ITeacher>): Promise<ITeacher> {
-    try {
-      const teacher = await teacherModel.create(data);
-
-      return teacher.toObject();
-    } catch (err) {
-      logger.error(err);
-      throw new Error(`Cannot create the teacher Error:${err}`);
-    }
-  }
-
-  /* ----------    FIND BY ID   ------------ */
-  static async findById(teacherId: string): Promise<ITeacher | null> {
-    if (!Types.ObjectId.isValid(teacherId)) {
+      const created = await teacherModel.create(data);
+      return created.toObject();
+    } catch (error) {
+      logger.error('Error creating professional teacher:', error);
       return null;
     }
-
-    return await teacherModel
-      .findById(teacherId)
-      .populate('classTeacherOf')
-      .populate('assignedSubjects')
-      .populate('academicYearId')
-      .populate('centerId')
-      .lean<ITeacher>();
   }
 
-  public async getTeacherById(teacherId: string): Promise<ITeacher | null> {
-    return await teacherModel
-      .findOne({ teacherId: teacherId })
-      .populate('centerId', 'name')
-      .populate('academicYearId', 'year code')
-      .populate('classTeacherOf', 'name code')
-      .populate('assignedSubjects', 'name code')
-      .lean();
+  /* ===============================
+     FIND PROFESSIONAL BY ID
+  ================================= */
+  async findProfessionalById(teacherId: string): Promise<ITeacher | null> {
+    try {
+      if (!Types.ObjectId.isValid(teacherId)) return null;
+
+      return await teacherModel
+        .findById(teacherId)
+        .populate('classTeacherOf')
+        .populate('assignedSubjects')
+        .populate('academicYearId')
+        .populate('centerId')
+        .lean<ITeacher>();
+    } catch (error) {
+      logger.error('Error fetching teacher:', error);
+      return null;
+    }
   }
 
-  /* ------------- FIND ONE (GENERIC) ----------------*/
-  static async findOne(query: FilterQuery<Partial<ITeacher>>): Promise<ITeacher | null> {
-    return teacherModel.findOne(query).lean<ITeacher>();
+  /* ===============================
+     GENERIC FIND ONE (PROFESSIONAL)
+  ================================= */
+  async findOneProfessional(query: FilterQuery<Partial<ITeacher>>): Promise<ITeacher | null> {
+    try {
+      return await teacherModel.findOne(query).lean<ITeacher>();
+    } catch (error) {
+      logger.error('Error finding teacher:', error);
+      return null;
+    }
   }
 
-  /* -------------FIND MANY-----------------*/
-  static async findMany(query: FilterQuery<Partial<ITeacher>>): Promise<ITeacher[]> {
-    return teacherModel
-      .find(query)
-      .populate('classTeacherOf')
-      .populate('assignedSubjects')
-      .populate('academicYearId')
-      .populate('centerId')
-      .lean<ITeacher[]>();
+  /* ===============================
+     UPDATE BIO
+  ================================= */
+  async updateBioById(teacherId: string, data: Partial<ITeacherBio>): Promise<ITeacherBio | null> {
+    try {
+      if (!Types.ObjectId.isValid(teacherId)) return null;
+
+      return await this.model
+        .findByIdAndUpdate(teacherId, { $set: data }, { new: true })
+        .lean<ITeacherBio>();
+    } catch (error) {
+      logger.error('Error updating teacher bio:', error);
+      return null;
+    }
   }
 
-  /* -----------SOFT DELETE------------- */
+  /* ===============================
+     SOFT DELETE
+  ================================= */
+  async softDelete(teacherId: string): Promise<boolean> {
+    try {
+      if (!Types.ObjectId.isValid(teacherId)) return false;
 
-  public async softDelete(query: FilterQuery<Partial<ITeacher>>): Promise<boolean> {
-    const result = await teacherModel.findByIdAndUpdate(query, {
-      $set: {
-        employmentStatus: 'terminated',
-        dateOfLeaving: new Date(),
-      },
-    });
-
-    return !!result;
-  }
-
-  /* --------------ASSIGN SUBJECTS---------------------- */
-  public async assignSubjects(teacherId: string, subjectIds: string[]): Promise<ITeacher | null> {
-    return teacherModel
-      .findByIdAndUpdate(
-        teacherId,
-        {
-          $addToSet: {
-            assignedSubjects: { $each: subjectIds },
-          },
-        },
-        { new: true },
-      )
-      .lean<ITeacher>();
-  }
-
-  public async assignClass(teacherId: string, batchId: string): Promise<ITeacher | null> {
-    return teacherModel
-      .findByIdAndUpdate(
-        teacherId,
+      const result = await teacherModel.updateOne(
+        { teacherId: teacherId },
         {
           $set: {
-            classTeacherOf: batchId,
+            employmentStatus: 'terminated',
+            dateOfLeaving: new Date(),
           },
         },
-        { new: true },
-      )
-      .lean<ITeacher>();
+      );
+
+      return result.modifiedCount === 1;
+    } catch (error) {
+      logger.error('Error soft deleting teacher:', error);
+      return false;
+    }
   }
 
-  /*-------UPDATE------ */
-
-  public async updateBioById(
-    teacherId: string,
-    data: Partial<ITeacherBio>,
-  ): Promise<ITeacherBio | null> {
-    if (!Types.ObjectId.isValid(teacherId)) {
+  /* ===============================
+     ASSIGN SUBJECTS
+  ================================= */
+  async assignSubjects(teacherId: string, subjectIds: string[]): Promise<ITeacher | null> {
+    try {
+      return await teacherModel
+        .findByIdAndUpdate(
+          teacherId,
+          {
+            $addToSet: {
+              assignedSubjects: { $each: subjectIds },
+            },
+          },
+          { new: true },
+        )
+        .lean<ITeacher>();
+    } catch (error) {
+      logger.error('Error assigning subjects:', error);
       return null;
     }
-
-    return teacherBioModel
-      .findByIdAndUpdate(teacherId, { $set: data }, { new: true })
-      .lean<ITeacherBio>();
   }
 
-  public async getUnassignedTeachers(): Promise<ITeacherBio[]> {
-    const assignedTeacherIds = await batchModel
-      .find({ batchCounselor: { $ne: null } })
-      .distinct('batchCounselor');
-
-    const unassignedTeachers = await teacherBioModel
-      .find({
-        _id: { $nin: assignedTeacherIds },
-      })
-      .lean<ITeacherBio[]>();
-
-    return unassignedTeachers;
-  }
-
-  /* -----------REMOVE SUBJECT-------------------- */
-  public async removeSubject(teacherId: string, subjectId: string): Promise<ITeacher | null> {
-    return teacherModel
-      .findByIdAndUpdate(
-        teacherId,
-        {
-          $pull: {
-            assignedSubjects: subjectId,
-          },
-        },
-        { new: true },
-      )
-      .lean<ITeacher>();
-  }
-
-  public async getAllTeachers(): Promise<IGetAllTeachers> {
+  /* ===============================
+     REMOVE SUBJECT
+  ================================= */
+  async removeSubject(teacherId: string, subjectId: string): Promise<ITeacher | null> {
     try {
-      const a = await teacherBioModel.find({}, { tenantId: 0 }).lean<ITeacherBio[]>();
+      return await teacherModel
+        .findByIdAndUpdate(
+          teacherId,
+          {
+            $pull: { assignedSubjects: subjectId },
+          },
+          { new: true },
+        )
+        .lean<ITeacher>();
+    } catch (error) {
+      logger.error('Error removing subject:', error);
+      return null;
+    }
+  }
 
-      const b = await teacherModel.find({}, { _id: 0 }).lean<ITeacher[]>();
+  /* ===============================
+     ASSIGN CLASS
+  ================================= */
+  async assignClass(teacherId: string, batchId: string): Promise<ITeacher | null> {
+    try {
+      return await teacherModel
+        .findByIdAndUpdate(teacherId, { $set: { classTeacherOf: batchId } }, { new: true })
+        .lean<ITeacher>();
+    } catch (error) {
+      logger.error('Error assigning class:', error);
+      return null;
+    }
+  }
 
-      const result: IGetAllTeachers = {
-        teacherBio: a,
-        teachersSchoolData: b,
+  /* ===============================
+     GET UNASSIGNED TEACHERS
+  ================================= */
+  async getUnassignedTeachers(): Promise<ITeacherBio[]> {
+    try {
+      const assignedIds = await batchModel
+        .find({ batchCounselor: { $ne: null } })
+        .distinct('batchCounselor');
+
+      return await this.model.find({ _id: { $nin: assignedIds } }).lean<ITeacherBio[]>();
+    } catch (error) {
+      logger.error('Error fetching unassigned teachers:', error);
+      return [];
+    }
+  }
+
+  /* ===============================
+     GET ALL TEACHERS (COMBINED)
+  ================================= */
+  async getAllTeachers(): Promise<IGetAllTeachers | null> {
+    try {
+      const bio = await this.model.find({}, { tenantId: 0 }).lean<ITeacherBio[]>();
+
+      const professional = await teacherModel.find({}, { _id: 0 }).lean<ITeacher[]>();
+
+      return {
+        teacherBio: bio,
+        teachersSchoolData: professional,
       };
-      return result;
-    } catch (err) {
-      logger.error(`Error: ${err}`);
-      throw new Error(`Cant fetch Teachers, ${err}`);
+    } catch (error) {
+      logger.error('Error fetching teachers:', error);
+      return null;
     }
   }
 }

@@ -19,6 +19,7 @@ import { UserRepository } from '../Repository/userRepository';
 import { AddressRepository } from '../Repository/addressRepository';
 import { DocumentRepository } from '../Repository/documentRepository';
 import bcrypt from 'bcrypt';
+import { ApiResponse } from '../Constants/apiResponse';
 
 @injectable()
 export class SchoolService implements ISchoolService {
@@ -71,12 +72,17 @@ export class SchoolService implements ISchoolService {
 
   //LOGIN
   async getSchool(req: Request, res: Response) {
-    let query = SchoolDTO.getSchool(req, res);
-    const hashedPassword = await bcrypt.hash(query.password!, 10);
-    query.password = hashedPassword;
+    let { password, schoolName, userId } = SchoolDTO.getSchool(req, res);
 
-    const school = await this.schoolRepository.findOne(query);
+    const school = await this.schoolRepository.findOne({ schoolName, userId });
 
+    if (school) {
+      const hashedPassword = await bcrypt.compare(password, school.password!);
+      if (!hashedPassword) {
+        ApiResponse.notFound('School NOT found, credentials miss match');
+        return school;
+      }
+    }
     if (!school) throw new Error('School not found');
 
     //JWT ****

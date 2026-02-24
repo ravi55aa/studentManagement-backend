@@ -1,17 +1,16 @@
 import { Request, Response } from 'express';
 import { CenterDto } from '../dto/centersDto';
-import centerModel, { ICenter } from '../Models/centerModel';
+import { ICenter } from '../Models/centerModel';
 import { AddressDTO } from '../dto/addressDTO';
 import { IAddress } from '../Models/addressModel';
 import { serviceReturnType } from '../Constants/interfaces';
-import { IResponse } from '../Interfaces/IResponse';
-import { StatusCodes } from '../Constants/statusCodes';
-import { CenterResponseBody } from '../Utils/ResponseBody/center.responsebody';
+
 import { ICenterService } from '../Interfaces/services/ICenterService';
-import { addressModel } from '../Models';
 import { inject, injectable } from 'tsyringe';
 import { AddressRepository } from '../Repository/addressRepository';
 import { CenterRepository } from '../Repository/centerRepository';
+import { ApiResponse } from '../Constants/apiResponse';
+import { CenterMessage } from '../Constants/resposeMessages';
 
 @injectable()
 export class CentersService implements ICenterService {
@@ -23,19 +22,18 @@ export class CentersService implements ICenterService {
     private centerRepo: CenterRepository,
   ) {}
 
-  //!center already exist {prop:name};
   async createCenter(req: Request, res: Response): Promise<serviceReturnType> {
     const dto: Partial<ICenter> = CenterDto.handleNewCenterDto(req, res);
 
-    const newCenterDoc: Partial<ICenter | null> = await this.centerRepo.addCenter(dto);
+    // Check if already exists
+    const existing = await this.centerRepo.findByName(dto.name!);
+    if (existing) {
+      return ApiResponse.failure(CenterMessage.CenterExists);
+    }
 
-    // const address:Partial<IAddress> = AddressDTO.handleAddress(req);
+    const newCenterDoc = await this.centerRepo.addCenter(dto);
 
-    // await this.addressRepo.create(address);
-
-    const { status, resBody } = CenterResponseBody.createCenter(newCenterDoc);
-
-    return { status, resBody };
+    return ApiResponse.success(newCenterDoc, CenterMessage.CenterAdded);
   }
 
   async createCenterAddress(req: Request, res: Response): Promise<serviceReturnType> {
@@ -45,101 +43,71 @@ export class CentersService implements ICenterService {
     dto.userId = id;
     dto.userType = 'Center';
 
-    const doc: Partial<IAddress | null> = await addressModel.create(dto);
+    const doc = await this.addressRepo.create(dto);
 
-    const status = doc ? 200 : 404;
-    const resBody: IResponse<Partial<IAddress | null>> = {
-      success: status == 200 ? true : false,
-      data: doc,
-      error: status == 200 ? null : 'Something went error',
-      message: status == 200 ? 'Fetched' : 'Not-fetched',
-    };
-
-    return { status, resBody };
+    return ApiResponse.success(doc, CenterMessage.CenterUpdated);
   }
 
   async getCenterById(req: Request): Promise<serviceReturnType> {
     const { id } = req.params;
-    const doc: Partial<ICenter | null> = await this.centerRepo.findById(id!);
 
-    //handleResBody
-    const status = doc ? 200 : 404;
-    const resBody: IResponse<Partial<ICenter | null>> = {
-      success: status == 200 ? true : false,
-      data: doc,
-      error: status == 200 ? null : 'Something went error',
-      message: status == 200 ? 'Fetched' : 'Not-fetched',
-    };
+    const doc = await this.centerRepo.findById(id!);
 
-    //const {status,resBody}=AcademicYearResponseBody.newAcademicYear(newAYearDoc);
+    if (!doc) {
+      return ApiResponse.failure(CenterMessage.CenterNotFound);
+    }
 
-    return { status, resBody };
+    return ApiResponse.success(doc, CenterMessage.CenterListed);
   }
 
   async getAllCenters(): Promise<serviceReturnType> {
-    const arrayOfCentersDoc: ICenter[] = await this.centerRepo.getAllCenters();
+    const docs = await this.centerRepo.getAllCenters();
 
-    const status: number = StatusCodes.OK;
+    if (!docs || docs.length === 0) {
+      return ApiResponse.failure(CenterMessage.CenterNotFound);
+    }
 
-    //
-    const responseBody: IResponse<ICenter[]> = {
-      data: arrayOfCentersDoc,
-      error: null,
-      message: 'Centers Data fetched Successfully',
-      success: true,
-    };
-
-    return { status, resBody: responseBody };
+    return ApiResponse.success(docs, CenterMessage.CenterListed);
   }
 
   async updateCenter(req: Request, res: Response): Promise<serviceReturnType> {
-    const centerData: Partial<ICenter> = CenterDto.handleNewCenterDto(req, res);
     const { id } = req.params;
+    const updatedData: Partial<ICenter> = CenterDto.handleNewCenterDto(req, res);
 
-    // const updatedDoc:Partial<ICenter|null> = await this.centerRepo.updateCenter(centerData);
+    const updatedDoc = await this.centerRepo.updateCenter(id!, updatedData);
 
-    const doc = await centerModel.findByIdAndUpdate(id, centerData, { new: true });
+    if (!updatedDoc) {
+      return ApiResponse.failure(CenterMessage.CenterNotFound);
+    }
 
-    // const address:Partial<IAddress> = AddressDTO.handleAddress(req);
-
-    // await this.addressRepo.create(address);
-
-    const { status, resBody } = CenterResponseBody.createCenter(doc);
-
-    return { status, resBody };
+    return ApiResponse.success(updatedDoc, CenterMessage.CenterUpdated);
   }
 
   async deleteCenter(req: Request): Promise<serviceReturnType> {
     const { id } = req.params;
 
-    const doc = await centerModel.deleteOne({ _id: id });
+    const deleted = await this.centerRepo.deleteCenter(id!);
 
-    const status = doc ? StatusCodes.OK : StatusCodes.CONFLICT;
+    if (!deleted) {
+      return ApiResponse.failure(CenterMessage.CenterNotFound);
+    }
 
-    const resBody: IResponse<null> = {
-      success: status == 200 ? true : false,
-      data: null,
-      error: status == 200 ? null : 'Something went error',
-      message: status == 200 ? 'Deleted' : 'Not-deleted',
-    };
-    //const {status,resBody}=AcademicYearResponseBody.newAcademicYear(newAYearDoc);
-
-    return { status, resBody };
+    return ApiResponse.success(null, CenterMessage.CenterDeleted);
   }
-
-  //**📌 Relationship / Business Logic
-
-  assignAdminToCenter() {}
-
-  removeAdminFromCenter() {}
-
-  assignSchoolToCenter() {}
-
-  removeSchoolFromCenter() {}
-
-  //** 📌 Status & Lifecycle
-
-  activateCenter() {}
-
-  deactivateCenter() {}
 }
+
+// //**📌 Relationship / Business Logic
+
+// assignAdminToCenter() {}
+
+// removeAdminFromCenter() {}
+
+// assignSchoolToCenter() {}
+
+// removeSchoolFromCenter() {}
+
+// //** 📌 Status & Lifecycle
+
+// activateCenter() {}
+
+// deactivateCenter() {}

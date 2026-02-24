@@ -1,42 +1,113 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken, refreshAccessToken } from '../Utils/jwt';
 import { env } from '../Config';
-import handleErrorsMiddleware from './error.middleware';
 import logger from '../Utils/logger';
+import { StatusCodes } from '../Constants/statusCodes';
+import { AuthMessage } from '../Constants/resposeMessages';
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const token = req.cookies.token; //expired token back-listing
+    const accessToken = req.cookies.token; //expired token back-listing
 
-    let decoded = verifyToken(token, env.JWT_ACCESS_TOKEN_SECRET!);
-    req.user = decoded || {};
+    if (!accessToken) {
+          logger.warn('Access token missing', {
+            path: req.originalUrl,
+          });
+    
+          return res.status(StatusCodes.UNAUTHORIZED).json({
+            success: false,
+            message: 'User Unauthorized',
+          });
+      }
 
-    if (decoded) return next();
 
-    const refreshToken = req.session.refreshToken;
-    // console.log("session id:", req.sessionID);
-    // console.log("refresh token:", req.session.refreshToken);
-    // console.log("full session:", req.session);
+    /* ========Try Verify Access Token========= */
+    try {
+          const decoded = verifyToken(
+            accessToken,
+            env.JWT_ACCESS_TOKEN_SECRET!,
+          );
+    
+          if(decoded && req.user){
+            req.user.role = decoded.role;
+            req.user.userId = decoded.userId;
+            req.user.tenantId = decoded.tenantId;
+          }
+          return next();
+      } catch (accessError:any) {
+        /* Token expired ; try refresh */
+        if (accessError.name !== 'TokenExpiredError') {
+          logger.warn(AuthMessage.InvalidAccessToken, {
+            error: accessError.message,
+          });
+  
+          return res.status(StatusCodes.UNAUTHORIZED).json({
+            success: false,
+            message: 'Invalid authentication token',
+          });
+        }
+      }
+
+
+    /* ===========Refresh Flow========== */
+    const refreshToken = req.session?.refreshToken;
 
     if (!refreshToken) {
-      throw new Error('Your session has ended, kindly re-login @authMiddleware');
+      logger.warn('Refresh token missing');
+
+      return res.status(StatusCodes.UNAUTHORIZED).json({
+        success: false,
+        message: 'Session expired. Please login again.',
+      });
     }
 
-    const newToken = refreshAccessToken(refreshToken);
-    if (!newToken) throw new Error("Can't generate new token from rToken");
+    const newAccessToken = refreshAccessToken(refreshToken);
+    
+        if (!newAccessToken) {
+          logger.warn('Failed to generate new access token');
+    
+          return res.status(StatusCodes.UNAUTHORIZED).json({
+            success: false,
+            message: 'Session expired. Please login again.',
+          });
+        }
 
-    res.cookie('token', newToken, {
-      httpOnly: true,
-      maxAge: 2 * 60 * 1000, //can't set the env.token.expiryTime;
-    });
 
-    decoded = verifyToken(newToken, env.JWT_ACCESS_TOKEN_SECRET!);
-    req.user = decoded || {};
+    /* ===========Set New Access Token Cookie============*/
+        res.cookie('token', newAccessToken, {
+          httpOnly: true,
+          secure: false,
+          sameSite: 'strict',
+          maxAge: 2 * 60 * 1000, // 2 minutes (consider moving to env)
+        });
+    
+        const decoded = verifyToken(
+          newAccessToken,
+          env.JWT_ACCESS_TOKEN_SECRET!,
+        );
+    
+        if(decoded && req.user){
+            req.user.role = decoded.role;
+            req.user.userId = decoded.userId;
+            req.user.tenantId = decoded.tenantId;
+          }
+    
+        logger.info('NewTokenGenerated🆕🎫', {
+          userId: decoded?.id,
+        });
+    
+        return next();
 
-    logger.info('NewTokenGenerated🆕🎫');
     next();
-  } catch (err: any) {
-    logger.error('AUTH MIDDLEWARE ERROR:', err.message);
-    return handleErrorsMiddleware(err, req, res, next);
-  }
+  } catch (error) {
+    logger.error('Auth middleware unexpected error', {
+          error: error,
+          path: req.originalUrl,
+        });
+    
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: 'Internal authentication error',
+      });
+    };
 };

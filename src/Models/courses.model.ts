@@ -17,6 +17,8 @@ export interface IAcademicCourse extends Document {
   };
   adminId: ObjectId | null;
   status: string | null;
+  modelType: 'School' | 'Centers';
+  center: ObjectId;
 }
 
 const AcademicCoursesSchema = new Schema<IAcademicCourse>(
@@ -96,6 +98,16 @@ const AcademicCoursesSchema = new Schema<IAcademicCourse>(
       enum: ['active', 'inactive'],
       default: 'active',
     },
+    modelType: {
+      type: String,
+      enum: ['School', 'Centers'],
+      default: 'School',
+    },
+    center: {
+      type: Schema.Types.ObjectId,
+      refPath: 'modelType',
+      required: true,
+    },
   },
   {
     timestamps: true,
@@ -129,7 +141,7 @@ export interface IAcademicCourseMeta extends Document {
   coordinators: ObjectId[] | null;
   eligibilityCriteria: string | null;
   attachments: IUpload_document[];
-  batches: Types.ObjectId[] | null;
+  classes: string[] | null;
   syllabusUrl?: string | null;
   maxStudents: string | null;
   courseId: Types.ObjectId | null;
@@ -196,12 +208,10 @@ const AcademicCourseMetaSchema = new Schema<IAcademicCourseMeta>(
       },
     ],
 
-    batches: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Batches',
-      },
-    ],
+    classes: {
+      type: [String],
+      enum: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+    },
 
     syllabusUrl: {
       type: String,

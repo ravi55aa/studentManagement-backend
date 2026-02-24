@@ -10,4 +10,8 @@ export interface IBatchRepository extends BaseRepository<IBatches> {
   findByTeacherId(teacherId: string): Promise<IBatches | null>;
 
   assignTeacher(batchId: string, teacherId: string): Promise<IBatches | null>;
+
+  updateBatch(id: string, updateData: Partial<IBatches>): Promise<IBatches | null>;
+
+  deleteBatch(id: string): Promise<boolean>;
 }

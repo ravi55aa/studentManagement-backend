@@ -40,8 +40,6 @@ const schoolMeta = new mongoose.Schema<ISchool>(
     password: {
       type: String,
       required: [true, 'Password is required'],
-      minlength: [6, 'Password must be 6+ characters'],
-      maxlength: [8, 'Password must not be greater than 8 characters'],
     },
 
     profile: {

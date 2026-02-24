@@ -8,6 +8,7 @@ export interface ICenter extends Document {
   tenantId: ObjectId | null;
   adminId: ObjectId | null;
   headInCharge: ObjectId | null;
+  userModel: 'Admin' | 'TeacherBio';
   currentStrength: number | null;
   totalCapacity: number | null;
   isMain: boolean | null;
@@ -24,11 +25,16 @@ const CentersSchema: Schema = new Schema(
 
     email: { type: String, required: true },
 
-    tenantId: { type: Schema.Types.ObjectId, required: true, refPath: 'School' },
+    tenantId: { type: Schema.Types.ObjectId, required: true, ref: 'School' },
 
-    adminId: { type: Schema.Types.ObjectId, required: true, refPath: 'Admin' },
+    adminId: { type: Schema.Types.ObjectId, required: true, ref: 'Admin' },
 
-    headInCharge: { type: Schema.Types.ObjectId, required: false, refPath: 'Teacher' },
+    userModel: {
+      type: String,
+      enum: ['Admin', 'TeacherBio'],
+    },
+
+    headInCharge: { type: Schema.Types.ObjectId, required: false, refPath: 'userModel' },
 
     totalCapacity: { type: Number, required: true },
 

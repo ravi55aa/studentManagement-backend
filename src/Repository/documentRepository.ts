@@ -3,6 +3,7 @@ import documentModel, { IDocument, IUploadedDoc } from '../Models/documentModel'
 import { IDocumentRepository } from '../Interfaces/repository/IDocument.interface';
 import { FilterQuery } from 'mongoose';
 import { injectable } from 'tsyringe';
+import logger from '../Utils/logger';
 
 @injectable()
 export class DocumentRepository extends BaseRepository<IDocument> implements IDocumentRepository {
@@ -10,21 +11,30 @@ export class DocumentRepository extends BaseRepository<IDocument> implements IDo
     super(documentModel);
   }
 
-  public async uploadDocuments(data: Partial<IDocument>): Promise<IDocument | null> {
-    const newDoc = new documentModel(data);
-    await newDoc.save();
-    return newDoc;
+  //  Upload Document
+  async uploadDocuments(data: Partial<IDocument>): Promise<IDocument | null> {
+    try {
+      return await this.create(data);
+    } catch (error) {
+      logger.error('Error uploading document:', error);
+      return null;
+    }
   }
 
-  public async updateDocuments(
+  //  Replace Entire Document Data
+  async updateDocuments(
     query: FilterQuery<Partial<IDocument>>,
     data: IUploadedDoc[],
-  ): Promise<Partial<IDocument> | null> {
+  ): Promise<IDocument | null> {
     try {
-      return await documentModel
+      if (!query || Object.keys(query).length === 0) {
+        return null;
+      }
+
+      return await this.model
         .findOneAndUpdate(
           query,
-          { $set: data },
+          { $set: { docs: data } },
           {
             new: true,
             runValidators: true,
@@ -32,45 +42,68 @@ export class DocumentRepository extends BaseRepository<IDocument> implements IDo
         )
         .lean<IDocument>();
     } catch (error) {
-      throw new Error('Failed to update document:', { cause: error });
+      logger.error('Error updating document:', error);
+      return null;
     }
   }
 
-  public async updateNEWUploadDocuments(
+  //  Push New Documents (Append Mode)
+  async updateNEWUploadDocuments(
     query: FilterQuery<Partial<IDocument>>,
     data: IUploadedDoc[],
-  ): Promise<Partial<IDocument> | null> {
+  ): Promise<IDocument | null> {
     try {
-      return await documentModel
+      if (!query || Object.keys(query).length === 0) {
+        return null;
+      }
+
+      return await this.model
         .findOneAndUpdate(
           query,
           { $push: { docs: { $each: data } } },
           {
-            upsert: true,
+            new: true,
+            upsert: false,
           },
         )
         .lean<IDocument>();
     } catch (error) {
-      throw new Error('Failed to update document:', { cause: error });
+      logger.error('Error appending document:', error);
+      return null;
     }
   }
 
-  public async deleteDocument(query: FilterQuery<Partial<IDocument>>): Promise<IDocument | null> {
+  //  Delete Entire Document
+  async deleteDocument(query: FilterQuery<Partial<IDocument>>): Promise<boolean> {
     try {
-      return await documentModel.findOneAndDelete(query).lean<IDocument>();
+      if (!query || Object.keys(query).length === 0) {
+        return false;
+      }
+
+      const result = await this.model.deleteOne(query);
+      return result.deletedCount === 1;
     } catch (error) {
-      throw new Error('Failed to delete document:', { cause: error });
+      logger.error('Error deleting document:', error);
+      return false;
     }
   }
 
-  public async deleteADocumentFile(
+  //  Delete Single File From Document
+  async deleteADocumentFile(
     filter: FilterQuery<Partial<IDocument>>,
-    pullQuery: FilterQuery<Partial<IDocument>>,
-  ): Promise<IDocument | null> {
+    pullQuery: Partial<IDocument>,
+  ): Promise<boolean> {
     try {
-      return await documentModel.updateOne(filter, { $pull: pullQuery }).lean<IDocument>();
+      if (!filter || Object.keys(filter).length === 0) {
+        return false;
+      }
+
+      const result = await this.model.updateOne(filter, { $pull: pullQuery });
+
+      return result.modifiedCount === 1;
     } catch (error) {
-      throw new Error('Failed to delete document:', { cause: error });
+      logger.error('Error removing document file:', error);
+      return false;
     }
   }
 }

@@ -105,9 +105,11 @@ export const schoolSubjectSchema = z
 
     academicYear: z.string().refine(isObjectId, 'Invalid academic year ID'),
 
-    batchesToFollow: z
-      .array(z.string().refine(String, 'Invalid batch ID'))
-      .min(1, 'Select at least one batch'),
+    modelType: z.enum(['School', 'Centers']).default('School'),
+
+    // batchesToFollow: z
+    //   .array(z.string().refine(String, 'Invalid batch ID'))
+    //   .min(1, 'Select at least one batch'),
 
     description: z.string().min(10, 'Description must be at least 10 characters').trim(),
 

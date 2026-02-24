@@ -11,6 +11,10 @@ import { ForgotPasswordRepository, idToObjectId } from '../Repository/forgotPass
 import { StatusCodes } from '../Constants/statusCodes';
 import { ForgotPasswordDTO } from '../dto/forogotPasssword.dto';
 import { injectable, inject } from 'tsyringe';
+import { ApiResponse } from '../Constants/apiResponse';
+import { AuthMessage } from '../Constants/resposeMessages';
+import bcrypt from "bcrypt";
+
 
 @injectable()
 export class ForgotPasswordService implements IForgotPasswordService {
@@ -48,14 +52,7 @@ export class ForgotPasswordService implements IForgotPasswordService {
 
     const newOtpDoc = await this.repository.storeOtp(id!, newOtp);
 
-    const responseBody: IResponse<IOtp> = {
-      success: true,
-      data: newOtpDoc,
-      error: null,
-      message: 'Otp generated Successfully',
-    };
-
-    return { status: StatusCodes.OK, resBody: responseBody };
+    return ApiResponse.success(newOtpDoc,AuthMessage.OtpVerified);
   }
 
   async findValidOtp(id: string, otp: string): Promise<IOtp | null> {
@@ -65,91 +62,55 @@ export class ForgotPasswordService implements IForgotPasswordService {
   }
 
   async verifyOtp(req: Request): Promise<serviceReturnType> {
-    //! move to dto
+
     const { generatedOtp, userEnteredOtp } = req.body;
     const { id } = req.params;
-    //! move to dto
-
+    
     const data = (await this.findValidOtp(id!, generatedOtp)) && generatedOtp === userEnteredOtp;
 
-    const status = data ? StatusCodes.OK : StatusCodes.CONFLICT;
-
-    const responseBody = {
-      success: data ? true : false,
-      data: data,
-      error: data ? null : 'otp verification is failed',
-      message: data ? 'otp verification successful' : 'otp verification failed',
-    };
-
-    return { status: status, resBody: responseBody };
+    return ApiResponse.success(data,AuthMessage.OtpVerified);
   }
 
   async updatePassword(req: Request): Promise<serviceReturnType> {
-    let updatedStatus: number = StatusCodes.BAD_REQUEST;
-
-    let responseBody: IResponse<IUser | ISchool | null> = {
-      success: false,
-      data: null,
-      error: 'Invalid model name',
-      message: 'Invalid request',
-    };
 
     const { modelName, newPassword } = req.body;
     const { id } = req.params;
 
     if (modelName == 'admin') {
-      const adminPassUpdated = await this.repository?.findAndUpdateAdmin(id!, newPassword);
+      const updated = await this.repository?.findAndUpdateAdmin(id!, newPassword);
 
-      updatedStatus = adminPassUpdated ? StatusCodes.OK : StatusCodes.CONFLICT;
+      if (!updated) {
+        return ApiResponse.failure(AuthMessage.InvalidCredentials);
+      }
 
-      responseBody = {
-        success: adminPassUpdated ? true : false,
-        data: adminPassUpdated,
-        error: adminPassUpdated ? null : "user password haven't updated",
-        message: adminPassUpdated
-          ? 'Password updated successfully'
-          : "Password isn't updated successfully",
-      };
+      return ApiResponse.success(null,AuthMessage.PasswordReset);
+
     } else if (modelName === 'school') {
-      const schoolPassUpdated = await this.repository?.findAndUpdateSchool(id!, newPassword);
-
-      updatedStatus = schoolPassUpdated ? StatusCodes.OK : StatusCodes.CONFLICT;
-
-      responseBody = {
-        success: schoolPassUpdated ? true : false,
-        data: schoolPassUpdated,
-        error: schoolPassUpdated ? null : "user password haven't updated",
-        message: schoolPassUpdated
-          ? 'Password updated successfully'
-          : "Password isn't updated successfully",
-      };
+      const updated = await this.repository?.findAndUpdateSchool(id!, newPassword);
+      
+      if (!updated) {
+        return ApiResponse.failure(AuthMessage.InvalidCredentials);
+      }
     }
-
-    return { status: updatedStatus, resBody: responseBody };
+    
+    return ApiResponse.success(null,AuthMessage.PasswordReset);
   }
 
   async updatePasswordV2(req: Request): Promise<serviceReturnType> {
     const { role, id, password } = ForgotPasswordDTO.changePassword(req);
 
-    //const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     let updated = null;
 
     if (role == 'School') {
-      const data: Partial<ISchool> = { password: password };
+      const data: Partial<ISchool> = { password: hashedPassword };
       updated = await this.repository.updatePassword<ISchool>(role, id, data);
     }
 
     if (!updated) {
-      throw new Error('Password not updated');
+      return ApiResponse.failure(AuthMessage.InvalidCredentials);
     }
 
-    const status = 200;
-    const resBody = {
-      success: true,
-      error: null,
-      data: null,
-      message: 'UpdatedPassword',
-    };
-    return { status, resBody };
+    return ApiResponse.success(null,AuthMessage.PasswordReset);
   }
 }

@@ -4,14 +4,11 @@ import { Response, Request } from 'express';
 import { serviceReturnType } from '../../Constants/interfaces';
 
 export interface IAddressService {
-  getSchoolAddress(id: string | undefined): Promise<IAddress | null>;
-  //tenantId:"schoolId"
-  //role:"school"
+  getSchoolAddress(id: string): Promise<serviceReturnType>;
 
-  getUserAddress(query: FilterQuery<Partial<IAddress>>): Promise<IAddress[] | []>;
-  //query : { userId=paramId, tenantId=schoolId}
+  getUserAddress(query: FilterQuery<Partial<IAddress>>): Promise<serviceReturnType>;
 
-  createAddress(address: Partial<IAddress>): Promise<IAddress | null>;
+  createAddress(address: Partial<IAddress>): Promise<serviceReturnType>;
 
   updateAddress(req: Request, res: Response): Promise<serviceReturnType>;
 

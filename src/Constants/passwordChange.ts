@@ -1,6 +1,6 @@
 export enum Databases {
-  admin = 'admin',
-  teacher = 'teacher',
-  student = 'student',
-  school = 'school',
+  admin = 'Admin',
+  teacher = 'TeacherBio',
+  student = 'Students',
+  school = 'School',
 }
