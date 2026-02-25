@@ -3,11 +3,11 @@ import { IDocumentService } from '../Interfaces/services/IDocument.service';
 import { IDocument } from '../Models/documentModel';
 import { Request, Response } from 'express';
 import { DocumentsDto } from '../dto/schoolDTO';
-import { SchoolResponseBody } from '../Utils/ResponseBody/school.responce.body';
 import { inject, injectable } from 'tsyringe';
 import { DocumentRepository } from '../Repository/documentRepository';
 import { ApiResponse } from '../Constants/apiResponse';
 import { DocumentMessage } from '../Constants/resposeMessages';
+import logger from '../Utils/logger';
 
 @injectable()
 export class DocumentService implements IDocumentService {
@@ -27,7 +27,7 @@ export class DocumentService implements IDocumentService {
 
       return ApiResponse.success(uploaded, DocumentMessage.DocumentUploaded);
     } catch (error) {
-      console.error('Error uploading document:', error);
+      logger.error('Error uploading document:', error);
       return ApiResponse.failure('Internal server error');
     }
   }
@@ -45,15 +45,15 @@ export class DocumentService implements IDocumentService {
 
       return ApiResponse.success(updated, DocumentMessage.DocumentUpdated);
     } catch (error) {
-      console.error('Error updating document:', error);
+      logger.error('Error updating document:', error);
       return ApiResponse.failure('Internal server error');
     }
   }
 
   //  Update New Addition Documents
-  async update_NewAddition_Documents(req: Request): Promise<serviceReturnType> {
+  async update_NewAddition_Documents(req: Request,res:Response): Promise<serviceReturnType> {
     try {
-      const { dtoData, dtoQuery } = DocumentsDto.updateDocV2(req);
+      const { dtoData, dtoQuery } = DocumentsDto.updateDocV2(req,res);
 
       const updated = await this.documentRepository.updateNEWUploadDocuments(dtoQuery, dtoData);
 
@@ -63,7 +63,7 @@ export class DocumentService implements IDocumentService {
 
       return ApiResponse.success(updated, DocumentMessage.DocumentUpdated);
     } catch (error) {
-      console.error('Error updating additional documents:', error);
+      logger.error('Error updating additional documents:', error);
       return ApiResponse.failure('Internal server error');
     }
   }
@@ -81,7 +81,7 @@ export class DocumentService implements IDocumentService {
 
       return ApiResponse.success(null, DocumentMessage.DocumentDeleted);
     } catch (error) {
-      console.error('Error deleting document:', error);
+      logger.error('Error deleting document:', error);
       return ApiResponse.failure('Internal server error');
     }
   }
@@ -99,7 +99,7 @@ export class DocumentService implements IDocumentService {
 
       return ApiResponse.success(null, DocumentMessage.FileDeleted);
     } catch (error) {
-      console.error('Error deleting document file:', error);
+      logger.error('Error deleting document file:', error);
       return ApiResponse.failure('Internal server error');
     }
   }

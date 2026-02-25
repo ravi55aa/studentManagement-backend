@@ -9,9 +9,7 @@ export class FeeController {
     private feeService: FeeService,
   ) {}
 
-  /* ----------------------------------------
-        CREATE FEE
-    ---------------------------------------- */
+  /* --------------CREATE FEE--------------- */
   public async createFee(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { status, resBody } = await this.feeService.createFee(req, res);
@@ -22,9 +20,7 @@ export class FeeController {
     }
   }
 
-  /* ----------------------------------------
-        UPDATE FEE
-    ---------------------------------------- */
+  /* --------------UPDATE FEE--------------- */
   public async updateFee(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
@@ -45,9 +41,7 @@ export class FeeController {
     }
   }
 
-  /* ----------------------------------------
-        GET ALL FEES
-    ---------------------------------------- */
+  /* --------------GET ALL FEES--------------- */
   public async getAllFees(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { status, resBody } = await this.feeService.getAllFees();
@@ -58,9 +52,7 @@ export class FeeController {
     }
   }
 
-  /* ----------------------------------------
-        GET FEE BY ID
-    ---------------------------------------- */
+  /* --------------GET FEE BY ID--------------- */
   public async getFeeById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
@@ -81,9 +73,7 @@ export class FeeController {
     }
   }
 
-  /* ----------------------------------------
-        DELETE FEE (Soft Delete Recommended)
-    ---------------------------------------- */
+  /* --------------DELETE FEE (Soft Delete )--------------- */
   public async deleteFee(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;

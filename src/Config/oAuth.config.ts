@@ -87,7 +87,7 @@ export const handleAuthCallback = async (req: Request, res: Response) => {
     const payload: IJwtPayload = { userId: userInDB._id, tenantId: userInDB._id, role: 'Admin' };
     handleJwtTokensGenerator(payload, req, res);
 
-    res.redirect('http://localhost:5173/createSchool');
+    res.redirect('http://localhost:5173/school/register');
   } catch (error: any) {
     logger.error(`OAuth callback error:, ${error.response?.data}  ${error.message}`);
     res.status(500).send('Authentication failed. Please try again.');

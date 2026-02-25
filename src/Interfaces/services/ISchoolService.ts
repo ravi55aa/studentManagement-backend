@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { serviceReturnType } from '../../Constants/interfaces';
 
 export interface ISchoolService {
-  createSchool(req: Request, res: Response): Promise<ISchool>;
+  createSchool(req: Request, res: Response): Promise<serviceReturnType>;
 
   addAddress(req: Request, res: Response): Promise<IAddress>;
 

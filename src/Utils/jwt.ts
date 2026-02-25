@@ -92,7 +92,7 @@ export const handleJwtTokensGenerator = (
 ): void => {
   const { token, refreshToken } = jwtTokensGeneratorForAll(payload);
 
-  res.cookie('token', token, { httpOnly: true, maxAge: 10 * 60 * 1000, path: '/' });
+  res.cookie('token', token, { httpOnly: true, maxAge: 24* 60 * 60 * 1000, path: '/' });
 
   req.session.refreshToken = refreshToken;
 };
@@ -111,7 +111,7 @@ export const handleTokenVerification = (req: Request, res: Response) => {
 
     token = refreshAccessToken(refreshToken!);
 
-    res.cookie('token', token, { httpOnly: true, maxAge: 10 * 60 * 1000, path: '/' });
+    res.cookie('token', token, { httpOnly: true, maxAge: 24*60 * 60 * 1000, path: '/' });
 
     decoded = verifyToken(token, env.JWT_ACCESS_TOKEN_SECRET!);
 

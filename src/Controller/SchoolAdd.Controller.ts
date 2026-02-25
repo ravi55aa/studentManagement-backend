@@ -3,7 +3,7 @@ import { StatusCodes } from '../Constants/statusCodes';
 
 import { IResponse } from '../Interfaces/IResponse';
 import { ISchool } from '../Models/schoolModel';
-import { handleSchoolRB, handleSchoolResBody, validateResponseBody } from '../Utils/responseBody';
+import { handleSchoolRB, handleSchoolResBody } from '../Utils/responseBody';
 import { injectable, inject } from 'tsyringe';
 import { SchoolService } from '../Services/schoolService';
 
@@ -17,10 +17,9 @@ export class SchoolController {
   //*create
   public async createSchool(req: Request, res: Response, next: NextFunction) {
     try {
-      const createdSchool = await this.schoolService.createSchool(req, res);
+      const {status,resBody} = await this.schoolService.createSchool(req, res);
 
-      const responseBody: IResponse<string | null> = validateResponseBody(createdSchool.id);
-      res.status(StatusCodes.CREATED).json(responseBody);
+      res.status(status).json(resBody);
     } catch (err) {
       next(err);
     }

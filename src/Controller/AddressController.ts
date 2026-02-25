@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { IAddress } from '../Models/addressModel';
-import { handleSchoolRB } from '../Utils/responseBody';
 import { StatusCodes } from '../Constants/statusCodes';
 import { AddressDTO } from '../dto/addressDTO';
 import { AddressMessage } from '../Constants/resposeMessages';
@@ -20,12 +19,9 @@ export class AddressController {
   public async getSchoolAddress(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
-      const address = await this.addressService.getSchoolAddress(id!);
+      const {status,resBody} = await this.addressService.getSchoolAddress(id!);
 
-      //pending responseBody
-      const responseBody = handleAddressResponseBody(AddressMessage.AddressListed, address);
-
-      res.status(StatusCodes.OK).json(responseBody);
+      res.status(status).json(resBody);
     } catch (err) {
       next(err);
     }
@@ -34,9 +30,6 @@ export class AddressController {
   public async getAddressById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
-
-      //later replace partial by promise
-      //when move code to service layer.
 
       const address: Partial<IAddress | null> = await addressModel
         .findOne({ userId: id })
@@ -74,11 +67,9 @@ export class AddressController {
     try {
       const dto: Partial<IAddress> = AddressDTO.handleAddress(req, res);
 
-      const dbStoredAddr = await this.addressService.createAddress(dto);
+      const {status,resBody} = await this.addressService.createAddress(dto);
 
-      const responseBody = handleSchoolRB(dbStoredAddr);
-
-      res.status(StatusCodes.CREATED).json(responseBody);
+      res.status(status).json(resBody);
     } catch (err) {
       next(err);
     }

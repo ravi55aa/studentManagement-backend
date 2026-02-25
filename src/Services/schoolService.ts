@@ -37,16 +37,17 @@ export class SchoolService implements ISchoolService {
     private docRepo: IDocumentRepository,
   ) {}
 
-  public async createSchool(req: Request, res: Response) {
+  public async createSchool(req: Request, res: Response):Promise<serviceReturnType> {
     let schoolData: Partial<ISchool> = SchoolDTO.createSchool(req.body);
     const hashedPassword = await bcrypt.hash(schoolData.password!, 10);
     schoolData.password = hashedPassword;
 
-    const adminId: string | undefined = req.user?.userId; //JWT middleware attaches
+    // const adminId: string | undefined = req.user?.userId; //JWT middleware attaches
+    // console.log('@school service, adminId',adminId);
 
-    const admin = await this.userRepository.findById(adminId!);
+    const admin = await this.userRepository.findOne({name:schoolData.adminName});
     if (!admin) {
-      throw new Error('Admin not found');
+      return ApiResponse.notFound('Admin not found');
     }
 
     const plainSchoolData =
@@ -57,6 +58,10 @@ export class SchoolService implements ISchoolService {
       userId: admin._id,
     });
 
+    if(!createdSchool){
+      return ApiResponse.failure('School cannot create');
+    }
+
     admin.tenantId = createdSchool._id;
     await admin.save();
 
@@ -65,9 +70,19 @@ export class SchoolService implements ISchoolService {
       tenantId: createdSchool._id,
       role: 'School',
     };
+
+    // if (!req.user) {
+    //   return ApiResponse.unAuthorized('User is Unauthorized, or Session data is undefined');
+    // }
+
+    // //update Session Data
+    // req.user.role!=payload.role;
+    // req.user.tenantId!=payload.tenantId;
+    // req.user.userId!=payload.userId;
+
     handleJwtTokensGenerator(payload, req, res);
 
-    return createdSchool;
+    return ApiResponse.success(createdSchool,'School Created successfully');
   }
 
   //LOGIN

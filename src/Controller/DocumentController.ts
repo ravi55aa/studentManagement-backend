@@ -1,34 +1,23 @@
 import { Request, Response, NextFunction } from 'express';
-
-import { IDocument } from '../Models/documentModel';
-import { IResponse } from '../Interfaces/IResponse';
-import { handleDocRespBody } from '../Utils/responseBody';
-import { StatusCodes } from '../Constants/statusCodes';
 import { DocumentsDto } from '../dto/schoolDTO';
 import { injectable, inject } from 'tsyringe';
 import { DocumentService } from '../Services/documentService';
+import { IDocumentService } from '../Interfaces/services/IDocument.service';
 
 @injectable()
 export class DocumentController {
   constructor(
     @inject(DocumentService)
-    private documentService: DocumentService,
+    private documentService: IDocumentService,
   ) {}
 
   public async addNewDocuments(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      //dto
-      //service_call
-      //res + catchError
+      const dto = DocumentsDto.handleDtoOfDoc(req,res);
 
-      const dto = DocumentsDto.handleDtoOfDoc(req);
-      dto.userId = dto.tenantId;
+      const {status,resBody} = await this.documentService.uploadDocs(dto);
 
-      const resDoc = this.documentService.uploadDocs(dto);
-
-      const resBody: IResponse<Promise<IDocument | null>> = handleDocRespBody(resDoc);
-
-      res.status(StatusCodes.OK).json(resBody);
+      res.status(status).json(resBody);
     } catch (err) {
       next(err);
     }
@@ -72,7 +61,7 @@ export class DocumentController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const { status, resBody } = await this.documentService.update_NewAddition_Documents(req);
+      const { status, resBody } = await this.documentService.update_NewAddition_Documents(req,res);
 
       res.status(status).json(resBody);
     } catch (err) {

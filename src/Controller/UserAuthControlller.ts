@@ -1,10 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from '../Constants/statusCodes';
-import { IResponse } from '../Interfaces/IResponse';
-import { IUser } from '../Models/userModel';
 import { jwtTokensGenerator } from '../Utils/jwt';
 import { AuthUserDTO } from '../dto/userAuth.dto';
-import { handleResponseBody } from '../Utils/responseBody';
 import { injectable, inject } from 'tsyringe';
 import { UserAuthService } from '../Services/userAuthService';
 import bcrypt from 'bcrypt';
@@ -29,7 +26,7 @@ export class UserAuthController {
       //jwt *********
       const { token, refreshToken } = jwtTokensGenerator(newUser);
 
-      res.cookie('token', token, { httpOnly: true, maxAge: 2 * 60 * 1000, path: '/' });
+      res.cookie('token', token, { httpOnly: true, maxAge: 24*60 * 60 * 1000, path: '/' }); //24h
 
       req.session.refreshToken = refreshToken;
 

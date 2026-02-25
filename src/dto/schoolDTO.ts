@@ -410,17 +410,19 @@ export class SchoolCoursesDto {
  * Documents
  */
 export class DocumentsDto {
-  static handleDtoOfDoc(req: Request): Partial<IDocument> {
+  static handleDtoOfDoc(req: Request,res:Response): Partial<IDocument> {
     const files = req.files as Express.Multer.File[];
     const docs = files?.map((f) => ({
       url: f.path,
       fileName: f.filename,
     }));
 
+    const {adminId,tenantId,role}=SchoolAcademicYearDto.getTenantId(req,res);
+
     return {
-      userId: req.user?.userId,
-      tenantId: req.user?.tenantId,
-      role: req.cookies.role || 'School',
+      userId: role=='School'?tenantId:adminId,
+      tenantId: tenantId,
+      role: req.user?.role || 'School',
       docs,
     };
   }
@@ -428,7 +430,7 @@ export class DocumentsDto {
   static updateDoc(req: Request, res: Response) {
     const decoded = handleTokenVerification(req, res);
 
-    const { docs } = this.handleDtoOfDoc(req);
+    const { docs } = this.handleDtoOfDoc(req,res);
     if (!docs || docs?.length <= 0) {
       throw new Error('Nothing in the docs');
     }
@@ -442,10 +444,10 @@ export class DocumentsDto {
     return { dtoData, dtoQuery };
   }
 
-  static updateDocV2(req: Request) {
+  static updateDocV2(req: Request,res:Response) {
     const { userId } = req.params;
 
-    const { docs } = this.handleDtoOfDoc(req);
+    const { docs } = this.handleDtoOfDoc(req,res);
     if (!docs || docs?.length <= 0) {
       throw new Error('Nothing in the docs');
     }

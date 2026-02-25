@@ -99,6 +99,25 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
     }
   }
 
+  async deleteTeacherBio(teacherId: string): Promise<boolean> {
+    try {
+      if (!Types.ObjectId.isValid(teacherId)) return false;
+
+      const result = await teacherBioModel.deleteOne(
+        { _id: teacherId }
+      );
+
+      if(result.deletedCount <=0){
+        return false;
+      } 
+      return true;
+
+    } catch (error) {
+      logger.error('Error soft deleting teacher:', error);
+      return false;
+    }
+  }
+
   /* ===============================
      ASSIGN SUBJECTS
   ================================= */

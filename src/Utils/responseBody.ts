@@ -45,7 +45,7 @@ export const handleSchoolRB = (address: IAddress | null): IResponse<IAddress | n
     success: true,
     data: address,
     error: null,
-    message: AddressMessage.AddressAdded,
+    message: AddressMessage.AddressCreated,
   };
 };
 
@@ -65,7 +65,7 @@ export const handleDocRespBody = (
     success: true,
     data: payload,
     error: null,
-    message: DocumentMessage.DocumentAdded,
+    message: DocumentMessage.DocumentCreated,
   };
 };
 

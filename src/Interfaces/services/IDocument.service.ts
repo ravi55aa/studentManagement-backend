@@ -9,7 +9,7 @@ export interface IDocumentService {
 
   deleteDocument(req: Request, res: Response): Promise<serviceReturnType>;
 
-  deleteAFile(req: Request, res: Response): Promise<serviceReturnType>;
+  deleteAFile(req: Request): Promise<serviceReturnType>;
 
-  update_NewAddition_Documents(req: Request, res: Response): Promise<serviceReturnType>;
+  update_NewAddition_Documents(req: Request,res:Response): Promise<serviceReturnType>;
 }

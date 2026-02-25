@@ -2,18 +2,15 @@ import { Request, Response } from 'express';
 
 import { serviceReturnType } from '../Constants/interfaces';
 
-import { IResponse } from '../Interfaces/IResponse';
-import { StatusCodes } from '../Constants/statusCodes';
-
-import { batchModel, IBatches } from '../Models/batchModel';
+import {  IBatches } from '../Models/batchModel';
 import { BatchDto } from '../dto/batchDto';
-import { BatchResponseBody } from '../Utils/ResponseBody/batch.response';
 
 import { IBatchService } from '../Interfaces/services/IBatchService';
 import { ApiResponse } from '../Constants/apiResponse';
 import { injectable, inject } from 'tsyringe';
 import { BatchRepository } from '../Repository/batchRespository';
 import { BatchMessage } from '../Constants/resposeMessages';
+import logger from '../Utils/logger';
 
 @injectable()
 export class BatchService implements IBatchService {
@@ -44,7 +41,7 @@ export class BatchService implements IBatchService {
 
       return ApiResponse.success(newBatchDoc, BatchMessage.BatchAdded);
     } catch (error) {
-      console.error('Error creating batch:', error);
+      logger.error('Error creating batch:', error);
       return ApiResponse.failure('Internal server error');
     }
   }
@@ -61,7 +58,7 @@ export class BatchService implements IBatchService {
 
       return ApiResponse.success(doc, BatchMessage.BatchFetched);
     } catch (error) {
-      console.error('Error fetching batch:', error);
+      logger.error('Error fetching batch:', error);
       return ApiResponse.failure('Internal server error');
     }
   }
@@ -74,7 +71,7 @@ export class BatchService implements IBatchService {
 
       return ApiResponse.success(docs, BatchMessage.BatchListed);
     } catch (error) {
-      console.error('Error fetching batches:', error);
+      logger.error('Error fetching batches:', error);
       return ApiResponse.failure('Internal server error');
     }
   }
@@ -92,7 +89,7 @@ export class BatchService implements IBatchService {
 
       return ApiResponse.success(updated, BatchMessage.BatchUpdated);
     } catch (error) {
-      console.error('Error updating batch:', error);
+      logger.error('Error updating batch:', error);
       return ApiResponse.failure('Internal server error');
     }
   }
@@ -109,7 +106,7 @@ export class BatchService implements IBatchService {
 
       return ApiResponse.success(null, BatchMessage.BatchDeleted);
     } catch (error) {
-      console.error('Error deleting batch:', error);
+      logger.error('Error deleting batch:', error);
       return ApiResponse.failure('Internal server error');
     }
   }
@@ -144,7 +141,7 @@ export class BatchService implements IBatchService {
 
       return ApiResponse.success(updated, BatchMessage.TeacherAssigned);
     } catch (error) {
-      console.error('Error assigning teacher:', error);
+      logger.error('Error assigning teacher:', error);
       return ApiResponse.failure('Internal server error');
     }
   }

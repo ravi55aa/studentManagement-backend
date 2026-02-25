@@ -368,6 +368,8 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
           ),
         );
 
+        console.log('@school.year.service subjectDocs',subjectDocs);
+
         const validSubjects = subjectDocs.filter(Boolean).map((s) => s!._id);
 
         if (validSubjects.length === 0) {

@@ -63,7 +63,11 @@ export class BatchRepository extends BaseRepository<IBatches> implements IBatchR
 
   async updateBatch(id: string, updateData: Partial<IBatches>): Promise<IBatches | null> {
     try {
-      return await this.updateById(id, updateData);
+      return await this.model.findByIdAndUpdate(
+        id, 
+        {$set :{...updateData}},
+        {new:true}
+      ).lean<IBatches>();
     } catch (error) {
       logger.error('Error updating batch:', error);
       return null;

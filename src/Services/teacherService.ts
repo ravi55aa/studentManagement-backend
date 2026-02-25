@@ -63,13 +63,14 @@ export class TeacherService implements ITeacherService {
 
       const data = await TeacherDTO.create(req, res);
 
-      if (data.academicYearId) {
+      if (data.academicYearId && data.designation=='teacher') {
         const exists = await this.teacherRepo.findOneProfessional({
           academicYearId: data.academicYearId,
           employmentStatus: 'active',
         });
 
         if (exists) {
+          this.teacherRepo.deleteTeacherBio(req.params.id!)
           return ApiResponse.badRequest(TeacherMessage.ClassTeacherAlreadyAssigned);
         }
 

@@ -13,6 +13,8 @@ export interface ITeacherRepo extends BaseRepository<ITeacherBio> {
 
   softDelete(teacherId: string): Promise<boolean>;
 
+  deleteTeacherBio(teacherId: string): Promise<boolean>
+
   assignClass(teacherId: string, batchId: string): Promise<ITeacher | null>;
 
   removeSubject(teacherId: string, subjectId: string): Promise<ITeacher | null>;

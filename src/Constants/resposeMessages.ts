@@ -128,6 +128,7 @@ export enum DocumentMessage {
   FileNotFound = 'File not found in document',
 
   // Success
+  DocumentCreated = 'Document Created successfully',
   DocumentUploaded = 'Document uploaded successfully',
   DocumentUpdated = 'Document updated successfully',
   DocumentDeleted = 'Document deleted successfully',

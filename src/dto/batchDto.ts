@@ -21,7 +21,7 @@ export class BatchDto {
 
     const newBatchDto: Partial<IBatches> = {
       name,
-      code,
+      code:code.slice(0,3)=='BAT-'?code:'BAT-'+code,
       modelType,
       center: modelType == 'Centers' ? center : decodedToken?.tenantId,
       status: isActive ? 'active' : 'inActive',
