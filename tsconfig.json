@@ -30,6 +30,12 @@
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
 
+    "baseUrl": "./src",
+    "paths": {
+      "@services/*": ["services/*"],
+      "@controllers/*": ["controllers/*"]
+    },
+
     // Style Options
     // "noImplicitReturns": true,
     // "noImplicitOverride": true,

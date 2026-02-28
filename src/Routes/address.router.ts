@@ -2,7 +2,6 @@ import { Router } from 'express';
 const router = Router();
 
 import { authMiddleware } from '../Middlewares/authorise.middleware';
-
 import { addressController } from '../dependencyInjector';
 
 router.get('/get/:id', authMiddleware, (req, res, next) =>
@@ -10,7 +9,7 @@ router.get('/get/:id', authMiddleware, (req, res, next) =>
 );
 
 router.get('/all', authMiddleware, (req, res, next) =>
-  addressController.getAddressAllAddress(req, res, next),
+  addressController.getAllAddress(req, res, next),
 );
 
 router.put('/edit/:id', authMiddleware, (req, res, next) =>

@@ -1,7 +1,8 @@
-import { Types } from 'mongoose';
-
+import { FilterQuery, Types } from 'mongoose';
 import { Request, Response } from 'express';
-import { ITeacher, ITeacherBio } from '../Models/teacherModel';
+import { injectable, inject } from 'tsyringe';
+
+import { ITeacher } from '../Models/teacherModel';
 import { teacherModel } from '../Models';
 import { TeacherDTO, TeacherValidation } from '../dto/teacherDto';
 import { serviceReturnType } from '../Constants/interfaces';
@@ -11,25 +12,24 @@ import { ITeacherService } from '../Interfaces/services/ITeacherService';
 import { ApiResponse } from '../Constants/apiResponse';
 // import { TeacherType } from '../types/teacher.types';
 import logger from '../Utils/logger';
-import { injectable, inject } from 'tsyringe';
 import { TeacherRepository } from '../Repository/teacherRepo';
 import { TeacherMessage } from '../Constants/resposeMessages';
+import { ITeacherRepo } from '../Interfaces/repository/ITeacherRepo';
 
 @injectable()
 export class TeacherService implements ITeacherService {
   constructor(
     @inject(TeacherRepository)
-    private teacherRepo: TeacherRepository,
+    private _teacherRepo: ITeacherRepo,
   ) {}
 
-  /* -------------CREATE TEACHER------------------- */
-
+  /* ------------CreateTeacher*/
   public async createTeacherBio(req: Request, res: Response): Promise<serviceReturnType> {
     try {
       const data = TeacherDTO.createBio(req, res);
 
       if (data.email && data.phone) {
-        const exists = await this.teacherRepo.findOne({
+        const exists = await this._teacherRepo.findOne({
           email: data.email,
           phone: data.phone,
         });
@@ -39,7 +39,7 @@ export class TeacherService implements ITeacherService {
         }
       }
 
-      const created = await this.teacherRepo.create(data);
+      const created = await this._teacherRepo.create(data);
 
       if (!created) {
         return ApiResponse.failure(TeacherMessage.TeacherCreateFailed);
@@ -64,22 +64,22 @@ export class TeacherService implements ITeacherService {
       const data = await TeacherDTO.create(req, res);
 
       if (data.academicYearId && data.designation=='teacher') {
-        const exists = await this.teacherRepo.findOneProfessional({
+        const exists = await this._teacherRepo.findOneProfessional({
           academicYearId: data.academicYearId,
           employmentStatus: 'active',
         });
 
         if (exists) {
-          this.teacherRepo.deleteTeacherBio(req.params.id!)
+          this._teacherRepo.deleteTeacherBio(req.params.id!)
           return ApiResponse.badRequest(TeacherMessage.ClassTeacherAlreadyAssigned);
         }
 
         if (data.teacherId) {
-          await this.teacherRepo.softDelete(data.teacherId.toString());
+          await this._teacherRepo.softDelete(data.teacherId.toString());
         }
       }
 
-      const created = await this.teacherRepo.createProfessional(data);
+      const created = await this._teacherRepo.createProfessional(data);
 
       if (!created) {
         return ApiResponse.failure(TeacherMessage.TeacherCreateFailed);
@@ -97,9 +97,10 @@ export class TeacherService implements ITeacherService {
     }
   }
 
+  /* ===================GET/LIST All Teachers====================== */
   public async getAllTeachers(): Promise<serviceReturnType> {
     try {
-      const result = await this.teacherRepo.getAllTeachers();
+      const result = await this._teacherRepo.getAllTeachers();
 
       if (!result || !result.teacherBio || result.teacherBio.length === 0) {
         return ApiResponse.notFound(TeacherMessage.NoTeachersFound);
@@ -117,18 +118,16 @@ export class TeacherService implements ITeacherService {
     }
   }
 
-  /* =================================================
-      GET TEACHER BY ID
-  ================================================= */
+  /* ===================GET TEACHER BY ID====================== */
   public async getTeacherById(teacherId: string): Promise<serviceReturnType> {
     try {
       if (!Types.ObjectId.isValid(teacherId)) {
         return ApiResponse.badRequest(TeacherMessage.InvalidTeacherId);
       }
 
-      const bio = await this.teacherRepo.findById(teacherId);
+      const bio = await this._teacherRepo.findById(teacherId);
 
-      const professional = await this.teacherRepo.findProfessionalById(teacherId);
+      const professional = await this._teacherRepo.findProfessionalById(teacherId);
 
       if (!bio || !professional) {
         return ApiResponse.notFound(TeacherMessage.TeacherNotFound);
@@ -149,9 +148,7 @@ export class TeacherService implements ITeacherService {
     }
   }
 
-  /* =================================================
-      UPDATE TEACHER BIO
-  ================================================= */
+  /* ===================UPDATE TEACHER BIO====================== */
   public async updateTeacherBio(teacherId: string, req: Request): Promise<serviceReturnType> {
     try {
       if (!Types.ObjectId.isValid(teacherId)) {
@@ -160,7 +157,7 @@ export class TeacherService implements ITeacherService {
 
       const updatePayload = TeacherDTO.updateBio(req);
 
-      const updated = await this.teacherRepo.updateBioById(teacherId, updatePayload);
+      const updated = await this._teacherRepo.updateBioById(teacherId, updatePayload);
 
       if (!updated) {
         return ApiResponse.notFound(TeacherMessage.TeacherNotFound);
@@ -178,14 +175,12 @@ export class TeacherService implements ITeacherService {
     }
   }
 
-  /* =================================================
-      ASSIGN CLASS
-  ================================================= */
+  /* ===================ASSIGN CLASS====================== */
   public async assignClassToTeacher(req: Request): Promise<serviceReturnType> {
     try {
       const dto = TeacherDTO.assignClass(req);
 
-      const updated = await this.teacherRepo.assignClass(dto.teacherId, dto.batchId);
+      const updated = await this._teacherRepo.assignClass(dto.teacherId, dto.batchId);
 
       if (!updated) {
         return ApiResponse.failure(TeacherMessage.TeacherUpdateFailed);
@@ -203,10 +198,8 @@ export class TeacherService implements ITeacherService {
     }
   }
 
-  /* ---------DELETE TEACHER (SOFT DELETE)---------- */
-  public async deleteTeacher(teacherId: string): Promise<serviceReturnType> {
-    try {
-      const deleted = await this.teacherRepo.softDelete(teacherId);
+  /* ---------DELETE TEACpublic async deleteTeacher(teacherId: string): Promise<serviceReturnType> {tr
+      const deleted = await this._teacherRepo.softDelete(teacherId);
 
       if (!deleted) {
         return ApiResponse.notFound(TeacherMessage.TeacherNotFound);
@@ -224,9 +217,7 @@ export class TeacherService implements ITeacherService {
     }
   }
 
-  /* ----------------------------------------
-        UPDATE TEACHER
-  ---------------------------------------- */
+  /* ----------UPDATE TEACHER------------- */
   static async updateTeacher(teacherId: string, updateData: Partial<ITeacher>): Promise<ITeacher> {
     if (!Types.ObjectId.isValid(teacherId)) {
       throw new Error('Invalid teacher id');
@@ -256,8 +247,8 @@ export class TeacherService implements ITeacherService {
     return updated;
   }
 
-  public async getUnassignedTeachers(): Promise<serviceReturnType> {
-    const teachers = await this.teacherRepo.getUnassignedTeachers();
+  public async getUnassignedTeachers(query:FilterQuery<Partial<ITeacher>>): Promise<serviceReturnType> {
+    const teachers = await this._teacherRepo.getUnassignedTeachers(query);
 
     if (!teachers.length) {
       return ApiResponse.notFound('No unassigned teachers found');
@@ -266,9 +257,7 @@ export class TeacherService implements ITeacherService {
     return ApiResponse.success(teachers, 'Unassigned teachers fetched successfully');
   }
 
-  /* ----------------------------------------
-        FETCH ALL TEACHERS
-  ---------------------------------------- */
+  /* ----------FETCH ALL TEACHERS------------- */
   static async fetchAllTeachers(
     tenantId: string,
     filters: {
@@ -300,9 +289,7 @@ export class TeacherService implements ITeacherService {
       .lean<ITeacher[]>();
   }
 
-  /* ----------------------------------------
-        FETCH SINGLE TEACHER
-  ---------------------------------------- */
+  /* ----------FETCH SINGLE TEACHER------------- */
   static async fetchTeacherById(teacherId: string): Promise<ITeacher> {
     if (!Types.ObjectId.isValid(teacherId)) {
       throw new Error('Invalid teacher id');
@@ -323,9 +310,7 @@ export class TeacherService implements ITeacherService {
     return teacher;
   }
 
-  /* ----------------------------------------
-        ASSIGN SUBJECTS TO TEACHER
-  ---------------------------------------- */
+  /* ----------ASSIGN SUBJECTS TO TEACHER------------- */
   static async assignSubjects(teacherId: string, subjectIds: string[]): Promise<ITeacher> {
     const updated = await teacherModel
       .findByIdAndUpdate(
@@ -346,9 +331,7 @@ export class TeacherService implements ITeacherService {
     return updated;
   }
 
-  /* ----------------------------------------
-        REMOVE SUBJECT FROM TEACHER
-  ---------------------------------------- */
+  /* ----------REMOVE SUBJECT FROM TEACHER------------- */
   static async removeSubject(teacherId: string, subjectId: string): Promise<ITeacher> {
     const updated = await teacherModel
       .findByIdAndUpdate(

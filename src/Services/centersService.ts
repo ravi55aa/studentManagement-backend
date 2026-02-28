@@ -1,37 +1,39 @@
 import { Request, Response } from 'express';
+import { inject, injectable } from 'tsyringe';
+
 import { CenterDto } from '../dto/centersDto';
 import { ICenter } from '../Models/centerModel';
 import { AddressDTO } from '../dto/addressDTO';
 import { IAddress } from '../Models/addressModel';
 import { serviceReturnType } from '../Constants/interfaces';
-
 import { ICenterService } from '../Interfaces/services/ICenterService';
-import { inject, injectable } from 'tsyringe';
 import { AddressRepository } from '../Repository/addressRepository';
 import { CenterRepository } from '../Repository/centerRepository';
 import { ApiResponse } from '../Constants/apiResponse';
 import { CenterMessage } from '../Constants/resposeMessages';
+import { IAddressRepository } from '../Interfaces/repository/IAddressRepository';
+import { ICenterRepository } from '../Interfaces/repository/ICenterRepository';
 
 @injectable()
 export class CentersService implements ICenterService {
   constructor(
     @inject(AddressRepository)
-    private addressRepo: AddressRepository,
+    private _addressRepo: IAddressRepository,
 
     @inject(CenterRepository)
-    private centerRepo: CenterRepository,
+    private _centerRepo: ICenterRepository,
   ) {}
 
   async createCenter(req: Request, res: Response): Promise<serviceReturnType> {
     const dto: Partial<ICenter> = CenterDto.handleNewCenterDto(req, res);
 
     // Check if already exists
-    const existing = await this.centerRepo.findByName(dto.name!);
+    const existing = await this._centerRepo.findByName(dto.name!);
     if (existing) {
       return ApiResponse.failure(CenterMessage.CenterExists);
     }
 
-    const newCenterDoc = await this.centerRepo.addCenter(dto);
+    const newCenterDoc = await this._centerRepo.addCenter(dto);
 
     return ApiResponse.success(newCenterDoc, CenterMessage.CenterAdded);
   }
@@ -43,7 +45,7 @@ export class CentersService implements ICenterService {
     dto.userId = id;
     dto.userType = 'Center';
 
-    const doc = await this.addressRepo.create(dto);
+    const doc = await this._addressRepo.create(dto);
 
     return ApiResponse.success(doc, CenterMessage.CenterUpdated);
   }
@@ -51,7 +53,7 @@ export class CentersService implements ICenterService {
   async getCenterById(req: Request): Promise<serviceReturnType> {
     const { id } = req.params;
 
-    const doc = await this.centerRepo.findById(id!);
+    const doc = await this._centerRepo.findById(id!);
 
     if (!doc) {
       return ApiResponse.failure(CenterMessage.CenterNotFound);
@@ -61,7 +63,7 @@ export class CentersService implements ICenterService {
   }
 
   async getAllCenters(): Promise<serviceReturnType> {
-    const docs = await this.centerRepo.getAllCenters();
+    const docs = await this._centerRepo.getAllCenters();
 
     if (!docs || docs.length === 0) {
       return ApiResponse.failure(CenterMessage.CenterNotFound);
@@ -74,7 +76,7 @@ export class CentersService implements ICenterService {
     const { id } = req.params;
     const updatedData: Partial<ICenter> = CenterDto.handleNewCenterDto(req, res);
 
-    const updatedDoc = await this.centerRepo.updateCenter(id!, updatedData);
+    const updatedDoc = await this._centerRepo.updateCenter(id!, updatedData);
 
     if (!updatedDoc) {
       return ApiResponse.failure(CenterMessage.CenterNotFound);
@@ -86,7 +88,7 @@ export class CentersService implements ICenterService {
   async deleteCenter(req: Request): Promise<serviceReturnType> {
     const { id } = req.params;
 
-    const deleted = await this.centerRepo.deleteCenter(id!);
+    const deleted = await this._centerRepo.deleteCenter(id!);
 
     if (!deleted) {
       return ApiResponse.failure(CenterMessage.CenterNotFound);

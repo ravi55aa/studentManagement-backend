@@ -1,24 +1,28 @@
 import { Request, Response, NextFunction } from 'express';
+import { injectable, inject } from 'tsyringe';
+
 import { serviceReturnType } from '../Constants/interfaces';
 import coursesModel, { coursesMetaModel } from '../Models/courses.model';
-import { injectable, inject } from 'tsyringe';
 import {
   SchoolAcademicCoursesService,
   SchoolAcademicSubjectSer,
   SchoolYear,
 } from '../Services/school.year.service';
+import { ISchoolAcademicCourseSer, ISchoolAcademicSubjectSer, ISchoolAcademicYear } from '../Interfaces/services/ISchoolAcademicYear';
+import { ApiResponse } from '../Constants/apiResponse';
+import { CourseMessage } from '../Constants/resposeMessages';
 
 /******** SCHOOL YEAR********/
 @injectable()
 export class SchoolAcademicController {
   constructor(
     @inject(SchoolYear)
-    private academicService: SchoolYear,
+    private _academicService: ISchoolAcademicYear,
   ) {}
 
   async addNewYear(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody }: serviceReturnType = await this.academicService.addNewSchoolYear(
+      const { status, resBody }: serviceReturnType = await this._academicService.addNewSchoolYear(
         req,
         res,
       );
@@ -32,7 +36,7 @@ export class SchoolAcademicController {
   async getASchoolAcademicYear(req: Request, res: Response, next: NextFunction) {
     try {
       const { status, resBody }: serviceReturnType =
-        await this.academicService.getAAcademicYear(req);
+        await this._academicService.getAAcademicYear(req);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -42,7 +46,7 @@ export class SchoolAcademicController {
 
   async listAllAcademicYear(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this.academicService.listAllAcademicYears();
+      const { status, resBody } = await this._academicService.listAllAcademicYears();
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -52,7 +56,7 @@ export class SchoolAcademicController {
 
   async editAnAcademicYearById(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this.academicService.updateAcademicYear(req, res);
+      const { status, resBody } = await this._academicService.updateAcademicYear(req, res);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -62,7 +66,7 @@ export class SchoolAcademicController {
 
   async deleteAnSchoolAcademicYearById(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this.academicService.deleteAcademicYear(req);
+      const { status, resBody } = await this._academicService.deleteAcademicYear(req);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -76,12 +80,12 @@ export class SchoolAcademicController {
 export class SchoolAcademicSubjectController {
   constructor(
     @inject(SchoolAcademicSubjectSer)
-    private service: SchoolAcademicSubjectSer,
+    private _service: ISchoolAcademicSubjectSer,
   ) {}
 
   async addNewSchoolSubject(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody }: serviceReturnType = await this.service.addAcademicSubject(
+      const { status, resBody }: serviceReturnType = await this._service.addAcademicSubject(
         req,
         res,
       );
@@ -94,7 +98,7 @@ export class SchoolAcademicSubjectController {
 
   async listAllSchoolAcademicSubjects(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this.service.listAllAcademicSubjects(req, res);
+      const { status, resBody } = await this._service.listAllAcademicSubjects(req, res);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -106,7 +110,7 @@ export class SchoolAcademicSubjectController {
 
   async getASchoolAcademicSubject(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody }: serviceReturnType = await this.service.getAnAcademicSubject(req);
+      const { status, resBody }: serviceReturnType = await this._service.getAnAcademicSubject(req,res);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -116,7 +120,7 @@ export class SchoolAcademicSubjectController {
 
   async editASchoolAcademicSubject(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this.service.updateAnAcademicSubject(req, res);
+      const { status, resBody } = await this._service.updateAnAcademicSubject(req, res);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -126,7 +130,7 @@ export class SchoolAcademicSubjectController {
 
   async deleteASchoolAcademicSubject(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this.service.deleteAnAcademicSubject(req);
+      const { status, resBody } = await this._service.deleteAnAcademicSubject(req,res);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -140,12 +144,12 @@ export class SchoolAcademicSubjectController {
 export class SchoolAcademicCourseController {
   constructor(
     @inject(SchoolAcademicCoursesService)
-    private courseService: SchoolAcademicCoursesService,
+    private _courseService: ISchoolAcademicCourseSer,
   ) {}
 
   async addNewSchoolCourse(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody }: serviceReturnType = await this.courseService.createNewCourse(
+      const { status, resBody }: serviceReturnType = await this._courseService.createNewCourse(
         req,
         res,
       );
@@ -161,12 +165,9 @@ export class SchoolAcademicCourseController {
       const courses = await coursesModel.find().lean();
       const courses_meta = await coursesMetaModel.find().lean();
 
-      res.status(200).json({
-        message: 'fetched Successfully',
-        success: true,
-        error: null,
-        data: { courses, courses_meta },
-      });
+      const {status,resBody}=ApiResponse.success({courses,courses_meta},CourseMessage.CourseListed);
+
+      return res.status(status).json(resBody);
     } catch (err) {
       next(err);
     }
@@ -174,7 +175,7 @@ export class SchoolAcademicCourseController {
 
   async getASchoolAcademicCourse(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody }: serviceReturnType = await this.courseService.getAnAcademicCourse(
+      const { status, resBody }: serviceReturnType = await this._courseService.getAnAcademicCourse(
         req,
         res,
       );
@@ -187,7 +188,7 @@ export class SchoolAcademicCourseController {
 
   async editASchoolAcademicCourse(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this.courseService.updateAcademicCourse(req, res);
+      const { status, resBody } = await this._courseService.updateAcademicCourse(req, res);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -197,7 +198,7 @@ export class SchoolAcademicCourseController {
 
   async deleteASchoolAcademicSubject(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this.courseService.deleteAnAcademicCourse(req, res);
+      const { status, resBody } = await this._courseService.deleteAnAcademicCourse(req, res);
 
       res.status(status).json(resBody);
     } catch (err) {

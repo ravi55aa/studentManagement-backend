@@ -1,6 +1,7 @@
+import { FilterQuery } from 'mongoose';
+
 import { BaseRepository } from '../../Repository/BaseRepository';
 import { IBatches } from '../../Models/batchModel';
-import { FilterQuery } from 'mongoose';
 
 export interface IBatchRepository extends BaseRepository<IBatches> {
   addBatch(centerData: Partial<IBatches>): Promise<IBatches | null>;

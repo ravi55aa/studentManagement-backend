@@ -1,10 +1,11 @@
 import { FilterQuery, Types } from 'mongoose';
-import { IBatchRepository } from '../Interfaces/repository/IBatchRepository';
-
-import { IBatches, batchModel } from '../Models/batchModel';
-import { BaseRepository } from './BaseRepository';
 import { injectable } from 'tsyringe';
+
+import { IBatchRepository } from '../Interfaces/repository/IBatchRepository';
+import { IBatches, batchModel } from '../Models/batchModel';
 import logger from '../Utils/logger';
+
+import { BaseRepository } from './BaseRepository';
 
 @injectable()
 export class BatchRepository extends BaseRepository<IBatches> implements IBatchRepository {

@@ -1,9 +1,9 @@
+import { IUserRepository } from '../Interfaces/repository/IAdminRepository';
 import { IAddress } from '../Models/addressModel';
 
-import { UserRepository } from '../Repository/userRepository';
 
 export class UserValidator {
-  static async ensureUserIsTaken(repository: UserRepository, field: string) {
+  static async ensureUserIsTaken(repository: IUserRepository, field: string) {
     const existing = await repository.findByEmail(field);
     if (existing) throw new Error('User already exist');
   }

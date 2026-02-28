@@ -16,3 +16,16 @@ export const sendMail = async ({ to, subject, html, text }: SendMailOptions): Pr
     text,
   });
 };
+
+
+export const handleMailOptions=(newOtp:string)=>{
+  const mailOptions: SendMailOptions = {
+      to: 'raviaa912@gmail.com',
+      subject: 'Password change otp',
+      html: `<P>You're otp is ${newOtp}</p>1}
+            sendMail`,
+      text: 'kindly Update the otp',
+  };
+
+    return mailOptions;
+}

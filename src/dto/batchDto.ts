@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
+import { FilterQuery } from 'mongoose';
+
 import { IBatches } from '../Models/batchModel';
 import { handleTokenVerification } from '../Utils/jwt';
-import { FilterQuery } from 'mongoose';
 
 export class BatchDto {
   static handleNewBatchDto(req: Request, res: Response): Partial<IBatches> {
@@ -21,7 +22,7 @@ export class BatchDto {
 
     const newBatchDto: Partial<IBatches> = {
       name,
-      code:code.slice(0,3)=='BAT-'?code:'BAT-'+code,
+      code:code.slice(0,4)=='BAT-'?code:'BAT-'+code,
       modelType,
       center: modelType == 'Centers' ? center : decodedToken?.tenantId,
       status: isActive ? 'active' : 'inActive',

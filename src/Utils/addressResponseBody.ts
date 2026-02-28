@@ -1,5 +1,5 @@
 import { serviceReturnType } from '../Constants/interfaces';
-import { IResponse } from '../Interfaces/IResponse';
+import { IResponse } from '../Interfaces/Other/IResponse';
 import { IAddress } from '../Models/addressModel';
 
 export const handleAddressResponseBody = (

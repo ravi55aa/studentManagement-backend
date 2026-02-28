@@ -1,7 +1,8 @@
 import mongoose, { Schema, Document, ObjectId, Types } from 'mongoose';
-import { EmploymentStatus, TeacherDesignation, EDepartment } from '../types/enum';
+
+import { EmploymentStatus, TeacherDesignation, EDepartment , Gender_types } from '../types/enum';
+
 import { IAcademicSubject } from './academicYear';
-import { Gender_types } from '../types/enum';
 import { IUploadedDoc } from './documentModel';
 
 export interface ITeacherBio extends Document {

@@ -1,4 +1,5 @@
 import { Router } from 'express';
+
 import { authMiddleware } from '../Middlewares/authorise.middleware';
 import { resetPassController } from '../dependencyInjector';
 const router = Router();

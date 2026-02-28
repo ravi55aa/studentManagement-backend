@@ -1,18 +1,21 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'tsyringe';
+
 import { FeeService } from '../Services/feesService';
+import { ApiResponse } from '../Constants/apiResponse';
+import { AuthMessage } from '../Constants/resposeMessages';
 
 @injectable()
 export class FeeController {
   constructor(
     @inject(FeeService)
-    private feeService: FeeService,
+    private _feeService: FeeService,
   ) {}
 
   /* --------------CREATE FEE--------------- */
   public async createFee(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { status, resBody } = await this.feeService.createFee(req, res);
+      const { status, resBody } = await this._feeService.createFee(req, res);
 
       res.status(status).json(resBody);
     } catch (error) {
@@ -33,7 +36,7 @@ export class FeeController {
         return;
       }
 
-      const { status, resBody } = await this.feeService.updateFee(id, req);
+      const { status, resBody } = await this._feeService.updateFee(id, req);
 
       res.status(status).json(resBody);
     } catch (error) {
@@ -44,7 +47,7 @@ export class FeeController {
   /* --------------GET ALL FEES--------------- */
   public async getAllFees(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { status, resBody } = await this.feeService.getAllFees();
+      const { status, resBody } = await this._feeService.getAllFees();
 
       res.status(status).json(resBody);
     } catch (error) {
@@ -58,16 +61,13 @@ export class FeeController {
       const { id } = req.params;
 
       if (!id) {
-        res.status(400).json({
-          success: false,
-          message: 'Fee ID is required',
-        });
-        return;
+        const {status,resBody}=ApiResponse.notFound('UserIdNotFound');
+        res.status(status).json(resBody);
       }
 
-      const result = await this.feeService.getFeeById(id);
+      const {status,resBody} = await this._feeService.getFeeById(id!);
 
-      res.status(result.status).json(result.resBody);
+      res.status(status).json(resBody);
     } catch (error) {
       next(error);
     }
@@ -86,7 +86,7 @@ export class FeeController {
         return;
       }
 
-      const { status, resBody } = await this.feeService.deleteFee(id);
+      const { status, resBody } = await this._feeService.deleteFee(id);
 
       res.status(status).json(resBody);
     } catch (error) {

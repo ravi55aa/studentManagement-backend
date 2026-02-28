@@ -1,4 +1,5 @@
 import { Request } from 'express';
+
 import { UserRole } from '../types/auth.types';
 
 export class ForgotPasswordDTO {

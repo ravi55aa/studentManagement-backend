@@ -1,16 +1,17 @@
 import { Request, Response } from 'express';
+
 import { serviceReturnType } from '../../Constants/interfaces';
 
 export interface ISchoolAcademicYear {
   addNewSchoolYear(req: Request, res: Response): Promise<serviceReturnType>;
 
-  getAAcademicYear(req: Request, res: Response): Promise<serviceReturnType>;
+  getAAcademicYear(req: Request): Promise<serviceReturnType>
 
   updateAcademicYear(req: Request, res: Response): Promise<serviceReturnType>;
 
-  listAllAcademicYears(req: Request, res: Response): Promise<serviceReturnType>;
+  listAllAcademicYears(): Promise<serviceReturnType>;
 
-  deleteAcademicYear(req: Request, res: Response): Promise<serviceReturnType>;
+  deleteAcademicYear(req: Request): Promise<serviceReturnType>;
 }
 
 export interface ISchoolAcademicSubjectSer {

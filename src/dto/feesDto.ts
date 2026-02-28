@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+
 import { IFee } from '../Models/feesModel';
 import { handleTokenVerification } from '../Utils/jwt';
 
@@ -10,7 +11,7 @@ export class FeeDto {
 
     const returnData: Partial<IFee> = {
       name: data.name,
-      code: data.code,
+      code: 'FEE-'+data.code,
 
       type: data.type,
 
@@ -51,7 +52,7 @@ export class FeeDto {
 
     if (data.name !== undefined) updateData.name = data.name;
 
-    if (data.code !== undefined) updateData.code = data.code;
+    if (data.code !== undefined) updateData.code = data.code.slice(0,4)=='FEE-'?data.code:'FEE-'+data.code;
 
     if (data.type !== undefined) updateData.type = data.type;
 

@@ -1,5 +1,8 @@
-import { serviceReturnType } from '../../Constants/interfaces';
 import { Request, Response } from 'express';
+
+import { serviceReturnType } from '../../Constants/interfaces';
+import { FilterQuery } from 'mongoose';
+import { ITeacher } from 'Models/teacherModel';
 
 export interface ITeacherService {
   createTeacher(req: Request, res: Response): Promise<serviceReturnType>;
@@ -12,7 +15,7 @@ export interface ITeacherService {
 
   getTeacherById(teacherId: string): Promise<serviceReturnType>;
 
-  getUnassignedTeachers(): Promise<serviceReturnType>;
+  getUnassignedTeachers(query:FilterQuery<Partial<ITeacher>>): Promise<serviceReturnType>;
 
   assignClassToTeacher(req: Request): Promise<serviceReturnType>;
 }

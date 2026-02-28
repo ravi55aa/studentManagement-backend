@@ -1,25 +1,21 @@
 import { Types } from 'mongoose';
 import { Request, Response } from 'express';
+import { injectable, inject } from 'tsyringe';
+
 import { StatusCodes } from '../Constants/statusCodes';
-import academicSubjectsModel from '../Models/academicYear';
+import academicSubjectsModel, { academicYearModel, IAcademicSubject, IAcademicYear } from '../Models/academicYear';
 import { serviceReturnType } from '../Constants/interfaces';
 import { handleValidationOF } from '../Middlewares/validateUser.middleware';
 import { AcademicYearResponseBody } from '../Utils/ResponseBody/academicYear.resonseBody';
 import { IBatchRepository } from '../Interfaces/repository/IBatchRepository';
-
 import { IAcademicCourse, IAcademicCourseMeta } from '../Models/courses.model';
-
 import { schoolAcademicYearSchema, schoolSubjectSchema } from '../Validators/school.validator';
-
-import { academicYearModel, IAcademicSubject, IAcademicYear } from '../Models/academicYear';
-
 import { SchoolAcademicYearDto, SchoolCoursesDto, SchoolSubjectsDto } from '../dto/schoolDTO';
-
 import {
+  ISchoolAcademicYearRepo,
   ISchoolCoursesRepo,
   ISchoolSubjectsRepo,
 } from '../Interfaces/repository/ISchoolAcademiYear';
-
 import {
   ISchoolAcademicCourseSer,
   ISchoolAcademicSubjectSer,
@@ -30,7 +26,6 @@ import {
   AcademicSubjectRepository,
   AcademicYearRepository,
 } from '../Repository/academicYear.Respository';
-import { injectable, inject } from 'tsyringe';
 import { BatchRepository } from '../Repository/batchRespository';
 import {
   AcademicCourseMessage,
@@ -55,7 +50,7 @@ export interface IFullCourses {
 export class SchoolYear implements ISchoolAcademicYear {
   constructor(
     @inject(AcademicYearRepository)
-    private yearRepo: AcademicYearRepository,
+    private _yearRepo: ISchoolAcademicYearRepo,
   ) {}
 
   /* =================ADD NEW ACADEMIC YEAR==================== */
@@ -65,7 +60,7 @@ export class SchoolYear implements ISchoolAcademicYear {
 
       handleValidationOF(schoolAcademicYearSchema, dto, res);
 
-      const created = await this.yearRepo.addAcademicYear(dto);
+      const created = await this._yearRepo.addAcademicYear(dto);
 
       if (!created) {
         return ApiResponse.failure(AcademicYearMessage.YearCreateFailed);
@@ -86,7 +81,7 @@ export class SchoolYear implements ISchoolAcademicYear {
   /* =================LIST ALL YEARS==================== */
   async listAllAcademicYears(): Promise<serviceReturnType> {
     try {
-      const years = await this.yearRepo.getAllAcademicYear();
+      const years = await this._yearRepo.getAllAcademicYear();
 
       if (!years || years.length === 0) {
         return ApiResponse.notFound(AcademicYearMessage.NoYearsFound);
@@ -113,7 +108,7 @@ export class SchoolYear implements ISchoolAcademicYear {
         return ApiResponse.badRequest(AcademicYearMessage.InvalidYearId);
       }
 
-      const year = await this.yearRepo.findById(id);
+      const year = await this._yearRepo.findById(id);
 
       if (!year) {
         return ApiResponse.notFound(AcademicYearMessage.YearNotFound);
@@ -142,7 +137,7 @@ export class SchoolYear implements ISchoolAcademicYear {
 
       const dto = SchoolAcademicYearDto.updateAcademicYear(req, res);
 
-      const updated = await this.yearRepo.updateYear({ _id: id }, dto);
+      const updated = await this._yearRepo.updateYear({ _id: id }, dto);
 
       if (!updated) {
         return ApiResponse.notFound(AcademicYearMessage.YearNotFound);
@@ -169,7 +164,7 @@ export class SchoolYear implements ISchoolAcademicYear {
         return ApiResponse.badRequest(AcademicYearMessage.InvalidYearId);
       }
 
-      const deleted = await this.yearRepo.deleteYear(id);
+      const deleted = await this._yearRepo.deleteYear(id);
 
       if (!deleted) {
         return ApiResponse.notFound(AcademicYearMessage.YearNotFound);
@@ -197,10 +192,10 @@ export class SchoolYear implements ISchoolAcademicYear {
 export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
   constructor(
     @inject(AcademicSubjectRepository)
-    private repo: ISchoolSubjectsRepo,
+    private _repo: ISchoolSubjectsRepo,
 
     @inject(BatchRepository)
-    private batchRepo: IBatchRepository,
+    private _batchRepo: IBatchRepository,
   ) {}
 
   /* =============ADD SUBJECT============= */
@@ -210,7 +205,7 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
 
       handleValidationOF(schoolSubjectSchema, dto, res);
 
-      const created = await this.repo.addSubject(dto);
+      const created = await this._repo.addSubject(dto);
 
       if (!created) {
         return ApiResponse.failure(AcademicSubjectMessage.SubjectCreateFailed);
@@ -233,7 +228,7 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
     try {
       const { tenantId, adminId } = SchoolAcademicYearDto.getTenantId(req, res);
 
-      const subjects = await this.repo.getAllSubjects({
+      const subjects = await this._repo.getAllSubjects({
         tenantId,
         adminId,
       });
@@ -263,7 +258,7 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
         return ApiResponse.badRequest(AcademicSubjectMessage.InvalidSubjectId);
       }
 
-      const subject = await this.repo.findById(id);
+      const subject = await this._repo.findById(id);
 
       if (!subject) {
         return ApiResponse.notFound(AcademicSubjectMessage.SubjectNotFound);
@@ -292,7 +287,7 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
 
       const dto = await SchoolSubjectsDto.updateSubject(req, res);
 
-      const updated = await this.repo.updateSubject({ _id: id }, dto);
+      const updated = await this._repo.updateSubject({ _id: id }, dto);
 
       if (!updated) {
         return ApiResponse.notFound(AcademicSubjectMessage.SubjectNotFound);
@@ -319,7 +314,7 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
         return ApiResponse.badRequest(AcademicSubjectMessage.InvalidSubjectId);
       }
 
-      const deleted = await this.repo.deleteSubject(id);
+      const deleted = await this._repo.deleteSubject(id);
 
       if (!deleted) {
         return ApiResponse.notFound(AcademicSubjectMessage.SubjectNotFound);
@@ -347,13 +342,13 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
 export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
   constructor(
     @inject(AcademicCourseRepository)
-    private courseRepo: ISchoolCoursesRepo,
+    private _courseRepo: ISchoolCoursesRepo,
 
     @inject(BatchRepository)
-    private batchRepo: IBatchRepository,
+    private _batchRepo: IBatchRepository,
 
     @inject(AcademicSubjectRepository)
-    private subjectRepo: ISchoolSubjectsRepo,
+    private _subjectRepo: ISchoolSubjectsRepo,
   ) {}
 
   async createNewCourse(req: Request, res: Response): Promise<serviceReturnType> {
@@ -364,7 +359,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
       if (courseMetaDto.subjects && courseMetaDto.subjects.subjectType === 'ACADEMIC') {
         const subjectDocs = await Promise.all(
           (courseMetaDto.subjects.subjectRef ?? []).map((code: string) =>
-            this.subjectRepo.findOne({ code }),
+            this._subjectRepo.findOne({ code }),
           ),
         );
 
@@ -394,14 +389,14 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
       courseDto.academicYear = academicYear._id;
 
       /* ==================Create Course================== */
-      const newCourse = await this.courseRepo.createCourse(courseDto);
+      const newCourse = await this._courseRepo.createCourse(courseDto);
 
       if (!newCourse) {
         return ApiResponse.failure(AcademicCourseMessage.CourseCreateFailed);
       }
 
       /* ==================Create Course Meta================== */
-      const newMeta = await this.courseRepo.createCourseMeta({
+      const newMeta = await this._courseRepo.createCourseMeta({
         ...courseMetaDto,
         courseId: newCourse._id,
       });
@@ -435,7 +430,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
       /* ==========================================
        Fetch Courses
     ========================================== */
-      const courses = await this.courseRepo.getAllCourses(query);
+      const courses = await this._courseRepo.getAllCourses(query);
 
       if (!courses || courses.length === 0) {
         return ApiResponse.notFound(AcademicCourseMessage.NoCoursesFound);
@@ -444,7 +439,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
       /* ==========================================
        Fetch Meta
     ========================================== */
-      const meta = await this.courseRepo.getAllCourseMeta(query);
+      const meta = await this._courseRepo.getAllCourseMeta(query);
 
       return ApiResponse.success({ courses, meta }, AcademicCourseMessage.CoursesListed);
     } catch (error) {
@@ -472,14 +467,14 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
       const query = { _id: id, tenantId, adminId };
 
       /* ===============Fetch Course==================== */
-      const course = await this.courseRepo.findOneCourse(query);
+      const course = await this._courseRepo.findOneCourse(query);
 
       if (!course) {
         return ApiResponse.notFound(AcademicCourseMessage.CourseNotFound);
       }
 
       /* ===============Fetch Meta==================== */
-      const meta = await this.courseRepo.findOneCourseMeta({
+      const meta = await this._courseRepo.findOneCourseMeta({
         courseId: id,
         tenantId,
         adminId,
@@ -518,7 +513,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
           courseMetaDto.subjects.map(async (subject) => {
             if (subject.subjectType === 'ACADEMIC') {
               const subjectDocs = await Promise.all(
-                (subject.subjectRef ?? []).map((code) => this.subjectRepo.findOne({ code })),
+                (subject.subjectRef ?? []).map((code) => this._subjectRepo.findOne({ code })),
               );
 
               subject.subjectRef = subjectDocs.filter(Boolean).map((s) => s!._id);
@@ -545,7 +540,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
       }
 
       /* ===============Update Course==================== */
-      const updatedCourse = await this.courseRepo.updateCourse(query, courseDto);
+      const updatedCourse = await this._courseRepo.updateCourse(query, courseDto);
 
       if (!updatedCourse) {
         return ApiResponse.notFound(AcademicCourseMessage.CourseNotFound);
@@ -553,7 +548,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
 
       /* ==================Update Course Meta======================= */
       if (courseMetaDto) {
-        await this.courseRepo.updateCourseMeta({ courseId: id, tenantId, adminId }, courseMetaDto);
+        await this._courseRepo.updateCourseMeta({ courseId: id, tenantId, adminId }, courseMetaDto);
       }
 
       return ApiResponse.success(updatedCourse, AcademicCourseMessage.CourseUpdated);
@@ -580,14 +575,14 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
       const query = { _id: id, tenantId, adminId };
 
       /* ==============Delete Course First=================== */
-      const deletedCourse = await this.courseRepo.deleteCourse(query);
+      const deletedCourse = await this._courseRepo.deleteCourse(query);
 
       if (!deletedCourse) {
         return ApiResponse.notFound(AcademicCourseMessage.CourseNotFound);
       }
 
       /* ==========Delete Meta Only If Course Deleted=============== */
-      await this.courseRepo.deleteCourseMeta({
+      await this._courseRepo.deleteCourseMeta({
         courseId: id,
         tenantId,
         adminId,
@@ -692,7 +687,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
 //         const subjectIds: Types.ObjectId[] = [];
 
 //         for (const code of subject.subjectRef ?? []) {
-//           const isSub = await this.subjectRepo.findOne({ code });
+//           const isSub = await this._subjectRepo.findOne({ code });
 //           if (isSub) subjectIds.push(isSub._id);
 //         }
 

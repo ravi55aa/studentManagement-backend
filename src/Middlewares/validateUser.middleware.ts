@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
+import { ZodSchema, ZodError } from 'zod';
 
 import { StatusCodes } from '../Constants/statusCodes';
-import { IResponse } from '../Interfaces/IResponse';
-import { ZodSchema, ZodError } from 'zod';
+import { IResponse } from '../Interfaces/Other/IResponse';
 import { ApiResponse } from '../Constants/apiResponse';
 
 const handleValidationErrors = (err: any, res: Response) => {

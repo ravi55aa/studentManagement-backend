@@ -1,30 +1,31 @@
 import { Request, Response } from 'express';
+import { injectable, inject } from 'tsyringe';
+
 import { IFeeService } from '../Interfaces/services/IFeeService';
 import { FeeRepository } from '../Repository/feeRepository';
 import { FeeDto } from '../dto/feesDto';
 import { ApiResponse } from '../Constants/apiResponse';
 import { serviceReturnType } from '../Constants/interfaces';
 import { IFee } from '../Models/feesModel';
-import { injectable, inject } from 'tsyringe';
 
 @injectable()
 export class FeeService implements IFeeService {
   constructor(
     @inject(FeeRepository)
-    private feeRepo: FeeRepository,
+    private _feeRepo: FeeRepository,
   ) {}
 
   public async createFee(req: Request, res: Response): Promise<serviceReturnType> {
     const dto: Partial<IFee> = FeeDto.createFeeDto(req, res);
 
     // Check duplicate code
-    const existing = await this.feeRepo.findOne({ code: dto.code });
+    const existing = await this._feeRepo.findOne({ code: dto.code });
 
     if (existing) {
       return ApiResponse.badRequest('Fee code already exists');
     }
 
-    const newFee = await this.feeRepo.create(dto);
+    const newFee = await this._feeRepo.create(dto);
 
     return ApiResponse.created(newFee);
   }
@@ -32,7 +33,7 @@ export class FeeService implements IFeeService {
   public async updateFee(id: string, req: Request): Promise<serviceReturnType> {
     const dto: Partial<IFee> = FeeDto.updateFeeDto(req);
 
-    const updated = await this.feeRepo.updateById(id, dto);
+    const updated = await this._feeRepo.updateById(id, dto);
 
     if (!updated) {
       return ApiResponse.notFound('Fee not found');
@@ -42,7 +43,7 @@ export class FeeService implements IFeeService {
   }
 
   public async getAllFees(): Promise<serviceReturnType> {
-    const fees = await this.feeRepo.findMany({});
+    const fees = await this._feeRepo.findMany({});
 
     if (!fees.length) {
       return ApiResponse.notFound('No Fees Found');
@@ -52,7 +53,7 @@ export class FeeService implements IFeeService {
   }
 
   public async getFeeById(id: string): Promise<serviceReturnType> {
-    const fee = await this.feeRepo.findById(id);
+    const fee = await this._feeRepo.findById(id);
 
     if (!fee) {
       return ApiResponse.notFound('Fee not found');
@@ -62,7 +63,7 @@ export class FeeService implements IFeeService {
   }
 
   public async deleteFee(id: string): Promise<serviceReturnType> {
-    const deleted = await this.feeRepo.deleteById(id);
+    const deleted = await this._feeRepo.deleteById(id);
 
     if (!deleted) {
       return ApiResponse.notFound('Fee not found');

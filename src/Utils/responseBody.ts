@@ -1,11 +1,13 @@
-import { AddressMessage, AuthMessage, DocumentMessage } from '../Constants/resposeMessages';
-import { IUser } from '../Models/userModel';
 import { Response, Request } from 'express';
-import { jwtTokensGenerator } from './jwt';
-import { IResponse } from '../Interfaces/IResponse';
+
+import { IUser } from '../Models/userModel';
+import { AddressMessage, AuthMessage, DocumentMessage } from '../Constants/resposeMessages';
+import { IResponse } from '../Interfaces/Other/IResponse';
 import { IAddress } from '../Models/addressModel';
 import { IDocument } from '../Models/documentModel';
 import { ISchool } from '../Models/schoolModel';
+
+import { jwtTokensGenerator } from './jwt';
 
 export const handleResponseBody = (signInUser: IUser | null, res: Response, req: Request) => {
   if (signInUser === null) {

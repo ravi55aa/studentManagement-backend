@@ -6,6 +6,7 @@
 import { initializeApp } from 'firebase/app';
 // config/firebase.ts
 import admin from 'firebase-admin';
+
 import serviceAccount from '../../management-accca-firebase-adminsdk-fbsvc-d69349595b.json';
 
 // Your web app's Firebase configuration

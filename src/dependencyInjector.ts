@@ -1,7 +1,6 @@
 import { container } from 'tsyringe';
-import { SchoolAcademicController } from './Controller/School.Acadmic.Controller';
-import { SchoolAcademicSubjectController } from './Controller/School.Acadmic.Controller';
-import { SchoolAcademicCourseController } from './Controller/School.Acadmic.Controller';
+
+import { SchoolAcademicController , SchoolAcademicSubjectController , SchoolAcademicCourseController } from './Controller/School.Acadmic.Controller';
 import { TeacherController } from './Controller/TeacherController';
 import { NotificationController } from './Controller/NotificatoinController';
 import { FeeController } from './Controller/FessController';

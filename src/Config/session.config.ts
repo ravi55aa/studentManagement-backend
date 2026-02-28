@@ -1,4 +1,5 @@
 import session from 'express-session';
+
 import env from './env.config';
 
 const sessionConfig = () => {

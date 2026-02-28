@@ -1,25 +1,27 @@
+import { Request, Response } from 'express';
+import { inject, injectable } from 'tsyringe';
+
 import { serviceReturnType } from '../Constants/interfaces';
 import { IDocumentService } from '../Interfaces/services/IDocument.service';
 import { IDocument } from '../Models/documentModel';
-import { Request, Response } from 'express';
 import { DocumentsDto } from '../dto/schoolDTO';
-import { inject, injectable } from 'tsyringe';
 import { DocumentRepository } from '../Repository/documentRepository';
 import { ApiResponse } from '../Constants/apiResponse';
 import { DocumentMessage } from '../Constants/resposeMessages';
 import logger from '../Utils/logger';
+import { IDocumentRepository } from '../Interfaces/repository/IDocument.interface';
 
 @injectable()
 export class DocumentService implements IDocumentService {
   constructor(
     @inject(DocumentRepository)
-    private documentRepository: DocumentRepository,
+    private _documentRepository: IDocumentRepository,
   ) {}
 
   //  Upload Documents
   async uploadDocs(data: Partial<IDocument>): Promise<serviceReturnType> {
     try {
-      const uploaded = await this.documentRepository.uploadDocuments(data);
+      const uploaded = await this._documentRepository.uploadDocuments(data);
 
       if (!uploaded) {
         return ApiResponse.failure(DocumentMessage.DocumentUploadFailed);
@@ -37,7 +39,7 @@ export class DocumentService implements IDocumentService {
     try {
       const { dtoData, dtoQuery } = DocumentsDto.updateDoc(req, res);
 
-      const updated = await this.documentRepository.updateDocuments(dtoQuery, dtoData);
+      const updated = await this._documentRepository.updateDocuments(dtoQuery, dtoData);
 
       if (!updated) {
         return ApiResponse.notFound(DocumentMessage.DocumentNotFound);
@@ -55,7 +57,7 @@ export class DocumentService implements IDocumentService {
     try {
       const { dtoData, dtoQuery } = DocumentsDto.updateDocV2(req,res);
 
-      const updated = await this.documentRepository.updateNEWUploadDocuments(dtoQuery, dtoData);
+      const updated = await this._documentRepository.updateNEWUploadDocuments(dtoQuery, dtoData);
 
       if (!updated) {
         return ApiResponse.notFound(DocumentMessage.DocumentNotFound);
@@ -73,7 +75,7 @@ export class DocumentService implements IDocumentService {
     try {
       const query = DocumentsDto.deleteDoc(req, res);
 
-      const deleted = await this.documentRepository.deleteDocument(query);
+      const deleted = await this._documentRepository.deleteDocument(query);
 
       if (!deleted) {
         return ApiResponse.notFound(DocumentMessage.DocumentNotFound);
@@ -91,7 +93,7 @@ export class DocumentService implements IDocumentService {
     try {
       const { filterQuery, pullQuery } = DocumentsDto.removeOneDocument(req);
 
-      const deleted = await this.documentRepository.deleteADocumentFile(filterQuery, pullQuery);
+      const deleted = await this._documentRepository.deleteADocumentFile(filterQuery, pullQuery);
 
       if (!deleted) {
         return ApiResponse.notFound(DocumentMessage.FileNotFound);

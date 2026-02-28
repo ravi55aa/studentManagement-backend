@@ -1,6 +1,6 @@
-import env from './env.config';
 import { Request, Response } from 'express';
 import axios, { AxiosResponse } from 'axios';
+
 import logger from '../Utils/logger';
 import userModel, { IUser } from '../Models/userModel';
 import {
@@ -9,6 +9,8 @@ import {
   IJwtPayload,
   verifyToken,
 } from '../Utils/jwt';
+
+import env from './env.config';
 
 const REDIRECT_URI = 'http://localhost:4000/google/auth/callback';
 

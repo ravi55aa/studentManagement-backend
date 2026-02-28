@@ -1,4 +1,5 @@
 import { FilterQuery } from 'mongoose';
+
 import { IOtp } from '../../Models/otpModel';
 import { ISchool } from '../../Models/schoolModel';
 import { IUser } from '../../Models/userModel';
@@ -11,7 +12,7 @@ export interface IForgotPasswordRepository {
 
   isOtpExpired(query: FilterQuery<IOtp>): Promise<IOtp | null>;
 
-  storeOtp(email: string, otp: string): Promise<IOtp>;
+  storeOtp(id: string, otp: string): Promise<IOtp | null> ;
 
   updatePassword<T>(role: UserRole, id: string, data: Partial<T>): Promise<T | null>;
 

@@ -1,4 +1,6 @@
 import { FilterQuery } from 'mongoose';
+import { injectable } from 'tsyringe';
+
 import {
   ISchoolAcademicYearRepo,
   ISchoolCoursesRepo,
@@ -9,14 +11,14 @@ import academicSubjectsModel, {
   IAcademicSubject,
   IAcademicYear,
 } from '../Models/academicYear';
-import { BaseRepository } from './BaseRepository';
 import coursesModel, {
   coursesMetaModel,
   IAcademicCourse,
   IAcademicCourseMeta,
 } from '../Models/courses.model';
-import { injectable } from 'tsyringe';
 import logger from '../Utils/logger';
+
+import { BaseRepository } from './BaseRepository';
 
 /**
  *

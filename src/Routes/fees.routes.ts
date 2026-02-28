@@ -1,11 +1,12 @@
 import { Router } from 'express';
+
 import { authMiddleware } from '../Middlewares/authorise.middleware';
 import { feeController } from '../dependencyInjector';
 const router = Router();
 
 router.post('/add', authMiddleware, (req, res, next) => feeController.createFee(req, res, next));
 
-router.get('/get-all', authMiddleware, (req, res, next) =>
+router.get('/get/all', authMiddleware, (req, res, next) =>
   feeController.getAllFees(req, res, next),
 );
 

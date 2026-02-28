@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+
 import { ICenter } from '../Models/centerModel';
 import { handleTokenVerification } from '../Utils/jwt';
 
@@ -11,7 +12,7 @@ export class CenterDto {
 
     const newCenterDto: Partial<ICenter> = {
       name,
-      code: 'CEN-' + code,
+      code: code.slice(0,4)=='CEN-'?code:'CEN-'+code,
       email,
       phone,
       totalCapacity,

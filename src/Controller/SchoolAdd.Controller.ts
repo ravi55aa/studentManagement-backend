@@ -1,23 +1,24 @@
 import { Request, Response, NextFunction } from 'express';
-import { StatusCodes } from '../Constants/statusCodes';
+import { injectable, inject } from 'tsyringe';
 
-import { IResponse } from '../Interfaces/IResponse';
+import { StatusCodes } from '../Constants/statusCodes';
+import { IResponse } from '../Interfaces/Other/IResponse';
 import { ISchool } from '../Models/schoolModel';
 import { handleSchoolRB, handleSchoolResBody } from '../Utils/responseBody';
-import { injectable, inject } from 'tsyringe';
 import { SchoolService } from '../Services/schoolService';
+import { ISchoolService } from '../Interfaces/services/ISchoolService';
 
 @injectable()
 export class SchoolController {
   constructor(
     @inject(SchoolService)
-    private schoolService: SchoolService,
+    private _schoolService: ISchoolService,
   ) {}
 
   //*create
   public async createSchool(req: Request, res: Response, next: NextFunction) {
     try {
-      const {status,resBody} = await this.schoolService.createSchool(req, res);
+      const {status,resBody} = await this._schoolService.createSchool(req, res);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -27,7 +28,7 @@ export class SchoolController {
 
   public async addAddress(req: Request, res: Response, next: NextFunction) {
     try {
-      const dbStoredAdd = await this.schoolService.addAddress(req, res);
+      const dbStoredAdd = await this._schoolService.addAddress(req, res);
 
       const responseBody = handleSchoolRB(dbStoredAdd);
 
@@ -40,7 +41,7 @@ export class SchoolController {
   //*update
   public async updateSchoolMeta(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this.schoolService.updateSchoolMeta(req, res);
+      const { status, resBody } = await this._schoolService.updateSchoolMeta(req, res);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -51,11 +52,9 @@ export class SchoolController {
   //*Read
   public async getSchool(req: Request, res: Response, next: NextFunction) {
     try {
-      const isSchool: ISchool | null = await this.schoolService.getSchool(req, res);
+      const {status,resBody} = await this._schoolService.getSchool(req, res);
 
-      const responseBody: IResponse<ISchool | null> = handleSchoolResBody(isSchool);
-
-      res.status(isSchool ? StatusCodes.OK : StatusCodes.NOT_FOUND).json(responseBody);
+      res.status(status).json(resBody);
     } catch (err) {
       next(err);
     }
@@ -64,7 +63,7 @@ export class SchoolController {
   //META+DOCUMENTS+ADDRESS = MDA
   public async getSchoolData_MDA(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { status, resBody } = await this.schoolService.getSchoolAllData(req, res);
+      const { status, resBody } = await this._schoolService.getSchoolAllData(req, res);
 
       res.status(status).json(resBody);
     } catch (err) {

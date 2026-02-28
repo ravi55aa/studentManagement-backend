@@ -1,11 +1,12 @@
 import { sign, verify, JwtPayload, SignOptions } from 'jsonwebtoken';
+import { Types } from 'mongoose';
+import { Request, Response } from 'express';
 
 import { env } from '../Config';
-import { Types } from 'mongoose';
 import { IUser } from '../Models/userModel';
 import { TGeneratesTokens } from '../types';
 import { JwtROle } from '../types/jwtRole';
-import { Request, Response } from 'express';
+
 
 export interface IJwtPayload {
   userId: string | Types.ObjectId | null;

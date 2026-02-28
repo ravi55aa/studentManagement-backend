@@ -1,61 +1,91 @@
 import { injectable } from 'tsyringe';
+
 import { ISchoolRepository } from '../Interfaces/repository/ISchoolRepository';
 import schoolModel, { ISchool } from '../Models/schoolModel';
+import logger from '../Utils/logger';
+
 import { BaseRepository } from './BaseRepository';
 
 @injectable()
-export class SchoolRepository extends BaseRepository<ISchool> implements ISchoolRepository {
+export class SchoolRepository
+  extends BaseRepository<ISchool>
+  implements ISchoolRepository {
+
   constructor() {
     super(schoolModel);
   }
 
   public async findByName(email: string): Promise<ISchool | null> {
-    return await schoolModel.findOne({ email }).exec();
+    try {
+      return await this.model
+        .findOne({ email })
+        .lean<ISchool>();
+    } catch (error) {
+      logger.error('Error finding school by email:', error);
+      return null;
+    }
   }
 
   public async findById(schoolId: string): Promise<ISchool | null> {
-    return await schoolModel.findById(schoolId).exec();
+    try {
+      if (!schoolId) return null;
+
+      return await this.model
+        .findById(schoolId)
+        .lean<ISchool>();
+    } catch (error) {
+      logger.error('Error finding school by ID:', error);
+      return null;
+    }
   }
 
-  public async createSchool(schoolData: ISchool): Promise<ISchool> {
-    const newSchool = new schoolModel(schoolData);
-    await newSchool.save();
-    return newSchool;
+  public async createSchool(
+    schoolData: ISchool
+  ): Promise<ISchool | null> {
+    try {
+      return await this.model.create(schoolData);
+    } catch (error) {
+      logger.error('Error creating school:', error);
+      return null;
+    }
   }
 
   public async updateSchool(
     schoolId: string,
-    updateData: Partial<ISchool>,
+    updateData: Partial<ISchool>
   ): Promise<ISchool | null> {
     try {
-      if (!schoolId) {
-        throw new Error('School ID is required');
-      }
+      if (!schoolId) return null;
 
-      const updatedSchool = await schoolModel
+      return await this.model
         .findByIdAndUpdate(
           schoolId,
           { $set: updateData },
-          { new: true }, // return updated document
+          {
+            new: true,
+            runValidators: true,
+          }
         )
-        .exec();
-
-      if (!updatedSchool) {
-        throw new Error('School not found');
-      }
-
-      return updatedSchool;
+        .lean<ISchool>();
     } catch (error) {
-      console.error('❌ updateSchool error:', error);
-
-      // rethrow so controller / global error handler can handle it
-      throw new Error('Failed to update school');
+      logger.error('Error updating school:', error);
+      return null;
     }
   }
 
-  public async deleteSchool(schoolId: string): Promise<boolean> {
-    const result = await schoolModel.findByIdAndDelete(schoolId).exec();
-    return result ? true : false;
+  public async deleteSchool(
+    schoolId: string
+  ): Promise<boolean> {
+    try {
+      if (!schoolId) return false;
+
+      const result = await this.model.findByIdAndDelete(schoolId);
+
+      return !!result;
+    } catch (error) {
+      logger.error('Error deleting school:', error);
+      return false;
+    }
   }
 }
 

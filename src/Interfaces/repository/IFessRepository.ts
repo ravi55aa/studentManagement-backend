@@ -1,4 +1,5 @@
 import { FilterQuery } from 'mongoose';
+
 import { IFee } from '../../Models/feesModel';
 import { BaseRepository } from '../../Repository/BaseRepository';
 

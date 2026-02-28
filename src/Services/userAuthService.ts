@@ -1,32 +1,33 @@
-import logger from '../Utils/logger';
+import { Request, Response } from 'express';
+import { injectable, inject } from 'tsyringe';
+import bcrypt from 'bcrypt';
 
+import logger from '../Utils/logger';
 import { IUserAuthService } from '../Interfaces/services/IAdminAuthService';
 import { IUser } from '../Models/userModel';
 import { IAddress } from '../Models/addressModel';
 import { AddressFormatter, UserValidator } from '../Constants/userValidator';
-import { Request, Response } from 'express';
 import { handleJwtTokensGenerator, IJwtPayload } from '../Utils/jwt';
-import { injectable, inject } from 'tsyringe';
 import { UserRepository } from '../Repository/userRepository';
-import bcrypt from 'bcrypt';
 import { ApiResponse } from '../Constants/apiResponse';
+import { IUserRepository } from '../Interfaces/repository/IAdminRepository';
 
 @injectable()
 export class UserAuthService implements IUserAuthService {
   constructor(
     @inject(UserRepository)
-    private userRepository: UserRepository,
+    private _userRepository: IUserRepository,
   ) {}
 
   async register(userData: Partial<IUser>, address: Partial<IAddress>) {
-    await UserValidator.ensureUserIsTaken(this.userRepository, userData.email!);
+    await UserValidator.ensureUserIsTaken(this._userRepository, userData.email!);
 
-    const createUser = await this.userRepository.create(userData);
+    const createUser = await this._userRepository.create(userData);
     if (!createUser) {
       throw new Error('Cant create the user');
     }
 
-    await this.userRepository.addAddress({
+    await this._userRepository.addAddress({
       ...AddressFormatter.toPlain(address),
       userId: createUser._id,
       userType: 'Admin',
@@ -36,9 +37,9 @@ export class UserAuthService implements IUserAuthService {
 
   async signIn(req: Request, res: Response) {
     try {
-      let userData = req.body;
+      const userData = req.body;
 
-      const isUser: IUser | null = await this.userRepository.findOne({
+      const isUser: IUser | null = await this._userRepository.findOne({
         email: userData.email,
       });
 

@@ -1,5 +1,6 @@
-import { IOtp } from '../../Models/otpModel';
 import { Request, Response } from 'express';
+
+import { IOtp } from '../../Models/otpModel';
 import { ISchool } from '../../Models/schoolModel';
 import { IUser } from '../../Models/userModel';
 import { serviceReturnType } from '../../Constants/interfaces';

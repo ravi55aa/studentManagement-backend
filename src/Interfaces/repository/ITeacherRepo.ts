@@ -1,3 +1,5 @@
+import { FilterQuery } from 'mongoose';
+
 import { ITeacher, ITeacherBio } from '../../Models/teacherModel';
 import { BaseRepository } from '../../Repository/BaseRepository';
 import { IGetAllTeachers } from '../Other/getAllTeachers';
@@ -23,5 +25,9 @@ export interface ITeacherRepo extends BaseRepository<ITeacherBio> {
 
   updateBioById(teacherId: string, data: Partial<ITeacherBio>): Promise<ITeacherBio | null>;
 
-  getUnassignedTeachers(): Promise<ITeacherBio[]>;
+  getUnassignedTeachers(query: FilterQuery<Partial<ITeacher>>): Promise<ITeacherBio[]>;
+
+  findOneProfessional(query: FilterQuery<Partial<ITeacher>>): Promise<ITeacher | null>
+
+  findProfessionalById(teacherId: string): Promise<ITeacher | null> 
 }

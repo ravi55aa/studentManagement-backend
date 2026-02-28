@@ -1,9 +1,12 @@
-import js from '@eslint/js';
-import tseslint from 'typescript-eslint';
-import prettier from 'eslint-config-prettier';
-import importPlugin from 'eslint-plugin-import';
+const js = require('@eslint/js');
+const tseslint = require('typescript-eslint');
+const prettier = require('eslint-config-prettier');
+const importPlugin = require('eslint-plugin-import');
 
 const rules = [
+  {
+    ignores: ['node_modules', 'dist', 'build','eslint.config.cjs'],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -19,7 +22,6 @@ const rules = [
     rules: {
       // Your custom rules
       'no-console': 'warn',
-      '@typescript-eslint/no-unused-vars': ['error'],
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/optional-chain-expressions': 'off',
@@ -34,9 +36,8 @@ const rules = [
       'import/no-duplicates': 'error',
     },
 
-    ignores: ['node_modules', 'dist', 'build'],
   },
   prettier,
 ];
 
-export default rules;
+module.exports = rules;

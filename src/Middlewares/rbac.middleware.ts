@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+
 import { StatusCodes } from '../Constants/statusCodes';
 
 export const authorizeRoles = (...roles: string[]) => {

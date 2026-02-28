@@ -1,18 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
-import { StatusCodes } from '../Constants/statusCodes';
 import { injectable, inject } from 'tsyringe';
+
+import { StatusCodes } from '../Constants/statusCodes';
 import { NotificationService } from '../Services/notificationService';
+import { INotificationService } from '../Interfaces/services/INotificatoin';
 
 @injectable()
 export class NotificationController {
   constructor(
     @inject(NotificationService)
-    private notificationService: NotificationService,
+    private _notificationService: INotificationService,
   ) {}
 
   async addNewNotification(req: Request, res: Response, next: NextFunction) {
     try {
-      await this.notificationService.addNotification(req, res);
+      await this._notificationService.addNotification(req, res);
 
       res.status(StatusCodes.CREATED).json({
         success: true,
@@ -27,7 +29,7 @@ export class NotificationController {
 
   async getAllNotification(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this.notificationService.getAllNotifications(req, res);
+      const { status, resBody } = await this._notificationService.getAllNotifications(req, res);
 
       res.status(status).json(resBody);
     } catch (err) {

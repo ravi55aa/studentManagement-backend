@@ -1,26 +1,33 @@
 import { NextFunction, Request, Response } from 'express';
+import { injectable, inject } from 'tsyringe';
+import bcrypt from 'bcrypt';
+
 import { StatusCodes } from '../Constants/statusCodes';
 import { jwtTokensGenerator } from '../Utils/jwt';
 import { AuthUserDTO } from '../dto/userAuth.dto';
-import { injectable, inject } from 'tsyringe';
 import { UserAuthService } from '../Services/userAuthService';
-import bcrypt from 'bcrypt';
+import { IUserAuthService } from '../Interfaces/services/IAdminAuthService';
+import { ApiResponse } from '../Constants/apiResponse';
+import { AuthMessage } from '../Constants/resposeMessages';
 
 @injectable()
 export class UserAuthController {
   constructor(
     @inject(UserAuthService)
-    private authService: UserAuthService,
+    private _authService: IUserAuthService,
   ) {}
 
   public async register(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      let { userSchema, addressSchema } = AuthUserDTO.register(req);
+      const { userSchema, addressSchema } = AuthUserDTO.register(req);
       userSchema.password = await bcrypt.hash(userSchema.password, 10);
 
-      const newUser = await this.authService.register(userSchema, addressSchema);
+      const newUser = await this._authService.register(userSchema, addressSchema);
+      
       if (!newUser) {
-        throw new Error('Cant register new user');
+        const {status,resBody}=ApiResponse.failure('User not created');
+        res.status(status).json(resBody);
+        return;
       }
 
       //jwt *********
@@ -30,12 +37,10 @@ export class UserAuthController {
 
       req.session.refreshToken = refreshToken;
 
-      res.status(StatusCodes.CREATED).json({
-        success: true,
-        message: 'User created successfully',
-        data: { id: newUser._id, email: newUser.email },
-        error: null,
-      });
+      const {status,resBody}=ApiResponse.success({ id: newUser._id, email: newUser.email },AuthMessage.UserRegistered);
+
+      res.status(status).json(resBody);
+
     } catch (err: any) {
       next(err);
     }
@@ -43,7 +48,7 @@ export class UserAuthController {
 
   public async signIn(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { status, resBody } = await this.authService.signIn(req, res);
+      const { status, resBody } = await this._authService.signIn(req, res);
 
       res.status(status).json(resBody);
     } catch (err) {

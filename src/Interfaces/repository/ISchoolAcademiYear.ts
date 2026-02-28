@@ -1,6 +1,6 @@
 import { FilterQuery } from 'mongoose';
-import { IAcademicSubject, IAcademicYear } from '../../Models/academicYear';
 
+import { IAcademicSubject, IAcademicYear } from '../../Models/academicYear';
 import { BaseRepository } from '../../Repository/BaseRepository';
 import { IAcademicCourse, IAcademicCourseMeta } from '../../Models/courses.model';
 
@@ -16,7 +16,7 @@ export interface ISchoolAcademicYearRepo extends BaseRepository<IAcademicYear> {
     data: Partial<IAcademicYear>,
   ): Promise<IAcademicYear | null>;
 
-  getAllAcademicYear(query: FilterQuery<Partial<IAcademicYear>>): Promise<IAcademicYear[]>;
+  getAllAcademicYear(): Promise<IAcademicYear[]>;
 
   deleteYear(id: string): Promise<boolean>;
 }

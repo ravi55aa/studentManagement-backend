@@ -1,6 +1,7 @@
+import { Request, Response } from 'express';
+
 import { serviceReturnType } from '../../Constants/interfaces';
 import { IDocument } from '../../Models/documentModel';
-import { Request, Response } from 'express';
 
 export interface IDocumentService {
   uploadDocs(data: Partial<IDocument>): Promise<serviceReturnType>;

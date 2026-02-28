@@ -1,5 +1,5 @@
 import { StatusCodes } from '../../Constants/statusCodes';
-import { IResponse } from '../../Interfaces/IResponse';
+import { IResponse } from '../../Interfaces/Other/IResponse';
 import { ICenter } from '../../Models/centerModel';
 
 export class CenterResponseBody {

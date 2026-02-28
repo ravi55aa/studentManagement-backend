@@ -1,16 +1,17 @@
-import { serviceReturnType } from '../../Constants/interfaces';
 import { Request, Response } from 'express';
+
+import { serviceReturnType } from '../../Constants/interfaces';
 
 export interface IBatchService {
   createBatch(req: Request, res: Response): Promise<serviceReturnType>;
 
-  getBatchById(req: Request, res: Response): Promise<serviceReturnType>;
+  getBatchById(req: Request): Promise<serviceReturnType>;
 
   getAllBatches(req: Request, res: Response): Promise<serviceReturnType>;
 
   updateABatch(req: Request, res: Response): Promise<serviceReturnType>;
 
-  deleteBatch(req: Request, res: Response): Promise<serviceReturnType>;
+  deleteBatch(req: Request): Promise<serviceReturnType>;
 
   //**📌 Relationship / Business Logic
 

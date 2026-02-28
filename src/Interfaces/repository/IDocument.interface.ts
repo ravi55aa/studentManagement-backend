@@ -1,4 +1,5 @@
 import { FilterQuery } from 'mongoose';
+
 import { IDocument, IUploadedDoc } from '../../Models/documentModel';
 import { BaseRepository } from '../../Repository/BaseRepository';
 

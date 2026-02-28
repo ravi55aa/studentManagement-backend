@@ -1,18 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
-import { serviceReturnType } from '../Constants/interfaces';
 import { injectable, inject } from 'tsyringe';
+
+import { serviceReturnType } from '../Constants/interfaces';
 import { CentersService } from '../Services/centersService';
+import { ICenterService } from '../Interfaces/services/ICenterService';
 
 @injectable()
 export class CentersController {
   constructor(
     @inject(CentersService)
-    private centerService: CentersService,
+    private _centerService: ICenterService,
   ) {}
 
   async addNewCenter(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody }: serviceReturnType = await this.centerService.createCenter(
+      const { status, resBody }: serviceReturnType = await this._centerService.createCenter(
         req,
         res,
       );
@@ -25,7 +27,7 @@ export class CentersController {
 
   async addNewCenterAddress(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody }: serviceReturnType = await this.centerService.createCenterAddress(
+      const { status, resBody }: serviceReturnType = await this._centerService.createCenterAddress(
         req,
         res,
       );
@@ -38,7 +40,7 @@ export class CentersController {
 
   async getAllCenters(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this.centerService.getAllCenters();
+      const { status, resBody } = await this._centerService.getAllCenters();
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -48,7 +50,7 @@ export class CentersController {
 
   async getASchoolCenter(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this.centerService.getCenterById(req);
+      const { status, resBody } = await this._centerService.getCenterById(req);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -58,7 +60,7 @@ export class CentersController {
 
   async editASchoolCenter(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this.centerService.updateCenter(req, res);
+      const { status, resBody } = await this._centerService.updateCenter(req, res);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -68,7 +70,7 @@ export class CentersController {
 
   async deleteASchoolCenter(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this.centerService.deleteCenter(req);
+      const { status, resBody } = await this._centerService.deleteCenter(req);
 
       res.status(status).json(resBody);
     } catch (err) {

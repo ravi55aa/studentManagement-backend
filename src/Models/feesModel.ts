@@ -41,7 +41,7 @@ const FeesSchema = new Schema<IFee>({
   appliesTo: {
     model: {
       type: String,
-      enum: ['Course', 'School', 'Exam', 'Center'],
+      enum: ['Course', 'AcademicYear', 'Exam', 'Center'],
       required: true,
     },
     id: {

@@ -1,29 +1,28 @@
 import { Request, Response } from 'express';
+import { injectable, inject } from 'tsyringe';
 
 import { serviceReturnType } from '../Constants/interfaces';
-
 import {  IBatches } from '../Models/batchModel';
 import { BatchDto } from '../dto/batchDto';
-
 import { IBatchService } from '../Interfaces/services/IBatchService';
 import { ApiResponse } from '../Constants/apiResponse';
-import { injectable, inject } from 'tsyringe';
 import { BatchRepository } from '../Repository/batchRespository';
 import { BatchMessage } from '../Constants/resposeMessages';
 import logger from '../Utils/logger';
+import { IBatchRepository } from '../Interfaces/repository/IBatchRepository';
 
 @injectable()
 export class BatchService implements IBatchService {
   constructor(
     @inject(BatchRepository)
-    private batchRepo: BatchRepository,
+    private _batchRepo: IBatchRepository,
   ) {}
 
   async createBatch(req: Request, res: Response): Promise<serviceReturnType> {
     try {
       const dto: Partial<IBatches> = BatchDto.handleNewBatchDto(req, res);
 
-      const existing = await this.batchRepo.findOne({
+      const existing = await this._batchRepo.findOne({
         tenantId: dto.tenantId,
         name: dto.name,
         code: dto.code,
@@ -33,7 +32,7 @@ export class BatchService implements IBatchService {
         return ApiResponse.badRequest(BatchMessage.BatchExists);
       }
 
-      const newBatchDoc = await this.batchRepo.addBatch(dto);
+      const newBatchDoc = await this._batchRepo.addBatch(dto);
 
       if (!newBatchDoc) {
         return ApiResponse.failure(BatchMessage.BatchCreateFailed);
@@ -50,7 +49,7 @@ export class BatchService implements IBatchService {
     try {
       const { id } = req.params;
 
-      const doc = await this.batchRepo.findById(id!);
+      const doc = await this._batchRepo.findById(id!);
 
       if (!doc) {
         return ApiResponse.notFound(BatchMessage.BatchNotFound);
@@ -67,7 +66,7 @@ export class BatchService implements IBatchService {
     try {
       const query = BatchDto.handleGetAllBatchesDto(req, res);
 
-      const docs = await this.batchRepo.getAllBatches(query);
+      const docs = await this._batchRepo.getAllBatches(query);
 
       return ApiResponse.success(docs, BatchMessage.BatchListed);
     } catch (error) {
@@ -81,7 +80,7 @@ export class BatchService implements IBatchService {
       const { id } = req.params;
       const dto = BatchDto.handleNewBatchDto(req, res);
 
-      const updated = await this.batchRepo.updateBatch(id!, dto);
+      const updated = await this._batchRepo.updateBatch(id!, dto);
 
       if (!updated) {
         return ApiResponse.notFound(BatchMessage.BatchNotFound);
@@ -98,7 +97,7 @@ export class BatchService implements IBatchService {
     try {
       const { id } = req.params;
 
-      const deleted = await this.batchRepo.deleteBatch(id!);
+      const deleted = await this._batchRepo.deleteBatch(id!);
 
       if (!deleted) {
         return ApiResponse.notFound(BatchMessage.BatchNotFound);
@@ -117,23 +116,25 @@ export class BatchService implements IBatchService {
         return ApiResponse.badRequest('Invalid ID');
       }
 
-      const batch = await this.batchRepo.findById(batchId);
+      const batch = await this._batchRepo.findById(batchId);
 
       if (!batch) {
         return ApiResponse.notFound(BatchMessage.BatchNotFound);
       }
 
-      if (batch.batchCounselor) {
-        return ApiResponse.badRequest(BatchMessage.BatchAlreadyHasTeacher);
-      }
+      //? VERIFY: WHY THIS CHECK ?
+      // if (batch.batchCounselor) {
+      //   return ApiResponse.badRequest(BatchMessage.BatchAlreadyHasTeacher);
+      // }
+      
 
-      const teacherAlreadyAssigned = await this.batchRepo.findByTeacherId(teacherId);
+      //const teacherAlreadyAssigned = await this._batchRepo.findByTeacherId(teacherId);
 
-      if (teacherAlreadyAssigned) {
-        return ApiResponse.badRequest(BatchMessage.TeacherAlreadyAssigned);
-      }
+      // if (teacherAlreadyAssigned) {
+      //   return ApiResponse.badRequest(BatchMessage.TeacherAlreadyAssigned);
+      // }
 
-      const updated = await this.batchRepo.assignTeacher(batchId, teacherId);
+      const updated = await this._batchRepo.assignTeacher(batchId, teacherId);
 
       if (!updated) {
         return ApiResponse.failure(BatchMessage.BatchUpdateFailed);

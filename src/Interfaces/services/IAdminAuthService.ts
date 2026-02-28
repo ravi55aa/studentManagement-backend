@@ -1,6 +1,7 @@
+import { Request, Response } from 'express';
+
 import { IUser } from '../../Models/userModel';
 import { IAddress } from '../../Models/addressModel';
-import { Request, Response } from 'express';
 import { serviceReturnType } from '../../Constants/interfaces';
 
 export interface IUserAuthService {

@@ -1,12 +1,14 @@
 import { Request, Response } from 'express';
-import { ISchool } from '../Models/schoolModel';
 import { FilterQuery } from 'mongoose';
+import bcrypt from 'bcrypt';
+
+import { ISchool } from '../Models/schoolModel';
 import { handleTokenVerification } from '../Utils/jwt';
 import { IAcademicCourse, IAcademicCourseMeta, IUpload_document } from '../Models/courses.model';
 import { IAcademicSubject } from '../Models/academicYear';
 import { batchModel } from '../Models/batchModel';
 import { IDocument, IUploadedDoc } from '../Models/documentModel';
-import bcrypt from 'bcrypt';
+
 
 export class SchoolDTO {
   static createSchool(reqBody: Partial<ISchool>): Partial<ISchool> {
@@ -104,7 +106,7 @@ export class SchoolAcademicYearDto {
     const decoded = handleTokenVerification(req, res);
 
     const updateYearDto = {
-      ...(code !== undefined && { code: 'YEAR-' + code }),
+      ...(code !== undefined && { code: code.slice(0,5)=='YEAR-'?code:'YEAR-'+code }),
       ...(startDate !== undefined && { startDate }),
       ...(year !== undefined && { year }),
       ...(endDate !== undefined && { endDate }),
@@ -207,7 +209,7 @@ export class SchoolSubjectsDto {
     const decoded = handleTokenVerification(req, res);
 
     const updateSubjectDto: IAcademicSubject = {
-      ...(code && { code: 'SUB-' + code }),
+      ...(code && { code: code.slice(0,4)=='SUB-'?code:'SUB-'+code }),
       ...(name && { name }),
       ...(className && { className }),
       ...(level && { level }),
@@ -279,6 +281,7 @@ export class SchoolCoursesDto {
       value: duration.value,
       unit: duration.unit,
     };
+    
     const courseDto = {
       code: 'COU-' + code,
       name,
@@ -347,7 +350,7 @@ export class SchoolCoursesDto {
     const decoded = handleTokenVerification(req, res);
 
     const courseDto: Partial<IAcademicCourse> = {
-      ...(code && { code: 'COU-' + code }),
+      ...(code && { code: code.slice(0,4)=='COU-'?code:'COU-'+code }),
       ...(name && { name }),
       //...(level && { level }),
       ...(status && { status }),

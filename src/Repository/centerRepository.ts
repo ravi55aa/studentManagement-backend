@@ -1,9 +1,11 @@
 import { Types } from 'mongoose';
+import { injectable } from 'tsyringe';
+
 import { ICenterRepository } from '../Interfaces/repository/ICenterRepository';
 import centerModel, { ICenter } from '../Models/centerModel';
-import { BaseRepository } from './BaseRepository';
-import { injectable } from 'tsyringe';
 import logger from '../Utils/logger';
+
+import { BaseRepository } from './BaseRepository';
 
 @injectable()
 export class CenterRepository extends BaseRepository<ICenter> implements ICenterRepository {

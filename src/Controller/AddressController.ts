@@ -1,25 +1,22 @@
 import { Request, Response, NextFunction } from 'express';
-import { IAddress } from '../Models/addressModel';
-import { StatusCodes } from '../Constants/statusCodes';
-import { AddressDTO } from '../dto/addressDTO';
-import { AddressMessage } from '../Constants/resposeMessages';
-
-import { handleAddressResponseBody } from '../Utils/addressResponseBody';
-import { addressModel } from '../Models';
 import { injectable, inject } from 'tsyringe';
+
+import { IAddress } from '../Models/addressModel';
+import { AddressDTO } from '../dto/addressDTO';
 import { AddressService } from '../Services/addressService';
+import { IAddressService } from '../Interfaces/services/IAddressService';
 
 @injectable()
 export class AddressController {
   constructor(
     @inject(AddressService)
-    private addressService: AddressService,
+    private _addressService:IAddressService,
   ) {}
 
   public async getSchoolAddress(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
-      const {status,resBody} = await this.addressService.getSchoolAddress(id!);
+      const {status,resBody} = await this._addressService.getSchoolAddress(id!);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -31,12 +28,7 @@ export class AddressController {
     try {
       const { id } = req.params;
 
-      const address: Partial<IAddress | null> = await addressModel
-        .findOne({ userId: id })
-        .lean<Partial<IAddress>>();
-
-      //pending responseBody
-      const { status, resBody } = handleAddressResponseBody(AddressMessage.AddressListed, address);
+      const {status,resBody} = await this._addressService.getAddressById(id!);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -44,20 +36,15 @@ export class AddressController {
     }
   }
 
-  public async getAddressAllAddress(
+  public async getAllAddress(
     req: Request,
     res: Response,
     next: NextFunction,
   ): Promise<void> {
     try {
-      const addresses: Partial<IAddress[] | null> = await addressModel
-        .find()
-        .lean<Partial<IAddress[]>>();
+      const {status,resBody} = await this._addressService.getAllAddressByQuery({userType:req.query.userType});
 
-      //pending responseBody
-      //const responseBody = handleAddressResponseBody(AddressMessage.AddressListed,addresses);
-
-      res.status(StatusCodes.OK).json({ message: 'fetched', success: true, data: addresses });
+      res.status(status).json(resBody);
     } catch (err) {
       next(err);
     }
@@ -67,7 +54,7 @@ export class AddressController {
     try {
       const dto: Partial<IAddress> = AddressDTO.handleAddress(req, res);
 
-      const {status,resBody} = await this.addressService.createAddress(dto);
+      const {status,resBody} = await this._addressService.createAddress(dto);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -77,7 +64,7 @@ export class AddressController {
 
   public async updateAddress(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { status, resBody } = await this.addressService.updateAddress(req, res);
+      const { status, resBody } = await this._addressService.updateAddress(req, res);
 
       res.status(status).json(resBody);
     } catch (err) {

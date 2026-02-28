@@ -1,5 +1,5 @@
 import { StatusCodes } from '../../Constants/statusCodes';
-import { IResponse } from '../../Interfaces/IResponse';
+import { IResponse } from '../../Interfaces/Other/IResponse';
 
 export class SchoolResponseBody {
   //     static newAcademicYear(newDoc:Partial<IAcademicYear|null>){

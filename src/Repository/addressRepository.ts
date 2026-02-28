@@ -1,9 +1,12 @@
 import { FilterQuery } from 'mongoose';
+import { injectable } from 'tsyringe';
+
 import { IAddressRepository } from '../Interfaces/repository/IAddressRepository';
 import { addressModel } from '../Models';
 import { IAddress } from '../Models/addressModel';
+import logger from '../Utils/logger';
+
 import { BaseRepository } from './BaseRepository';
-import { injectable } from 'tsyringe';
 
 @injectable()
 export class AddressRepository extends BaseRepository<IAddress> implements IAddressRepository {
@@ -32,7 +35,7 @@ export class AddressRepository extends BaseRepository<IAddress> implements IAddr
         )
         .lean<IAddress>();
     } catch (error) {
-      console.error('Error updating address:', error);
+      logger.error('Error updating address:', error);
       return null;
     }
   }

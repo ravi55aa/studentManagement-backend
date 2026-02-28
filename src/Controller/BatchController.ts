@@ -1,19 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
-import { serviceReturnType } from '../Constants/interfaces';
-
 import { injectable, inject } from 'tsyringe';
+
+import { serviceReturnType } from '../Constants/interfaces';
 import { BatchService } from '../Services/batchService';
+import { IBatchService } from '../Interfaces/services/IBatchService';
 
 @injectable()
 export class BatchController {
   constructor(
     @inject(BatchService)
-    private batchService: BatchService,
+    private _batchService: IBatchService,
   ) {}
 
   async addNewBatch(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody }: serviceReturnType = await this.batchService.createBatch(req, res);
+      const { status, resBody }: serviceReturnType = await this._batchService.createBatch(req, res);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -23,7 +24,7 @@ export class BatchController {
 
   async getAllBatches(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this.batchService.getAllBatches(req, res);
+      const { status, resBody } = await this._batchService.getAllBatches(req, res);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -33,7 +34,7 @@ export class BatchController {
 
   async getASchoolBatch(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this.batchService.getBatchById(req);
+      const { status, resBody } = await this._batchService.getBatchById(req);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -43,7 +44,7 @@ export class BatchController {
 
   async editASchoolBatch(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this.batchService.updateABatch(req, res);
+      const { status, resBody } = await this._batchService.updateABatch(req, res);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -56,7 +57,7 @@ export class BatchController {
       const { id } = req.params;
       const { teacherId } = req.body;
 
-      const { status, resBody } = await this.batchService.assignClassTeacher(id!, teacherId);
+      const { status, resBody } = await this._batchService.assignClassTeacher(id!, teacherId);
 
       res.status(status).json(resBody);
     } catch (error) {
@@ -66,7 +67,7 @@ export class BatchController {
 
   async deleteASchoolBatch(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this.batchService.deleteBatch(req);
+      const { status, resBody } = await this._batchService.deleteBatch(req);
 
       res.status(status).json(resBody);
     } catch (err) {

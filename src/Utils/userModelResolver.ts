@@ -1,5 +1,4 @@
 import schoolModel, { ISchool } from '../Models/schoolModel';
-
 import { UserRole } from '../types/auth.types';
 
 export function getUserModel(role: UserRole) {

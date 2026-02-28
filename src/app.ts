@@ -1,14 +1,12 @@
 /// <reference  path='./types/express/index.d.ts'/>
-
 import express from 'express';
 const app = express();
 
 import cookieParser from 'cookie-parser';
-import handleErrorsMiddleware from './Middlewares/error.middleware';
-
-import { sessionConfig, connectDB } from './Config/index';
 import cors from 'cors';
 
+import handleErrorsMiddleware from './Middlewares/error.middleware';
+import { sessionConfig, connectDB } from './Config/index';
 import {
   oauthRouter,
   authRouter,

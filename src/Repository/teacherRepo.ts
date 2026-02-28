@@ -1,12 +1,14 @@
 import { FilterQuery, Types } from 'mongoose';
+import { injectable } from 'tsyringe';
+
 import { teacherModel } from '../Models';
 import { ITeacher, ITeacherBio, teacherBioModel } from '../Models/teacherModel';
-import { BaseRepository } from './BaseRepository';
 import { ITeacherRepo } from '../Interfaces/repository/ITeacherRepo';
 import logger from '../Utils/logger';
 import { IGetAllTeachers } from '../Interfaces/Other/getAllTeachers';
 import { batchModel } from '../Models/batchModel';
-import { injectable } from 'tsyringe';
+
+import { BaseRepository } from './BaseRepository';
 
 @injectable()
 export class TeacherRepository extends BaseRepository<ITeacherBio> implements ITeacherRepo {
@@ -14,9 +16,7 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
     super(teacherBioModel);
   }
 
-  /* ===============================
-    CREATE PROFESSIONAL TEACHER
-  ================================= */
+  /* ==============CREATE PROFESSIONAL TEACHER================= */
   async createProfessional(data: Partial<ITeacher>): Promise<ITeacher | null> {
     try {
       const created = await teacherModel.create(data);
@@ -27,9 +27,7 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
     }
   }
 
-  /* ===============================
-     FIND PROFESSIONAL BY ID
-  ================================= */
+  /* ==============FIND PROFESSIONAL BY ID================= */
   async findProfessionalById(teacherId: string): Promise<ITeacher | null> {
     try {
       if (!Types.ObjectId.isValid(teacherId)) return null;
@@ -47,9 +45,7 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
     }
   }
 
-  /* ===============================
-     GENERIC FIND ONE (PROFESSIONAL)
-  ================================= */
+  /* ==============GENERIC FIND ONE (PROFESSIONAL)================= */
   async findOneProfessional(query: FilterQuery<Partial<ITeacher>>): Promise<ITeacher | null> {
     try {
       return await teacherModel.findOne(query).lean<ITeacher>();
@@ -59,9 +55,7 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
     }
   }
 
-  /* ===============================
-     UPDATE BIO
-  ================================= */
+  /* ==============UPDATE BIO================= */
   async updateBioById(teacherId: string, data: Partial<ITeacherBio>): Promise<ITeacherBio | null> {
     try {
       if (!Types.ObjectId.isValid(teacherId)) return null;
@@ -75,9 +69,7 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
     }
   }
 
-  /* ===============================
-     SOFT DELETE
-  ================================= */
+  /* ==============SOFT DELETE================= */
   async softDelete(teacherId: string): Promise<boolean> {
     try {
       if (!Types.ObjectId.isValid(teacherId)) return false;
@@ -118,9 +110,7 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
     }
   }
 
-  /* ===============================
-     ASSIGN SUBJECTS
-  ================================= */
+  /* ==============ASSIGN SUBJECTS to teacher================= */
   async assignSubjects(teacherId: string, subjectIds: string[]): Promise<ITeacher | null> {
     try {
       return await teacherModel
@@ -140,9 +130,7 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
     }
   }
 
-  /* ===============================
-     REMOVE SUBJECT
-  ================================= */
+  /* ==============REMOVE SUBJECT from teachers================= */
   async removeSubject(teacherId: string, subjectId: string): Promise<ITeacher | null> {
     try {
       return await teacherModel
@@ -160,9 +148,7 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
     }
   }
 
-  /* ===============================
-     ASSIGN CLASS
-  ================================= */
+  /* ==============ASSIGN CLASS to teacher================= */
   async assignClass(teacherId: string, batchId: string): Promise<ITeacher | null> {
     try {
       return await teacherModel
@@ -174,13 +160,11 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
     }
   }
 
-  /* ===============================
-     GET UNASSIGNED TEACHERS
-  ================================= */
-  async getUnassignedTeachers(): Promise<ITeacherBio[]> {
+  /* ==============GET UNASSIGNED TEACHERS================= */
+  async getUnassignedTeachers(query: FilterQuery<Partial<ITeacher>>): Promise<ITeacherBio[]> {
     try {
       const assignedIds = await batchModel
-        .find({ batchCounselor: { $ne: null } })
+        .find({...query, batchCounselor: { $ne: null } })
         .distinct('batchCounselor');
 
       return await this.model.find({ _id: { $nin: assignedIds } }).lean<ITeacherBio[]>();
@@ -190,9 +174,7 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
     }
   }
 
-  /* ===============================
-     GET ALL TEACHERS (COMBINED)
-  ================================= */
+  /* ==============GET ALL TEACHERS (COMBINED)================= */
   async getAllTeachers(): Promise<IGetAllTeachers | null> {
     try {
       const bio = await this.model.find({}, { tenantId: 0 }).lean<ITeacherBio[]>();

@@ -6,7 +6,7 @@ export interface ISchoolRepository extends BaseRepository<ISchool> {
 
   findById(id: string): Promise<ISchool | null>;
 
-  createSchool(schoolMetaData: Partial<ISchool>): Promise<ISchool>;
+  createSchool(schoolData: ISchool): Promise<ISchool | null>;
 
   // UPDATE
   updateSchool(schoolId: string, updateData: Partial<ISchool>): Promise<ISchool | null>;

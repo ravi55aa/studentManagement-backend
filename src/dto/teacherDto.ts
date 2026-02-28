@@ -1,9 +1,10 @@
-import { ITeacher, ITeacherBio } from '../Models/teacherModel';
 import { Request, Response } from 'express';
+import mongoose from 'mongoose';
+
+import { ITeacher, ITeacherBio } from '../Models/teacherModel';
 import { handleTokenVerification } from '../Utils/jwt';
 import { handleValidationOF } from '../Middlewares/validateUser.middleware';
 import { createTeacherSchema } from '../Validators/teacher';
-import mongoose from 'mongoose';
 import { batchModel } from '../Models/batchModel';
 import academicSubjectsModel, { academicYearModel } from '../Models/academicYear';
 import { getRandomId } from '../Utils/nanoId';
