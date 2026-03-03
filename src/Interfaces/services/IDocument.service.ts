@@ -12,5 +12,5 @@ export interface IDocumentService {
 
   deleteAFile(req: Request): Promise<serviceReturnType>;
 
-  update_NewAddition_Documents(req: Request,res:Response): Promise<serviceReturnType>;
+  update_NewAddition_Documents(req: Request, res: Response): Promise<serviceReturnType>;
 }

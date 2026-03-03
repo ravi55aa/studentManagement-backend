@@ -1,11 +1,9 @@
-
 import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import mongoose from 'mongoose';
 import { MongoServerError } from 'mongodb';
 
 import logger from '../Utils/logger';
 import { StatusCodes } from '../Constants/statusCodes';
-
 
 export const handleErrorsMiddleware: ErrorRequestHandler = (
   err,
@@ -65,9 +63,7 @@ export const handleErrorsMiddleware: ErrorRequestHandler = (
 
   /* ==============Fallback Error=================*/
   const status =
-    res.statusCode && res.statusCode !== 200
-      ? res.statusCode
-      : StatusCodes.INTERNAL_SERVER_ERROR;
+    res.statusCode && res.statusCode !== 200 ? res.statusCode : StatusCodes.INTERNAL_SERVER_ERROR;
 
   return res.status(status).json({
     success: false,

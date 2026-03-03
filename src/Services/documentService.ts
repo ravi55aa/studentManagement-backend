@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import { inject, injectable } from 'tsyringe';
 
+import { TYPES } from '../DI/types';
 import { serviceReturnType } from '../Constants/interfaces';
 import { IDocumentService } from '../Interfaces/services/IDocument.service';
 import { IDocument } from '../Models/documentModel';
 import { DocumentsDto } from '../dto/schoolDTO';
-import { DocumentRepository } from '../Repository/documentRepository';
 import { ApiResponse } from '../Constants/apiResponse';
 import { DocumentMessage } from '../Constants/resposeMessages';
 import logger from '../Utils/logger';
@@ -14,7 +14,7 @@ import { IDocumentRepository } from '../Interfaces/repository/IDocument.interfac
 @injectable()
 export class DocumentService implements IDocumentService {
   constructor(
-    @inject(DocumentRepository)
+    @inject(TYPES.DocumentRepository)
     private _documentRepository: IDocumentRepository,
   ) {}
 
@@ -53,9 +53,9 @@ export class DocumentService implements IDocumentService {
   }
 
   //  Update New Addition Documents
-  async update_NewAddition_Documents(req: Request,res:Response): Promise<serviceReturnType> {
+  async update_NewAddition_Documents(req: Request, res: Response): Promise<serviceReturnType> {
     try {
-      const { dtoData, dtoQuery } = DocumentsDto.updateDocV2(req,res);
+      const { dtoData, dtoQuery } = DocumentsDto.updateDocV2(req, res);
 
       const updated = await this._documentRepository.updateNEWUploadDocuments(dtoQuery, dtoData);
 

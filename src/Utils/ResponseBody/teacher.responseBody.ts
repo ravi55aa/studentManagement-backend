@@ -1,7 +1,6 @@
 import { StatusCodes } from '../../Constants/statusCodes';
 import { IResponse } from '../../Interfaces/Other/IResponse';
 import { IGetAllTeachers } from '../../Interfaces/Other/getAllTeachers';
-import { ITeacher, ITeacherBio } from '../../Models/teacherModel';
 
 //Argument of type 'T' is not assignable to parameter of type 'object'
 // T = string

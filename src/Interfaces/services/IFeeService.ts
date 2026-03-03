@@ -7,7 +7,7 @@ export interface IFeeService {
 
   updateFee(id: string, req: Request): Promise<serviceReturnType>;
 
-  getAllFees(req: Request): Promise<serviceReturnType>;
+  getAllFees(): Promise<serviceReturnType>;
 
   getFeeById(id: string): Promise<serviceReturnType>;
 

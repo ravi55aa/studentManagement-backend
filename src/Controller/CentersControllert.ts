@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'tsyringe';
 
+import { TYPES } from '../DI/types';
 import { serviceReturnType } from '../Constants/interfaces';
-import { CentersService } from '../Services/centersService';
 import { ICenterService } from '../Interfaces/services/ICenterService';
 
 @injectable()
 export class CentersController {
   constructor(
-    @inject(CentersService)
+    @inject(TYPES.CenterService)
     private _centerService: ICenterService,
   ) {}
 

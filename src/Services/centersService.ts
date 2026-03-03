@@ -1,14 +1,13 @@
 import { Request, Response } from 'express';
 import { inject, injectable } from 'tsyringe';
 
+import { TYPES } from '../DI/types';
 import { CenterDto } from '../dto/centersDto';
 import { ICenter } from '../Models/centerModel';
 import { AddressDTO } from '../dto/addressDTO';
 import { IAddress } from '../Models/addressModel';
 import { serviceReturnType } from '../Constants/interfaces';
 import { ICenterService } from '../Interfaces/services/ICenterService';
-import { AddressRepository } from '../Repository/addressRepository';
-import { CenterRepository } from '../Repository/centerRepository';
 import { ApiResponse } from '../Constants/apiResponse';
 import { CenterMessage } from '../Constants/resposeMessages';
 import { IAddressRepository } from '../Interfaces/repository/IAddressRepository';
@@ -17,10 +16,10 @@ import { ICenterRepository } from '../Interfaces/repository/ICenterRepository';
 @injectable()
 export class CentersService implements ICenterService {
   constructor(
-    @inject(AddressRepository)
+    @inject(TYPES.AddressRepository)
     private _addressRepo: IAddressRepository,
 
-    @inject(CenterRepository)
+    @inject(TYPES.CenterRepository)
     private _centerRepo: ICenterRepository,
   ) {}
 

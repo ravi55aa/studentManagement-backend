@@ -34,12 +34,13 @@ export enum AuthMessage {
   TokenRefreshed = 'Token refreshed',
 }
 
-export enum SchoolMessage{
-  NotFound='School NOT found, credentials miss match',
-  SchoolListed='School Listed Successfully',
-  Updated='School updated',
-  NotUpdated='School Not updated',
-  FetchAll='Listed All School'
+export enum SchoolMessage {
+  NotFound = 'School NOT found, credentials miss match',
+  SchoolListed = 'School Listed Successfully',
+  Updated = 'School updated',
+  NotUpdated = 'School Not updated',
+  FetchAll = 'Listed All School',
+  Deleted = 'School deleted successfully',
 }
 
 export enum AcademicCourseMessage {
@@ -78,8 +79,8 @@ export enum AcademicSubjectMessage {
   SubjectsListed = 'Academic subjects fetched successfully',
 }
 
-export enum AdminMessage{
-  NotFound ='Admin not found',
+export enum AdminMessage {
+  NotFound = 'Admin not found',
 }
 
 export enum AcademicYearMessage {

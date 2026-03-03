@@ -2,23 +2,21 @@ import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'tsyringe';
 
 import { StatusCodes } from '../Constants/statusCodes';
-import { IResponse } from '../Interfaces/Other/IResponse';
-import { ISchool } from '../Models/schoolModel';
-import { handleSchoolRB, handleSchoolResBody } from '../Utils/responseBody';
-import { SchoolService } from '../Services/schoolService';
+import { handleSchoolRB } from '../Utils/responseBody';
 import { ISchoolService } from '../Interfaces/services/ISchoolService';
+import { TYPES } from '../DI/types';
 
 @injectable()
 export class SchoolController {
   constructor(
-    @inject(SchoolService)
+    @inject(TYPES.SchoolService)
     private _schoolService: ISchoolService,
   ) {}
 
   //*create
   public async createSchool(req: Request, res: Response, next: NextFunction) {
     try {
-      const {status,resBody} = await this._schoolService.createSchool(req, res);
+      const { status, resBody } = await this._schoolService.createSchool(req, res);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -52,7 +50,7 @@ export class SchoolController {
   //*Read
   public async getSchool(req: Request, res: Response, next: NextFunction) {
     try {
-      const {status,resBody} = await this._schoolService.getSchool(req, res);
+      const { status, resBody } = await this._schoolService.getSchool(req, res);
 
       res.status(status).json(resBody);
     } catch (err) {

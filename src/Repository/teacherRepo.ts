@@ -95,15 +95,12 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
     try {
       if (!Types.ObjectId.isValid(teacherId)) return false;
 
-      const result = await teacherBioModel.deleteOne(
-        { _id: teacherId }
-      );
+      const result = await teacherBioModel.deleteOne({ _id: teacherId });
 
-      if(result.deletedCount <=0){
+      if (result.deletedCount <= 0) {
         return false;
-      } 
+      }
       return true;
-
     } catch (error) {
       logger.error('Error soft deleting teacher:', error);
       return false;
@@ -164,7 +161,7 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
   async getUnassignedTeachers(query: FilterQuery<Partial<ITeacher>>): Promise<ITeacherBio[]> {
     try {
       const assignedIds = await batchModel
-        .find({...query, batchCounselor: { $ne: null } })
+        .find({ ...query, batchCounselor: { $ne: null } })
         .distinct('batchCounselor');
 
       return await this.model.find({ _id: { $nin: assignedIds } }).lean<ITeacherBio[]>();

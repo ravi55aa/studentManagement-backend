@@ -5,7 +5,7 @@ import { serviceReturnType } from '../../Constants/interfaces';
 export interface ISchoolAcademicYear {
   addNewSchoolYear(req: Request, res: Response): Promise<serviceReturnType>;
 
-  getAAcademicYear(req: Request): Promise<serviceReturnType>
+  getAAcademicYear(req: Request): Promise<serviceReturnType>;
 
   updateAcademicYear(req: Request, res: Response): Promise<serviceReturnType>;
 

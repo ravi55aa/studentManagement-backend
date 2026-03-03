@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 import { injectable, inject } from 'tsyringe';
 
+import { TYPES } from '../DI/types';
 import { serviceReturnType } from '../Constants/interfaces';
-import {  IBatches } from '../Models/batchModel';
+import { IBatches } from '../Models/batchModel';
 import { BatchDto } from '../dto/batchDto';
 import { IBatchService } from '../Interfaces/services/IBatchService';
 import { ApiResponse } from '../Constants/apiResponse';
-import { BatchRepository } from '../Repository/batchRespository';
 import { BatchMessage } from '../Constants/resposeMessages';
 import logger from '../Utils/logger';
 import { IBatchRepository } from '../Interfaces/repository/IBatchRepository';
@@ -14,7 +14,7 @@ import { IBatchRepository } from '../Interfaces/repository/IBatchRepository';
 @injectable()
 export class BatchService implements IBatchService {
   constructor(
-    @inject(BatchRepository)
+    @inject(TYPES.BatchRepository)
     private _batchRepo: IBatchRepository,
   ) {}
 
@@ -126,7 +126,6 @@ export class BatchService implements IBatchService {
       // if (batch.batchCounselor) {
       //   return ApiResponse.badRequest(BatchMessage.BatchAlreadyHasTeacher);
       // }
-      
 
       //const teacherAlreadyAssigned = await this._batchRepo.findByTeacherId(teacherId);
 

@@ -2,13 +2,13 @@ import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'tsyringe';
 
 import { StatusCodes } from '../Constants/statusCodes';
-import { NotificationService } from '../Services/notificationService';
 import { INotificationService } from '../Interfaces/services/INotificatoin';
+import { TYPES } from '../DI/types';
 
 @injectable()
 export class NotificationController {
   constructor(
-    @inject(NotificationService)
+    @inject(TYPES.NotificationService)
     private _notificationService: INotificationService,
   ) {}
 

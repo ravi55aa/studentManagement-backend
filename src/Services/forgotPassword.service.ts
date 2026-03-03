@@ -1,7 +1,8 @@
 import { Request } from 'express';
 import { injectable, inject } from 'tsyringe';
-import bcrypt from "bcrypt";
+import bcrypt from 'bcrypt';
 
+import { TYPES } from '../DI/types';
 import { IForgotPasswordService } from '../Interfaces/services/IForgotPasswordService.';
 import { handleMailOptions, sendMail } from '../Constants/nodemail';
 import { otp } from '../Utils/generateOtp';
@@ -9,25 +10,24 @@ import { IOtp } from '../Models/otpModel';
 import { IUser } from '../Models/userModel';
 import { ISchool } from '../Models/schoolModel';
 import { serviceReturnType } from '../Constants/interfaces';
-import { ForgotPasswordRepository, idToObjectId } from '../Repository/forgotPassword.Repository';
+import { idToObjectId } from '../Repository/forgotPassword.Repository';
 import { ForgotPasswordDTO } from '../dto/forogotPasssword.dto';
 import { ApiResponse } from '../Constants/apiResponse';
 import { AuthMessage } from '../Constants/resposeMessages';
 import { IForgotPasswordRepository } from '../Interfaces/repository/IForgotPassword.repository';
 
-
 @injectable()
 export class ForgotPasswordService implements IForgotPasswordService {
   constructor(
-    @inject(ForgotPasswordRepository)
+    @inject(TYPES.ForgotPasswordRepository)
     private _repository: IForgotPasswordRepository,
   ) {}
 
   async verifyEmail(modelName: string, email: string): Promise<null | IUser | ISchool> {
     if (modelName == 'Admin') {
-      return this._repository.findAdmin(email); 
+      return this._repository.findAdmin(email);
     } else if (modelName === 'School') {
-      return this._repository.findSchool(email); 
+      return this._repository.findSchool(email);
     }
 
     return null;
@@ -37,12 +37,12 @@ export class ForgotPasswordService implements IForgotPasswordService {
   async generateOtp(req: Request): Promise<serviceReturnType> {
     const { id } = req.params;
     const newOtp = otp;
-    const mailOptions=handleMailOptions(newOtp);
+    const mailOptions = handleMailOptions(newOtp);
     await sendMail(mailOptions);
 
     const newOtpDoc = await this._repository.storeOtp(id!, newOtp);
 
-    return ApiResponse.success(newOtpDoc,AuthMessage.OtpVerified);
+    return ApiResponse.success(newOtpDoc, AuthMessage.OtpVerified);
   }
 
   async findValidOtp(id: string, otp: string): Promise<IOtp | null> {
@@ -52,21 +52,19 @@ export class ForgotPasswordService implements IForgotPasswordService {
   }
 
   async verifyOtp(req: Request): Promise<serviceReturnType> {
-
     const { generatedOtp, userEnteredOtp } = req.body;
     const { id } = req.params;
-    
+
     const data = (await this.findValidOtp(id!, generatedOtp)) && generatedOtp === userEnteredOtp;
 
-    return ApiResponse.success(data,AuthMessage.OtpVerified);
+    return ApiResponse.success(data, AuthMessage.OtpVerified);
   }
 
   async updatePassword(req: Request): Promise<serviceReturnType> {
-
     const { modelName, newPassword } = req.body;
     const { id } = req.params;
-    
-    const hashedPassword=await bcrypt.hash(newPassword,10);
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     if (modelName == 'Admin') {
       const updated = await this._repository.findAndUpdateAdmin(id!, hashedPassword);
@@ -75,17 +73,16 @@ export class ForgotPasswordService implements IForgotPasswordService {
         return ApiResponse.failure(AuthMessage.InvalidCredentials);
       }
 
-      return ApiResponse.success(null,AuthMessage.PasswordReset);
-
+      return ApiResponse.success(null, AuthMessage.PasswordReset);
     } else if (modelName === 'School') {
       const updated = await this._repository.findAndUpdateSchool(id!, hashedPassword);
-      
+
       if (!updated) {
         return ApiResponse.failure(AuthMessage.InvalidCredentials);
       }
     }
-    
-    return ApiResponse.success(null,AuthMessage.PasswordReset);
+
+    return ApiResponse.success(null, AuthMessage.PasswordReset);
   }
 
   async updatePasswordV2(req: Request): Promise<serviceReturnType> {
@@ -103,6 +100,6 @@ export class ForgotPasswordService implements IForgotPasswordService {
       return ApiResponse.failure(AuthMessage.InvalidCredentials);
     }
 
-    return ApiResponse.success(null,AuthMessage.PasswordReset);
+    return ApiResponse.success(null, AuthMessage.PasswordReset);
   }
 }

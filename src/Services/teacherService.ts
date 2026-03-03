@@ -2,24 +2,21 @@ import { FilterQuery, Types } from 'mongoose';
 import { Request, Response } from 'express';
 import { injectable, inject } from 'tsyringe';
 
+import { TYPES } from '../DI/types';
 import { ITeacher } from '../Models/teacherModel';
 import { teacherModel } from '../Models';
 import { TeacherDTO, TeacherValidation } from '../dto/teacherDto';
 import { serviceReturnType } from '../Constants/interfaces';
 import { ITeacherService } from '../Interfaces/services/ITeacherService';
-// import { TeacherResponseBody } from '../Utils/ResponseBody/teacher.responseBody';
-// import { IGetAllTeachers } from '../Interfaces/Other/getAllTeachers';
 import { ApiResponse } from '../Constants/apiResponse';
-// import { TeacherType } from '../types/teacher.types';
 import logger from '../Utils/logger';
-import { TeacherRepository } from '../Repository/teacherRepo';
 import { TeacherMessage } from '../Constants/resposeMessages';
 import { ITeacherRepo } from '../Interfaces/repository/ITeacherRepo';
 
 @injectable()
 export class TeacherService implements ITeacherService {
   constructor(
-    @inject(TeacherRepository)
+    @inject(TYPES.TeacherRepository)
     private _teacherRepo: ITeacherRepo,
   ) {}
 
@@ -63,14 +60,14 @@ export class TeacherService implements ITeacherService {
 
       const data = await TeacherDTO.create(req, res);
 
-      if (data.academicYearId && data.designation=='teacher') {
+      if (data.academicYearId && data.designation == 'teacher') {
         const exists = await this._teacherRepo.findOneProfessional({
           academicYearId: data.academicYearId,
           employmentStatus: 'active',
         });
 
         if (exists) {
-          this._teacherRepo.deleteTeacherBio(req.params.id!)
+          this._teacherRepo.deleteTeacherBio(req.params.id!);
           return ApiResponse.badRequest(TeacherMessage.ClassTeacherAlreadyAssigned);
         }
 
@@ -247,7 +244,9 @@ export class TeacherService implements ITeacherService {
     return updated;
   }
 
-  public async getUnassignedTeachers(query:FilterQuery<Partial<ITeacher>>): Promise<serviceReturnType> {
+  public async getUnassignedTeachers(
+    query: FilterQuery<Partial<ITeacher>>,
+  ): Promise<serviceReturnType> {
     const teachers = await this._teacherRepo.getUnassignedTeachers(query);
 
     if (!teachers.length) {

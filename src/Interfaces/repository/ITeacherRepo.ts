@@ -15,7 +15,7 @@ export interface ITeacherRepo extends BaseRepository<ITeacherBio> {
 
   softDelete(teacherId: string): Promise<boolean>;
 
-  deleteTeacherBio(teacherId: string): Promise<boolean>
+  deleteTeacherBio(teacherId: string): Promise<boolean>;
 
   assignClass(teacherId: string, batchId: string): Promise<ITeacher | null>;
 
@@ -27,7 +27,7 @@ export interface ITeacherRepo extends BaseRepository<ITeacherBio> {
 
   getUnassignedTeachers(query: FilterQuery<Partial<ITeacher>>): Promise<ITeacherBio[]>;
 
-  findOneProfessional(query: FilterQuery<Partial<ITeacher>>): Promise<ITeacher | null>
+  findOneProfessional(query: FilterQuery<Partial<ITeacher>>): Promise<ITeacher | null>;
 
-  findProfessionalById(teacherId: string): Promise<ITeacher | null> 
+  findProfessionalById(teacherId: string): Promise<ITeacher | null>;
 }

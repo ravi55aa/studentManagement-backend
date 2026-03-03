@@ -1,14 +1,11 @@
 import { Request, Response } from 'express';
 import { FilterQuery } from 'mongoose';
-import bcrypt from 'bcrypt';
 
 import { ISchool } from '../Models/schoolModel';
 import { handleTokenVerification } from '../Utils/jwt';
 import { IAcademicCourse, IAcademicCourseMeta, IUpload_document } from '../Models/courses.model';
-import { IAcademicSubject } from '../Models/academicYear';
-import { batchModel } from '../Models/batchModel';
+import { academicYearModel, IAcademicSubject, IAcademicYear } from '../Models/academicYear';
 import { IDocument, IUploadedDoc } from '../Models/documentModel';
-
 
 export class SchoolDTO {
   static createSchool(reqBody: Partial<ISchool>): Partial<ISchool> {
@@ -106,7 +103,7 @@ export class SchoolAcademicYearDto {
     const decoded = handleTokenVerification(req, res);
 
     const updateYearDto = {
-      ...(code !== undefined && { code: code.slice(0,5)=='YEAR-'?code:'YEAR-'+code }),
+      ...(code !== undefined && { code: code.slice(0, 5) == 'YEAR-' ? code : 'YEAR-' + code }),
       ...(startDate !== undefined && { startDate }),
       ...(year !== undefined && { year }),
       ...(endDate !== undefined && { endDate }),
@@ -183,6 +180,15 @@ export class SchoolSubjectsDto {
     // }
     // dtoData.batchesToFollow = batchesToFollowArray;
 
+    //AcademicYear
+    const findYear = await academicYearModel
+      .findOne({ code: dtoData.academicYear })
+      .lean<IAcademicYear>();
+
+    if (!findYear) return (dtoData.academicYear = null);
+
+    dtoData.academicYear = findYear._id;
+
     return dtoData;
   }
 
@@ -209,7 +215,7 @@ export class SchoolSubjectsDto {
     const decoded = handleTokenVerification(req, res);
 
     const updateSubjectDto: IAcademicSubject = {
-      ...(code && { code: code.slice(0,4)=='SUB-'?code:'SUB-'+code }),
+      ...(code && { code: code.slice(0, 4) == 'SUB-' ? code : 'SUB-' + code }),
       ...(name && { name }),
       ...(className && { className }),
       ...(level && { level }),
@@ -281,7 +287,7 @@ export class SchoolCoursesDto {
       value: duration.value,
       unit: duration.unit,
     };
-    
+
     const courseDto = {
       code: 'COU-' + code,
       name,
@@ -350,14 +356,14 @@ export class SchoolCoursesDto {
     const decoded = handleTokenVerification(req, res);
 
     const courseDto: Partial<IAcademicCourse> = {
-      ...(code && { code: code.slice(0,4)=='COU-'?code:'COU-'+code }),
+      ...(code && { code: code.slice(0, 4) == 'COU-' ? code : 'COU-' + code }),
       ...(name && { name }),
       //...(level && { level }),
       ...(status && { status }),
       ...(description && { description }),
       ...(academicYear && { academicYear }),
       ...(modelType && { modelType }),
-      ...(center && { center }),
+      ...(center && { center: modelType == 'School' ? decoded.tenantId : center }),
 
       ...(schedule && {
         schedule: {
@@ -413,17 +419,17 @@ export class SchoolCoursesDto {
  * Documents
  */
 export class DocumentsDto {
-  static handleDtoOfDoc(req: Request,res:Response): Partial<IDocument> {
+  static handleDtoOfDoc(req: Request, res: Response): Partial<IDocument> {
     const files = req.files as Express.Multer.File[];
     const docs = files?.map((f) => ({
       url: f.path,
       fileName: f.filename,
     }));
 
-    const {adminId,tenantId,role}=SchoolAcademicYearDto.getTenantId(req,res);
+    const { adminId, tenantId, role } = SchoolAcademicYearDto.getTenantId(req, res);
 
     return {
-      userId: role=='School'?tenantId:adminId,
+      userId: role == 'School' ? tenantId : adminId,
       tenantId: tenantId,
       role: req.user?.role || 'School',
       docs,
@@ -433,7 +439,7 @@ export class DocumentsDto {
   static updateDoc(req: Request, res: Response) {
     const decoded = handleTokenVerification(req, res);
 
-    const { docs } = this.handleDtoOfDoc(req,res);
+    const { docs } = this.handleDtoOfDoc(req, res);
     if (!docs || docs?.length <= 0) {
       throw new Error('Nothing in the docs');
     }
@@ -447,10 +453,10 @@ export class DocumentsDto {
     return { dtoData, dtoQuery };
   }
 
-  static updateDocV2(req: Request,res:Response) {
+  static updateDocV2(req: Request, res: Response) {
     const { userId } = req.params;
 
-    const { docs } = this.handleDtoOfDoc(req,res);
+    const { docs } = this.handleDtoOfDoc(req, res);
     if (!docs || docs?.length <= 0) {
       throw new Error('Nothing in the docs');
     }

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { authMiddleware } from '../Middlewares/authorise.middleware';
-import { resetPassController } from '../dependencyInjector';
+import { resetPassController } from '../DI/resolve';
 const router = Router();
 
 router.patch('/reset/:id', authMiddleware, (req, res, next) =>

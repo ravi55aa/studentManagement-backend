@@ -12,7 +12,7 @@ export class CenterDto {
 
     const newCenterDto: Partial<ICenter> = {
       name,
-      code: code.slice(0,4)=='CEN-'?code:'CEN-'+code,
+      code: code.slice(0, 4) == 'CEN-' ? code : 'CEN-' + code,
       email,
       phone,
       totalCapacity,

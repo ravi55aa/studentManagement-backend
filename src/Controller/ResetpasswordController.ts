@@ -11,15 +11,14 @@ import { StatusCodes } from '../Constants/statusCodes';
 import { ISchool } from '../Models/schoolModel';
 import { IUser } from '../Models/userModel';
 import { serviceReturnType } from '../Constants/interfaces';
-import { ForgotPasswordService } from '../Services/forgotPassword.service';
+import { TYPES } from '../DI/types';
 
 @injectable()
 export class PasswordResetController {
   constructor(
-    @inject(ForgotPasswordService)
+    @inject(TYPES.ForgotPasswordService)
     private _fps: IForgotPasswordService,
   ) {}
-
 
   async verifyEmail(req: Request, res: Response, next: NextFunction) {
     try {

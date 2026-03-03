@@ -9,9 +9,9 @@ export interface IAddressService {
 
   getUserAddress(query: FilterQuery<Partial<IAddress>>): Promise<serviceReturnType>;
 
-  getAddressById(id: string): Promise<serviceReturnType>
+  getAddressById(id: string): Promise<serviceReturnType>;
 
-  getAllAddressByQuery(query: FilterQuery<Partial<IAddress>>): Promise<serviceReturnType>
+  getAllAddressByQuery(query: FilterQuery<Partial<IAddress>>): Promise<serviceReturnType>;
 
   createAddress(address: Partial<IAddress>): Promise<serviceReturnType>;
 

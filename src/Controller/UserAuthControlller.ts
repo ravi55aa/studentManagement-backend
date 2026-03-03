@@ -2,18 +2,17 @@ import { NextFunction, Request, Response } from 'express';
 import { injectable, inject } from 'tsyringe';
 import bcrypt from 'bcrypt';
 
-import { StatusCodes } from '../Constants/statusCodes';
 import { jwtTokensGenerator } from '../Utils/jwt';
 import { AuthUserDTO } from '../dto/userAuth.dto';
-import { UserAuthService } from '../Services/userAuthService';
 import { IUserAuthService } from '../Interfaces/services/IAdminAuthService';
 import { ApiResponse } from '../Constants/apiResponse';
 import { AuthMessage } from '../Constants/resposeMessages';
+import { TYPES } from '../DI/types';
 
 @injectable()
 export class UserAuthController {
   constructor(
-    @inject(UserAuthService)
+    @inject(TYPES.UserAuthService)
     private _authService: IUserAuthService,
   ) {}
 
@@ -23,9 +22,9 @@ export class UserAuthController {
       userSchema.password = await bcrypt.hash(userSchema.password, 10);
 
       const newUser = await this._authService.register(userSchema, addressSchema);
-      
+
       if (!newUser) {
-        const {status,resBody}=ApiResponse.failure('User not created');
+        const { status, resBody } = ApiResponse.failure('User not created');
         res.status(status).json(resBody);
         return;
       }
@@ -33,15 +32,17 @@ export class UserAuthController {
       //jwt *********
       const { token, refreshToken } = jwtTokensGenerator(newUser);
 
-      res.cookie('token', token, { httpOnly: true, maxAge: 24*60 * 60 * 1000, path: '/' }); //24h
+      res.cookie('token', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000, path: '/' }); //24h
 
       req.session.refreshToken = refreshToken;
 
-      const {status,resBody}=ApiResponse.success({ id: newUser._id, email: newUser.email },AuthMessage.UserRegistered);
+      const { status, resBody } = ApiResponse.success(
+        { id: newUser._id, email: newUser.email },
+        AuthMessage.UserRegistered,
+      );
 
       res.status(status).json(resBody);
-
-    } catch (err: any) {
+    } catch (err) {
       next(err);
     }
   }

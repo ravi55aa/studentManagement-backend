@@ -7,19 +7,14 @@ import logger from '../Utils/logger';
 import { BaseRepository } from './BaseRepository';
 
 @injectable()
-export class SchoolRepository
-  extends BaseRepository<ISchool>
-  implements ISchoolRepository {
-
+export class SchoolRepository extends BaseRepository<ISchool> implements ISchoolRepository {
   constructor() {
     super(schoolModel);
   }
 
   public async findByName(email: string): Promise<ISchool | null> {
     try {
-      return await this.model
-        .findOne({ email })
-        .lean<ISchool>();
+      return await this.model.findOne({ email }).lean<ISchool>();
     } catch (error) {
       logger.error('Error finding school by email:', error);
       return null;
@@ -30,18 +25,14 @@ export class SchoolRepository
     try {
       if (!schoolId) return null;
 
-      return await this.model
-        .findById(schoolId)
-        .lean<ISchool>();
+      return await this.model.findById(schoolId).lean<ISchool>();
     } catch (error) {
       logger.error('Error finding school by ID:', error);
       return null;
     }
   }
 
-  public async createSchool(
-    schoolData: ISchool
-  ): Promise<ISchool | null> {
+  public async createSchool(schoolData: ISchool): Promise<ISchool | null> {
     try {
       return await this.model.create(schoolData);
     } catch (error) {
@@ -52,7 +43,7 @@ export class SchoolRepository
 
   public async updateSchool(
     schoolId: string,
-    updateData: Partial<ISchool>
+    updateData: Partial<ISchool>,
   ): Promise<ISchool | null> {
     try {
       if (!schoolId) return null;
@@ -64,7 +55,7 @@ export class SchoolRepository
           {
             new: true,
             runValidators: true,
-          }
+          },
         )
         .lean<ISchool>();
     } catch (error) {
@@ -73,9 +64,7 @@ export class SchoolRepository
     }
   }
 
-  public async deleteSchool(
-    schoolId: string
-  ): Promise<boolean> {
+  public async deleteSchool(schoolId: string): Promise<boolean> {
     try {
       if (!schoolId) return false;
 

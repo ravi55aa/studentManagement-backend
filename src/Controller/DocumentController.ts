@@ -2,21 +2,21 @@ import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'tsyringe';
 
 import { DocumentsDto } from '../dto/schoolDTO';
-import { DocumentService } from '../Services/documentService';
 import { IDocumentService } from '../Interfaces/services/IDocument.service';
+import { TYPES } from '../DI/types';
 
 @injectable()
 export class DocumentController {
   constructor(
-    @inject(DocumentService)
+    @inject(TYPES.DocumentService)
     private _documentService: IDocumentService,
   ) {}
 
   public async addNewDocuments(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const dto = DocumentsDto.handleDtoOfDoc(req,res);
+      const dto = DocumentsDto.handleDtoOfDoc(req, res);
 
-      const {status,resBody} = await this._documentService.uploadDocs(dto);
+      const { status, resBody } = await this._documentService.uploadDocs(dto);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -62,7 +62,10 @@ export class DocumentController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const { status, resBody } = await this._documentService.update_NewAddition_Documents(req,res);
+      const { status, resBody } = await this._documentService.update_NewAddition_Documents(
+        req,
+        res,
+      );
 
       res.status(status).json(resBody);
     } catch (err) {

@@ -1,15 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'tsyringe';
+import { IFeeService } from 'Interfaces/services/IFeeService';
 
-import { FeeService } from '../Services/feesService';
+import { TYPES } from '../DI/types';
 import { ApiResponse } from '../Constants/apiResponse';
-import { AuthMessage } from '../Constants/resposeMessages';
 
 @injectable()
 export class FeeController {
   constructor(
-    @inject(FeeService)
-    private _feeService: FeeService,
+    @inject(TYPES.FeeService)
+    private _feeService: IFeeService,
   ) {}
 
   /* --------------CREATE FEE--------------- */
@@ -61,11 +61,11 @@ export class FeeController {
       const { id } = req.params;
 
       if (!id) {
-        const {status,resBody}=ApiResponse.notFound('UserIdNotFound');
+        const { status, resBody } = ApiResponse.notFound('UserIdNotFound');
         res.status(status).json(resBody);
       }
 
-      const {status,resBody} = await this._feeService.getFeeById(id!);
+      const { status, resBody } = await this._feeService.getFeeById(id!);
 
       res.status(status).json(resBody);
     } catch (error) {

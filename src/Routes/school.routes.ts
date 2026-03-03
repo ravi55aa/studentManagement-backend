@@ -16,7 +16,7 @@ import {
   schoolAcademicController,
   schoolAcaSubController,
   schoolController,
-} from '../dependencyInjector';
+} from '../DI/resolve';
 import { authMiddleware } from '../Middlewares/authorise.middleware';
 
 //*create

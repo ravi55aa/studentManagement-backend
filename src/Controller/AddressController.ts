@@ -3,20 +3,21 @@ import { injectable, inject } from 'tsyringe';
 
 import { IAddress } from '../Models/addressModel';
 import { AddressDTO } from '../dto/addressDTO';
-import { AddressService } from '../Services/addressService';
+import { TYPES } from '../DI/types';
 import { IAddressService } from '../Interfaces/services/IAddressService';
 
+//resolve tokens
 @injectable()
 export class AddressController {
   constructor(
-    @inject(AddressService)
-    private _addressService:IAddressService,
+    @inject(TYPES.AddressService)
+    private _addressService: IAddressService,
   ) {}
 
   public async getSchoolAddress(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
-      const {status,resBody} = await this._addressService.getSchoolAddress(id!);
+      const { status, resBody } = await this._addressService.getSchoolAddress(id!);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -28,7 +29,7 @@ export class AddressController {
     try {
       const { id } = req.params;
 
-      const {status,resBody} = await this._addressService.getAddressById(id!);
+      const { status, resBody } = await this._addressService.getAddressById(id!);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -36,13 +37,11 @@ export class AddressController {
     }
   }
 
-  public async getAllAddress(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  public async getAllAddress(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const {status,resBody} = await this._addressService.getAllAddressByQuery({userType:req.query.userType});
+      const { status, resBody } = await this._addressService.getAllAddressByQuery({
+        userType: req.query.userType,
+      });
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -54,7 +53,7 @@ export class AddressController {
     try {
       const dto: Partial<IAddress> = AddressDTO.handleAddress(req, res);
 
-      const {status,resBody} = await this._addressService.createAddress(dto);
+      const { status, resBody } = await this._addressService.createAddress(dto);
 
       res.status(status).json(resBody);
     } catch (err) {

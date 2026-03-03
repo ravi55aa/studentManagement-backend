@@ -17,9 +17,7 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
         return null;
       }
 
-      return await this.model
-        .findOne(filter)
-        .lean<T>();
+      return await this.model.findOne(filter).lean<T>();
     } catch (error) {
       logger.error('Error in findOne:', error);
       return null;
@@ -33,9 +31,7 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
         return null;
       }
 
-      return await this.model
-        .findById(id)
-        .lean<T>();
+      return await this.model.findById(id).lean<T>();
     } catch (error) {
       logger.error('Error in findById:', error);
       return null;
@@ -45,9 +41,7 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
   //* FIND MANY
   public async findMany(filter: FilterQuery<T>): Promise<T[] | []> {
     try {
-      return await this.model
-        .find(filter)
-        .lean<T[]>();
+      return await this.model.find(filter).lean<T[]>();
     } catch (error) {
       logger.error('Error in findMany:', error);
       return [];
@@ -55,10 +49,7 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
   }
 
   //* UPDATE BY ID
-  public async updateById(
-    id: string,
-    updateData: Partial<T>
-  ): Promise<T | null> {
+  public async updateById(id: string, updateData: Partial<T>): Promise<T | null> {
     try {
       if (!Types.ObjectId.isValid(id)) {
         return null;
@@ -71,7 +62,7 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
           {
             new: true,
             runValidators: true,
-          }
+          },
         )
         .lean<T>();
     } catch (error) {

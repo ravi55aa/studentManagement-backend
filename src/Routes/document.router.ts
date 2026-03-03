@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { documentController } from '../dependencyInjector';
+import { documentController } from '../DI/resolve';
 import { authMiddleware } from '../Middlewares/authorise.middleware';
 import { uploadCloud } from '../Config/multerCloud';
 const router = Router();

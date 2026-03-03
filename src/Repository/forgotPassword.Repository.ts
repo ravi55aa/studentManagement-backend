@@ -16,12 +16,9 @@ export const idToObjectId = (id: string) => {
 
 @injectable()
 export class ForgotPasswordRepository implements IForgotPasswordRepository {
-
   async findAdmin(email: string): Promise<IUser | null> {
     try {
-      return await adminModel
-        .findOne({ email })
-        .lean<IUser>();
+      return await adminModel.findOne({ email }).lean<IUser>();
     } catch (error) {
       logger.error('Error finding admin:', error);
       return null;
@@ -30,9 +27,7 @@ export class ForgotPasswordRepository implements IForgotPasswordRepository {
 
   async findSchool(email: string): Promise<ISchool | null> {
     try {
-      return await schoolModel
-        .findOne({ email })
-        .lean<ISchool>();
+      return await schoolModel.findOne({ email }).lean<ISchool>();
     } catch (error) {
       logger.error('Error finding school:', error);
       return null;
@@ -45,9 +40,7 @@ export class ForgotPasswordRepository implements IForgotPasswordRepository {
         return null;
       }
 
-      return await OtpModel
-        .findOne(query)
-        .lean<IOtp>();
+      return await OtpModel.findOne(query).lean<IOtp>();
     } catch (error) {
       logger.error('Error checking OTP expiration:', error);
       return null;
@@ -69,37 +62,28 @@ export class ForgotPasswordRepository implements IForgotPasswordRepository {
     }
   }
 
-  async updatePassword<T>(
-    role: UserRole,
-    id: string,
-    data: Partial<T>
-  ): Promise<T | null> {
+  async updatePassword<T>(role: UserRole, id: string, data: Partial<T>): Promise<T | null> {
     try {
       const Model = getUserModel(role);
 
-      return await Model
-        .findOneAndUpdate(
-          { _id: id },
-          { $set: data },
-          { new: true, runValidators: true }
-        )
-        .lean<T>();
+      return await Model.findOneAndUpdate(
+        { _id: id },
+        { $set: data },
+        { new: true, runValidators: true },
+      ).lean<T>();
     } catch (error) {
       logger.error('Error updating password:', error);
       return null;
     }
   }
 
-  async findAndUpdateAdmin(
-    id: string,
-    newPassword: string
-  ): Promise<IUser | null> {
+  async findAndUpdateAdmin(id: string, newPassword: string): Promise<IUser | null> {
     try {
       return await adminModel
         .findOneAndUpdate(
           { _id: id },
           { $set: { password: newPassword } },
-          { new: true, runValidators: true }
+          { new: true, runValidators: true },
         )
         .lean<IUser>();
     } catch (error) {
@@ -108,16 +92,13 @@ export class ForgotPasswordRepository implements IForgotPasswordRepository {
     }
   }
 
-  async findAndUpdateSchool(
-    id: string,
-    newPassword: string
-  ): Promise<ISchool | null> {
+  async findAndUpdateSchool(id: string, newPassword: string): Promise<ISchool | null> {
     try {
       return await schoolModel
         .findOneAndUpdate(
           { _id: id },
           { $set: { password: newPassword } },
-          { new: true, runValidators: true }
+          { new: true, runValidators: true },
         )
         .lean<ISchool>();
     } catch (error) {

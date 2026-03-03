@@ -4,19 +4,18 @@ import { injectable, inject } from 'tsyringe';
 import { serviceReturnType } from '../Constants/interfaces';
 import coursesModel, { coursesMetaModel } from '../Models/courses.model';
 import {
-  SchoolAcademicCoursesService,
-  SchoolAcademicSubjectSer,
-  SchoolYear,
-} from '../Services/school.year.service';
-import { ISchoolAcademicCourseSer, ISchoolAcademicSubjectSer, ISchoolAcademicYear } from '../Interfaces/services/ISchoolAcademicYear';
+  ISchoolAcademicCourseSer,
+  ISchoolAcademicSubjectSer,
+  ISchoolAcademicYear,
+} from '../Interfaces/services/ISchoolAcademicYear';
 import { ApiResponse } from '../Constants/apiResponse';
 import { CourseMessage } from '../Constants/resposeMessages';
-
+import { TYPES } from '../DI/types';
 /******** SCHOOL YEAR********/
 @injectable()
 export class SchoolAcademicController {
   constructor(
-    @inject(SchoolYear)
+    @inject(TYPES.SchoolYearService)
     private _academicService: ISchoolAcademicYear,
   ) {}
 
@@ -79,7 +78,7 @@ export class SchoolAcademicController {
 /******** SCHOOL SUBJECTS********/
 export class SchoolAcademicSubjectController {
   constructor(
-    @inject(SchoolAcademicSubjectSer)
+    @inject(TYPES.SchoolAcademicSubjectService)
     private _service: ISchoolAcademicSubjectSer,
   ) {}
 
@@ -110,7 +109,10 @@ export class SchoolAcademicSubjectController {
 
   async getASchoolAcademicSubject(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody }: serviceReturnType = await this._service.getAnAcademicSubject(req,res);
+      const { status, resBody }: serviceReturnType = await this._service.getAnAcademicSubject(
+        req,
+        res,
+      );
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -130,7 +132,7 @@ export class SchoolAcademicSubjectController {
 
   async deleteASchoolAcademicSubject(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this._service.deleteAnAcademicSubject(req,res);
+      const { status, resBody } = await this._service.deleteAnAcademicSubject(req, res);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -143,7 +145,7 @@ export class SchoolAcademicSubjectController {
 @injectable()
 export class SchoolAcademicCourseController {
   constructor(
-    @inject(SchoolAcademicCoursesService)
+    @inject(TYPES.SchoolAcademicCoursesService)
     private _courseService: ISchoolAcademicCourseSer,
   ) {}
 
@@ -165,7 +167,10 @@ export class SchoolAcademicCourseController {
       const courses = await coursesModel.find().lean();
       const courses_meta = await coursesMetaModel.find().lean();
 
-      const {status,resBody}=ApiResponse.success({courses,courses_meta},CourseMessage.CourseListed);
+      const { status, resBody } = ApiResponse.success(
+        { courses, courses_meta },
+        CourseMessage.CourseListed,
+      );
 
       return res.status(status).json(resBody);
     } catch (err) {

@@ -3,12 +3,8 @@ import axios, { AxiosResponse } from 'axios';
 
 import logger from '../Utils/logger';
 import userModel, { IUser } from '../Models/userModel';
-import {
-  handleJwtTokensGenerator,
-  handleTokenVerification,
-  IJwtPayload,
-  verifyToken,
-} from '../Utils/jwt';
+import { handleJwtTokensGenerator, IJwtPayload } from '../Utils/jwt';
+import { GoogleTokenResponse, GoogleUserInfoResponse } from '../Interfaces/Other/oAuth';
 
 import env from './env.config';
 
@@ -37,7 +33,7 @@ export const handleAuthCallback = async (req: Request, res: Response) => {
   // }
 
   try {
-    const tokenResponse: AxiosResponse<any> = await axios.post(
+    const tokenResponse: AxiosResponse<GoogleTokenResponse> = await axios.post(
       'https://oauth2.googleapis.com/token',
       new URLSearchParams({
         client_id: env.GOOGLE_CLIENT_ID!,
@@ -52,10 +48,10 @@ export const handleAuthCallback = async (req: Request, res: Response) => {
         },
       },
     );
-    const { access_token } = await tokenResponse.data;
+    const { access_token } = tokenResponse.data;
     //id_token
 
-    const userInfo: AxiosResponse<any> = await axios.get(
+    const userInfo: AxiosResponse<GoogleUserInfoResponse> = await axios.get(
       'https://www.googleapis.com/oauth2/v3/userinfo',
       {
         headers: { Authorization: `Bearer ${access_token}` },
@@ -90,8 +86,17 @@ export const handleAuthCallback = async (req: Request, res: Response) => {
     handleJwtTokensGenerator(payload, req, res);
 
     res.redirect('http://localhost:5173/school/register');
-  } catch (error: any) {
-    logger.error(`OAuth callback error:, ${error.response?.data}  ${error.message}`);
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      logger.error(
+        `OAuth callback Axios error: ${JSON.stringify(error.response?.data)} - ${error.message}`,
+      );
+    } else if (error instanceof Error) {
+      logger.error(`OAuth callback error: ${error.message}`);
+    } else {
+      logger.error('Unknown OAuth callback error');
+    }
+
     res.status(500).send('Authentication failed. Please try again.');
   }
 };

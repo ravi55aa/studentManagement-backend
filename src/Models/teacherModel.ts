@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document, ObjectId, Types } from 'mongoose';
 
-import { EmploymentStatus, TeacherDesignation, EDepartment , Gender_types } from '../types/enum';
+import { EmploymentStatus, TeacherDesignation, EDepartment, Gender_types } from '../types/enum';
 
 import { IAcademicSubject } from './academicYear';
 import { IUploadedDoc } from './documentModel';

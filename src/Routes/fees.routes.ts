@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { authMiddleware } from '../Middlewares/authorise.middleware';
-import { feeController } from '../dependencyInjector';
+import { feeController } from '../DI/resolve';
 const router = Router();
 
 router.post('/add', authMiddleware, (req, res, next) => feeController.createFee(req, res, next));

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'tsyringe';
 
-import { TeacherService } from '../Services/teacherService';
+import { TYPES } from '../DI/types';
 import { ITeacherService } from '../Interfaces/services/ITeacherService';
 import { ApiResponse } from '../Constants/apiResponse';
 import { TeacherMessage } from '../Constants/resposeMessages';
@@ -9,7 +9,7 @@ import { TeacherMessage } from '../Constants/resposeMessages';
 @injectable()
 export class TeacherController {
   constructor(
-    @inject(TeacherService)
+    @inject(TYPES.TeacherService)
     private _teacherService: ITeacherService,
   ) {}
 
@@ -38,7 +38,7 @@ export class TeacherController {
       const { id } = req.params;
 
       if (!id) {
-        const {status,resBody}=ApiResponse.notFound(TeacherMessage.InvalidTeacherId);
+        const { status, resBody } = ApiResponse.notFound(TeacherMessage.InvalidTeacherId);
         res.status(status).json(resBody);
       }
 
@@ -66,8 +66,10 @@ export class TeacherController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const {center}=req.query;
-      const { status, resBody } = await this._teacherService.getUnassignedTeachers({center:center});
+      const { center } = req.query;
+      const { status, resBody } = await this._teacherService.getUnassignedTeachers({
+        center: center,
+      });
 
       res.status(status).json(resBody);
     } catch (error) {

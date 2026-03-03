@@ -2,7 +2,7 @@ import { Router } from 'express';
 const router = Router();
 
 import { authMiddleware } from '../Middlewares/authorise.middleware';
-import { notificationController } from '../dependencyInjector';
+import { notificationController } from '../DI/resolve';
 
 router.post('/new', authMiddleware, (req, res, next) =>
   notificationController.addNewNotification(req, res, next),

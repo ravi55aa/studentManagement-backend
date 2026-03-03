@@ -1,7 +1,6 @@
 import { IUserRepository } from '../Interfaces/repository/IAdminRepository';
 import { IAddress } from '../Models/addressModel';
 
-
 export class UserValidator {
   static async ensureUserIsTaken(repository: IUserRepository, field: string) {
     const existing = await repository.findByEmail(field);

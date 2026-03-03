@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'tsyringe';
 
+import { TYPES } from '../DI/types';
 import { serviceReturnType } from '../Constants/interfaces';
-import { BatchService } from '../Services/batchService';
 import { IBatchService } from '../Interfaces/services/IBatchService';
 
 @injectable()
 export class BatchController {
   constructor(
-    @inject(BatchService)
+    @inject(TYPES.BatchService)
     private _batchService: IBatchService,
   ) {}
 

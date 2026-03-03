@@ -2,7 +2,7 @@ import { Router } from 'express';
 const router = Router();
 
 import { authMiddleware } from '../Middlewares/authorise.middleware';
-import { addressController } from '../dependencyInjector';
+import { addressController } from '../DI/resolve';
 
 router.get('/get/:id', authMiddleware, (req, res, next) =>
   addressController.getAddressById(req, res, next),

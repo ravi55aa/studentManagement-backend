@@ -1,4 +1,6 @@
 import 'reflect-metadata';
+import './DI/register';
+
 import http from 'http';
 
 import { initSocket } from './Config/socket.config';

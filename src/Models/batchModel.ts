@@ -1,7 +1,6 @@
 //Add pre, if batch already exist, while promoting
 
 import { model, Types, Schema, Document, ObjectId } from 'mongoose';
-import { string } from 'zod';
 
 export interface IBatches extends Document {
   tenantId: ObjectId | null;

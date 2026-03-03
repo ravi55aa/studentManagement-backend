@@ -2,7 +2,7 @@ import { Router } from 'express';
 const router = Router();
 
 import { authMiddleware } from '../Middlewares/authorise.middleware';
-import { teacherController } from '../dependencyInjector';
+import { teacherController } from '../DI/resolve';
 import { uploadCloud } from '../Config/multerCloud';
 
 router.post(

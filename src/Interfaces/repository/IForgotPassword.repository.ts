@@ -12,7 +12,7 @@ export interface IForgotPasswordRepository {
 
   isOtpExpired(query: FilterQuery<IOtp>): Promise<IOtp | null>;
 
-  storeOtp(id: string, otp: string): Promise<IOtp | null> ;
+  storeOtp(id: string, otp: string): Promise<IOtp | null>;
 
   updatePassword<T>(role: UserRole, id: string, data: Partial<T>): Promise<T | null>;
 

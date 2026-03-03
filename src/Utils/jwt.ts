@@ -1,4 +1,4 @@
-import { sign, verify, JwtPayload, SignOptions } from 'jsonwebtoken';
+import { sign, verify, JwtPayload, SignOptions, JsonWebTokenError } from 'jsonwebtoken';
 import { Types } from 'mongoose';
 import { Request, Response } from 'express';
 
@@ -7,6 +7,7 @@ import { IUser } from '../Models/userModel';
 import { TGeneratesTokens } from '../types';
 import { JwtROle } from '../types/jwtRole';
 
+import logger from './logger';
 
 export interface IJwtPayload {
   userId: string | Types.ObjectId | null;
@@ -48,7 +49,10 @@ export const verifyToken = (token: string, secret: string): JwtPayload | null =>
     const decoded = verify(token, secret) as JwtPayload;
 
     return decoded;
-  } catch (error: any) {
+  } catch (error) {
+    if (error instanceof JsonWebTokenError) {
+      logger.error('JWT ERROR', error.message);
+    }
     return null;
   }
 };
@@ -63,7 +67,6 @@ export const refreshAccessToken = (refreshToken: string): string | null => {
   };
 
   if (!decoded) {
-    console.error('Refresh token invalid', decoded);
     return decoded;
   }
 
@@ -93,7 +96,7 @@ export const handleJwtTokensGenerator = (
 ): void => {
   const { token, refreshToken } = jwtTokensGeneratorForAll(payload);
 
-  res.cookie('token', token, { httpOnly: true, maxAge: 24* 60 * 60 * 1000, path: '/' });
+  res.cookie('token', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000, path: '/' });
 
   req.session.refreshToken = refreshToken;
 };
@@ -112,7 +115,7 @@ export const handleTokenVerification = (req: Request, res: Response) => {
 
     token = refreshAccessToken(refreshToken!);
 
-    res.cookie('token', token, { httpOnly: true, maxAge: 24*60 * 60 * 1000, path: '/' });
+    res.cookie('token', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000, path: '/' });
 
     decoded = verifyToken(token, env.JWT_ACCESS_TOKEN_SECRET!);
 

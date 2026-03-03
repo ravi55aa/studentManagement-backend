@@ -2,20 +2,20 @@ import { Request, Response } from 'express';
 import { injectable, inject } from 'tsyringe';
 import bcrypt from 'bcrypt';
 
+import { TYPES } from '../DI/types';
 import logger from '../Utils/logger';
 import { IUserAuthService } from '../Interfaces/services/IAdminAuthService';
 import { IUser } from '../Models/userModel';
 import { IAddress } from '../Models/addressModel';
 import { AddressFormatter, UserValidator } from '../Constants/userValidator';
 import { handleJwtTokensGenerator, IJwtPayload } from '../Utils/jwt';
-import { UserRepository } from '../Repository/userRepository';
 import { ApiResponse } from '../Constants/apiResponse';
 import { IUserRepository } from '../Interfaces/repository/IAdminRepository';
 
 @injectable()
 export class UserAuthService implements IUserAuthService {
   constructor(
-    @inject(UserRepository)
+    @inject(TYPES.UserRepository)
     private _userRepository: IUserRepository,
   ) {}
 

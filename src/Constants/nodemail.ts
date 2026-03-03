@@ -17,15 +17,14 @@ export const sendMail = async ({ to, subject, html, text }: SendMailOptions): Pr
   });
 };
 
-
-export const handleMailOptions=(newOtp:string)=>{
+export const handleMailOptions = (newOtp: string) => {
   const mailOptions: SendMailOptions = {
-      to: 'raviaa912@gmail.com',
-      subject: 'Password change otp',
-      html: `<P>You're otp is ${newOtp}</p>1}
+    to: 'raviaa912@gmail.com',
+    subject: 'Password change otp',
+    html: `<P>You're otp is ${newOtp}</p>1}
             sendMail`,
-      text: 'kindly Update the otp',
+    text: 'kindly Update the otp',
   };
 
-    return mailOptions;
-}
+  return mailOptions;
+};

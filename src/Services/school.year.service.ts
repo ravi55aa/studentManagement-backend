@@ -1,36 +1,30 @@
-import { Types } from 'mongoose';
 import { Request, Response } from 'express';
 import { injectable, inject } from 'tsyringe';
 
-import { StatusCodes } from '../Constants/statusCodes';
-import academicSubjectsModel, { academicYearModel, IAcademicSubject, IAcademicYear } from '../Models/academicYear';
-import { serviceReturnType } from '../Constants/interfaces';
-import { handleValidationOF } from '../Middlewares/validateUser.middleware';
-import { AcademicYearResponseBody } from '../Utils/ResponseBody/academicYear.resonseBody';
-import { IBatchRepository } from '../Interfaces/repository/IBatchRepository';
-import { IAcademicCourse, IAcademicCourseMeta } from '../Models/courses.model';
-import { schoolAcademicYearSchema, schoolSubjectSchema } from '../Validators/school.validator';
-import { SchoolAcademicYearDto, SchoolCoursesDto, SchoolSubjectsDto } from '../dto/schoolDTO';
-import {
-  ISchoolAcademicYearRepo,
-  ISchoolCoursesRepo,
-  ISchoolSubjectsRepo,
-} from '../Interfaces/repository/ISchoolAcademiYear';
+import { TYPES } from '../DI/types';
 import {
   ISchoolAcademicCourseSer,
   ISchoolAcademicSubjectSer,
   ISchoolAcademicYear,
 } from '../Interfaces/services/ISchoolAcademicYear';
 import {
-  AcademicCourseRepository,
-  AcademicSubjectRepository,
-  AcademicYearRepository,
-} from '../Repository/academicYear.Respository';
+  ISchoolAcademicYearRepo,
+  ISchoolCoursesRepo,
+  ISchoolSubjectsRepo,
+} from '../Interfaces/repository/ISchoolAcademiYear';
+import { SchoolAcademicYearDto, SchoolCoursesDto, SchoolSubjectsDto } from '../dto/schoolDTO';
+import { academicYearModel } from '../Models/academicYear';
+import { serviceReturnType } from '../Constants/interfaces';
+import { handleValidationOF } from '../Middlewares/validateUser.middleware';
+import { IBatchRepository } from '../Interfaces/repository/IBatchRepository';
+import { IAcademicCourse, IAcademicCourseMeta } from '../Models/courses.model';
+import { schoolAcademicYearSchema, schoolSubjectSchema } from '../Validators/school.validator';
 import { BatchRepository } from '../Repository/batchRespository';
 import {
   AcademicCourseMessage,
   AcademicSubjectMessage,
   AcademicYearMessage,
+  CourseMessage,
 } from '../Constants/resposeMessages';
 import logger from '../Utils/logger';
 import { ApiResponse } from '../Constants/apiResponse';
@@ -49,7 +43,7 @@ export interface IFullCourses {
 @injectable()
 export class SchoolYear implements ISchoolAcademicYear {
   constructor(
-    @inject(AcademicYearRepository)
+    @inject(TYPES.AcademicYearRepository)
     private _yearRepo: ISchoolAcademicYearRepo,
   ) {}
 
@@ -191,7 +185,7 @@ export class SchoolYear implements ISchoolAcademicYear {
 @injectable()
 export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
   constructor(
-    @inject(AcademicSubjectRepository)
+    @inject(TYPES.AcademicSubjectRepository)
     private _repo: ISchoolSubjectsRepo,
 
     @inject(BatchRepository)
@@ -202,6 +196,10 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
   async addAcademicSubject(req: Request, res: Response): Promise<serviceReturnType> {
     try {
       const dto = await SchoolSubjectsDto.addNewSubject(req, res);
+
+      if (!dto?.academicYear) {
+        return ApiResponse.notFound(AcademicYearMessage.YearNotFound);
+      }
 
       handleValidationOF(schoolSubjectSchema, dto, res);
 
@@ -341,13 +339,13 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
 @injectable()
 export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
   constructor(
-    @inject(AcademicCourseRepository)
+    @inject(TYPES.AcademicCourseRepository)
     private _courseRepo: ISchoolCoursesRepo,
 
-    @inject(BatchRepository)
+    @inject(TYPES.BatchRepository)
     private _batchRepo: IBatchRepository,
 
-    @inject(AcademicSubjectRepository)
+    @inject(TYPES.AcademicSubjectRepository)
     private _subjectRepo: ISchoolSubjectsRepo,
   ) {}
 
@@ -362,8 +360,6 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
             this._subjectRepo.findOne({ code }),
           ),
         );
-
-        console.log('@school.year.service subjectDocs',subjectDocs);
 
         const validSubjects = subjectDocs.filter(Boolean).map((s) => s!._id);
 
@@ -474,11 +470,11 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
       }
 
       /* ===============Fetch Meta==================== */
-      const meta = await this._courseRepo.findOneCourseMeta({
-        courseId: id,
-        tenantId,
-        adminId,
-      });
+      const meta = await this._courseRepo.findOneCourseMeta({ courseId: course._id });
+
+      if (!meta) {
+        ApiResponse.failure(`Meta of ${CourseMessage.CourseNotFound}`);
+      }
 
       return ApiResponse.success({ course, meta }, AcademicCourseMessage.CourseFetched);
     } catch (error) {
@@ -507,7 +503,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
 
       const { courseDto, courseMetaDto } = SchoolCoursesDto.updateCourse(req, res);
 
-      /* ===============Resolve Subjects==================== */
+      /* ===============Resolve Subjects=============== */
       if (courseMetaDto?.subjects) {
         await Promise.all(
           courseMetaDto.subjects.map(async (subject) => {
@@ -526,7 +522,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
         );
       }
 
-      /* ===============Resolve Academic Year==================== */
+      /* ============Resolve Academic Year============== */
       if (courseDto.academicYear) {
         const academicYear = await academicYearModel.findOne({
           code: courseDto.academicYear,
@@ -539,14 +535,14 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
         courseDto.academicYear = academicYear._id;
       }
 
-      /* ===============Update Course==================== */
+      /* ============Update Course=============== */
       const updatedCourse = await this._courseRepo.updateCourse(query, courseDto);
 
       if (!updatedCourse) {
         return ApiResponse.notFound(AcademicCourseMessage.CourseNotFound);
       }
 
-      /* ==================Update Course Meta======================= */
+      /* ==============Update Course Meta=============== */
       if (courseMetaDto) {
         await this._courseRepo.updateCourseMeta({ courseId: id, tenantId, adminId }, courseMetaDto);
       }
@@ -600,48 +596,6 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*
 

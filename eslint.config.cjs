@@ -5,7 +5,7 @@ const importPlugin = require('eslint-plugin-import');
 
 const rules = [
   {
-    ignores: ['node_modules', 'dist', 'build','eslint.config.cjs'],
+    ignores: ['node_modules', 'dist', 'build', 'eslint.config.cjs'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -35,9 +35,9 @@ const rules = [
       ],
       'import/no-duplicates': 'error',
     },
-
   },
   prettier,
 ];
 
 module.exports = rules;
+//core rules and style rules

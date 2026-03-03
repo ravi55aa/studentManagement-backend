@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { injectable, inject } from 'tsyringe';
-import { IUserNotification } from 'Interfaces/Other/IUserNotification';
 
+import { TYPES } from '../DI/types';
 import {
   INotificationService,
   NotificationPayload,
@@ -14,7 +14,6 @@ import { ApiResponse } from '../Constants/apiResponse';
 import { serviceReturnType } from '../Constants/interfaces';
 import { handleTokenVerification } from '../Utils/jwt';
 import { NotificationDto } from '../dto/notificatoinDto';
-import { NotificationRepo } from '../Repository/notificationRepo';
 import { INotificationRepo } from '../Interfaces/repository/INotificationRepo';
 import { UserNotificationService } from '../helper/UserNotificatin.helper';
 
@@ -26,11 +25,10 @@ import { UserNotificationService } from '../helper/UserNotificatin.helper';
     Teacher -> Student
 */
 
-
 @injectable()
 export class NotificationService implements INotificationService {
   constructor(
-    @inject(NotificationRepo)
+    @inject(TYPES.NotificationRepository)
     private _notificationRepo: INotificationRepo,
 
     private _userNotificationService: UserNotificationService,

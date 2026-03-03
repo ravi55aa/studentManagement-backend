@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import { injectable, inject } from 'tsyringe';
+import { IFeeRepository } from 'Interfaces/repository/IFessRepository';
 
+import { TYPES } from '../DI/types';
 import { IFeeService } from '../Interfaces/services/IFeeService';
-import { FeeRepository } from '../Repository/feeRepository';
 import { FeeDto } from '../dto/feesDto';
 import { ApiResponse } from '../Constants/apiResponse';
 import { serviceReturnType } from '../Constants/interfaces';
@@ -11,8 +12,8 @@ import { IFee } from '../Models/feesModel';
 @injectable()
 export class FeeService implements IFeeService {
   constructor(
-    @inject(FeeRepository)
-    private _feeRepo: FeeRepository,
+    @inject(TYPES.FeeRepository)
+    private _feeRepo: IFeeRepository,
   ) {}
 
   public async createFee(req: Request, res: Response): Promise<serviceReturnType> {
