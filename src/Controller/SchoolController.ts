@@ -71,5 +71,15 @@ export class SchoolController {
 
   // public async updateSchool(req:Request,res:Response):Promise<void>{}
 
-  // public async deleteSchool(req:Request,res:Response):Promise<void>{}
+  public async deleteSchool(req:Request,res:Response,next:NextFunction):Promise<void>{
+  {
+    try {
+      const { status, resBody } = await this._schoolService.deleteSchool(req);
+
+      res.status(status).json(resBody);
+    } catch (err) {
+      next(err);
+    }
+  }
+  }
 }

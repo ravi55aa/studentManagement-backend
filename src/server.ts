@@ -10,7 +10,9 @@ import logger from './Utils/logger';
 
 const server = http.createServer(app);
 
-//export const io=initSocket(server);
+export const io = initSocket(server);
+
+logger.info(io);
 
 const PORT = env.PORT || 5000;
 

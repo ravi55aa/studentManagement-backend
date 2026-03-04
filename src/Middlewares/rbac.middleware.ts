@@ -4,7 +4,7 @@ import { StatusCodes } from '../Constants/statusCodes';
 
 export const authorizeRoles = (...roles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    const user = (req as any).user;
+    const user = req?.user;
 
     if (!user) {
       return res.status(StatusCodes.UNAUTHORIZED).json({
@@ -15,7 +15,7 @@ export const authorizeRoles = (...roles: string[]) => {
       });
     }
 
-    if (!roles.includes(user.role)) {
+    if (!roles.includes(user.role!)) {
       return res.status(StatusCodes.FORBIDDEN).json({
         success: false,
         message: 'Access denied. Insufficient permissions.',

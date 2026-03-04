@@ -22,13 +22,12 @@ export class NotificationRepo extends BaseRepository<INotification> implements I
     }
   }
 
-  async findByUser(userId: string, role: string): Promise<INotification[] | []> {
+  async findByUser(userId: string): Promise<INotification[] | []> {
     try {
       return await this.model
         .find(
           {
             'sender.id': userId,
-            'sender.model': role,
           },
           { sender: 0 },
         )

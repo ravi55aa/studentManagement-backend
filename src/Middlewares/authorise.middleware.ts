@@ -31,9 +31,9 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         req.user.tenantId = decoded.tenantId;
       }
       return next();
-    } catch (accessError: any) {
+    } catch (accessError: unknown) {
       /* Token expired ; try refresh */
-      if (accessError.name !== 'TokenExpiredError') {
+      if (accessError instanceof Error && accessError.name !== 'TokenExpiredError') {
         logger.warn(AuthMessage.InvalidAccessToken, {
           error: accessError.message,
         });

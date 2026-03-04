@@ -14,6 +14,7 @@ import { IAddressRepository } from '../Interfaces/repository/IAddressRepository'
 import { IDocumentRepository } from '../Interfaces/repository/IDocument.interface';
 import { AddressDTO } from '../dto/addressDTO';
 import { ApiResponse } from '../Constants/apiResponse';
+import { adminModel } from '../Models';
 import { ISchoolRepository } from '../Interfaces/repository/ISchoolRepository';
 import { AdminMessage, AuthMessage, SchoolMessage } from '../Constants/resposeMessages';
 
@@ -59,8 +60,11 @@ export class SchoolService implements ISchoolService {
       return ApiResponse.failure('School cannot create');
     }
 
-    admin.tenantId = createdSchool._id;
-    await admin.save();
+
+
+    //update late with
+    // this._userRepository.updateById(admin._id,{tenantId:createdSchool._id});
+    await adminModel.findByIdAndUpdate(admin._id,{$set:{tenantId:createdSchool._id}},{new:true});
 
     const payload: IJwtPayload = {
       userId: admin._id,
@@ -156,14 +160,14 @@ export class SchoolService implements ISchoolService {
     }
 
     //Remove tenantId from admin (if existss)
-    if (existingSchool.userId) {
-      const admin = await this._userRepository.findOne({ _id: existingSchool.userId });
+    // if (existingSchool.userId) {
+    //   const admin = await this._userRepository.findOne({ _id: existingSchool.userId });
 
-      if (admin) {
-        admin.tenantId = null;
-        await admin.save();
-      }
-    }
+    //   if (admin) {
+    //     admin.tenantId = null;
+    //     await admin.save();
+    //   }
+    // }
 
     // Delete the school
     const deletedSchool = await this._schoolRepository.deleteSchool(schoolId);

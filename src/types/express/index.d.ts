@@ -14,3 +14,13 @@ declare global {
 }
 
 export {};
+
+// interface UserPayload {
+//       userId: string;
+//       role: string;
+//       tenantId?: string;
+//     }
+
+//     interface Request {
+//       user?: UserPayload;
+//     }

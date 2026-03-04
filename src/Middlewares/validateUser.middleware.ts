@@ -5,7 +5,7 @@ import { StatusCodes } from '../Constants/statusCodes';
 import { IResponse } from '../Interfaces/Other/IResponse';
 import { ApiResponse } from '../Constants/apiResponse';
 
-const handleValidationErrors = (err: any, res: Response) => {
+const handleValidationErrors = (err: unknown, res: Response) => {
   if (err instanceof ZodError) {
     return res.status(StatusCodes.BAD_REQUEST).json({
       success: false,
@@ -15,7 +15,11 @@ const handleValidationErrors = (err: any, res: Response) => {
     } as IResponse<null>);
   }
 
-  return ApiResponse.failure(`Validation Error ${err.issues}`);
+  if (err instanceof Error) {
+    return ApiResponse.failure(`Validation Error ${err.message}`);
+  }
+
+  return ApiResponse.failure(`Validation Error `);
 };
 
 export const validateData =

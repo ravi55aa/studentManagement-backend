@@ -47,7 +47,7 @@ app.use('/stripe', stripeRouter);
 app.use('/fee', feesRouter);
 
 app.use((req, res) => {
-  logger.error('❌ Route not found:', req.method, req.originalUrl);
+  logger.error(' Route not found:', req.method, req.originalUrl);
   res.status(404).json({ message: 'Route not found' });
 });
 

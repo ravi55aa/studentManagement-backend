@@ -2,12 +2,6 @@ import { Request, Response } from 'express';
 import { injectable, inject } from 'tsyringe';
 
 import { TYPES } from '../DI/types';
-import {
-  INotificationService,
-  NotificationPayload,
-  INotificationSender,
-} from '../Interfaces/services/INotificatoin';
-import { handleValidationOF } from '../Middlewares/validateUser.middleware';
 import { NotificationPayloadSchema } from '../Validators/notifications';
 import { teacherModel } from '../Models';
 import { ApiResponse } from '../Constants/apiResponse';
@@ -15,7 +9,14 @@ import { serviceReturnType } from '../Constants/interfaces';
 import { handleTokenVerification } from '../Utils/jwt';
 import { NotificationDto } from '../dto/notificatoinDto';
 import { INotificationRepo } from '../Interfaces/repository/INotificationRepo';
+import { handleValidationOF } from '../Middlewares/validateUser.middleware';
 import { UserNotificationService } from '../helper/UserNotificatin.helper';
+import {
+  INotificationService,
+  NotificationPayload,
+  INotificationSender,
+} from '../Interfaces/services/INotificatoin';
+import { NotificationMessage } from '../Constants/resposeMessages';
 
 /**
     from  -> one writer (Admin | Teacher)
@@ -100,10 +101,10 @@ export class NotificationService implements INotificationService {
     }
 
     // Fetch from UserNotification table
-    const notifications = await this._notificationRepo.findByUser(userId, role);
+    const notifications = await this._notificationRepo.findByUser(userId);
 
     if (!notifications.length) {
-      return ApiResponse.success([]);
+      return ApiResponse.success([], NotificationMessage.NotificationNotFound);
     }
 
     return ApiResponse.success(notifications);

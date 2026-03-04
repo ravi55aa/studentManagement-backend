@@ -6,7 +6,7 @@ export interface ISchool extends Document {
   schoolName: string | undefined;
   email: string | undefined;
   password: string | undefined;
-  profile?: any | undefined;
+  profile?: string | undefined;
   phone?: string | undefined;
 }
 

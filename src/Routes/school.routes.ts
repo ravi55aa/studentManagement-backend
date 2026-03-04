@@ -45,6 +45,12 @@ router.get(
   //MDA = META+DOCUMENTS+ADDRESS
 );
 
+router.delete(
+  '/delete/:id',
+  authMiddleware,
+  (req, res, next) => schoolController.deleteSchool(req, res, next),
+);
+
 /**
  * Document
  */

@@ -8,7 +8,7 @@ router.post('/new', authMiddleware, (req, res, next) =>
   notificationController.addNewNotification(req, res, next),
 );
 
-router.get('/get-all', authMiddleware, (req, res, next) =>
+router.get('/getAll', authMiddleware, (req, res, next) =>
   notificationController.getAllNotification(req, res, next),
 );
 

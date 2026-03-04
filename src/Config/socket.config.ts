@@ -2,6 +2,8 @@ import { Server as HttpServer } from 'http';
 
 import { Server } from 'socket.io';
 
+import logger from '../Utils/logger';
+
 let io: Server;
 
 export const initSocket = (server: HttpServer) => {
@@ -14,12 +16,12 @@ export const initSocket = (server: HttpServer) => {
   });
 
   io.on('connection', (socket) => {
-    //console.log("User connected:", socket.id);
+    logger.info('User connected:', socket.id);
 
     const { userId, role } = socket.handshake.auth;
 
     if (!userId || !role) {
-      //console.log("Invalid socket auth");
+      logger.info('\nInvalid socket auth \n');
       socket.disconnect();
       return;
     }
@@ -27,18 +29,19 @@ export const initSocket = (server: HttpServer) => {
     // Join unique room
     socket.join(`${role}-${userId}`);
 
-    //console.log(`User joined room: ${role}-${userId}`);
+    logger.warn(`\n User joined room: ${role}-${userId} \n`);
 
     socket.on('disconnect', () => {
-      //console.log("User disconnected:", socket.id);
+      logger.info('\nUser disconnected:', socket.id);
     });
   });
 
-  //return io;
+  return io;
 };
 
 export const getIO = (): Server => {
   if (!io) {
+    logger.error({ layer: 'socket.config.ts', message: 'Socket io not initialized' });
     throw new Error('Socket.io not initialized');
   }
 

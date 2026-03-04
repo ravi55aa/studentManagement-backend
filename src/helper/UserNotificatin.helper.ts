@@ -13,7 +13,12 @@ export class UserNotificationService implements IUserNotification {
       userModel: string;
     }[],
   ) {
-    const bulkDocs: any[] = [];
+    const bulkDocs: {
+      userId: Types.ObjectId;
+      userModel: string;
+      notificationId: Types.ObjectId;
+      isRead: boolean;
+    }[] = [];
 
     for (const user of recipients) {
       // Save DB record

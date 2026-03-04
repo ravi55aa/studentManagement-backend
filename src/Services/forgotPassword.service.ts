@@ -29,7 +29,6 @@ export class ForgotPasswordService implements IForgotPasswordService {
     } else if (modelName === 'School') {
       return this._repository.findSchool(email);
     }
-
     return null;
   }
 
