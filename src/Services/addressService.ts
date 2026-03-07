@@ -8,7 +8,7 @@ import { IAddress } from '../Models/addressModel';
 import { serviceReturnType } from '../Constants/interfaces';
 import { AddressDTO } from '../dto/addressDTO';
 import { ApiResponse } from '../Constants/apiResponse';
-import { AddressMessage } from '../Constants/resposeMessages';
+import { AddressMessage, ServerMessage } from '../Constants/resposeMessages';
 import { IAddressRepository } from '../Interfaces/repository/IAddressRepository';
 import logger from '../Utils/logger';
 
@@ -30,7 +30,7 @@ export class AddressService implements IAddressService {
       return ApiResponse.success(address, AddressMessage.AddressFetched);
     } catch (error) {
       logger.error(AddressMessage.AddressNotFound, error);
-      return ApiResponse.failure('Internal server error');
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 
@@ -41,7 +41,7 @@ export class AddressService implements IAddressService {
       return ApiResponse.success(addresses, AddressMessage.AddressListed);
     } catch (error) {
       logger.error(AddressMessage.AddressNotFound, error);
-      return ApiResponse.failure('Internal server error');
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 
@@ -52,18 +52,22 @@ export class AddressService implements IAddressService {
       return ApiResponse.success(addresses, AddressMessage.AddressListed);
     } catch (error) {
       logger.error(AddressMessage.AddressNotFound, error);
-      return ApiResponse.failure('Internal server error');
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 
   async getAddressById(id: string): Promise<serviceReturnType> {
     try {
+      if (!id) {
+        return ApiResponse.notFound(AddressMessage.AddressIdNotFound);
+      }
+
       const address = await this._addressRepository.findOne({ userId: id });
 
       return ApiResponse.success(address, AddressMessage.AddressFetched);
     } catch (error) {
       logger.error(AddressMessage.AddressNotFound, error);
-      return ApiResponse.failure('Internal server error');
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 
@@ -72,13 +76,13 @@ export class AddressService implements IAddressService {
       const created = await this._addressRepository.create(address);
 
       if (!created) {
-        return ApiResponse.failure(AddressMessage.AddressCreateFailed);
+        return ApiResponse.internalServerError(AddressMessage.AddressCreateFailed);
       }
 
       return ApiResponse.success(created, AddressMessage.AddressCreated);
     } catch (error) {
       logger.error(AddressMessage.AddressNotFound, error);
-      return ApiResponse.failure('Internal server error');
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 
@@ -98,7 +102,7 @@ export class AddressService implements IAddressService {
       return ApiResponse.success(updated, AddressMessage.AddressUpdated);
     } catch (error) {
       logger.error(AddressMessage.AddressNotFound, error);
-      return ApiResponse.failure('Internal server error');
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 }

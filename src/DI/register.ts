@@ -30,6 +30,8 @@ import {
 import { ForgotPasswordService } from '../Services/forgotPassword.service';
 import { ForgotPasswordRepository } from '../Repository/forgotPassword.Repository';
 import { AddressRepository } from '../Repository/addressRepository';
+import { HomeworkRepository } from '../Repository/Teacher/homework.Repository';
+import { HomeworkService } from '../Services/Teacher/homeworkService';
 
 import { TYPES } from './types';
 
@@ -95,3 +97,8 @@ container.registerSingleton(TYPES.FeeService, FeeService);
 container.registerSingleton(TYPES.ForgotPasswordRepository, ForgotPasswordRepository);
 
 container.registerSingleton(TYPES.ForgotPasswordService, ForgotPasswordService);
+
+/* ================= Homework ================= */
+container.registerSingleton(TYPES.HomeworkRepository, HomeworkRepository);
+
+container.registerSingleton(TYPES.HomeworkService, HomeworkService);

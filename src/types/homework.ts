@@ -1,0 +1,1 @@
+export type HomeWorkStatus="pending"|"submitted"|"reviewed";

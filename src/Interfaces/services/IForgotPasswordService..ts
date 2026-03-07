@@ -8,7 +8,7 @@ import { serviceReturnType } from '../../Constants/interfaces';
 export interface IForgotPasswordService {
   verifyEmail(model: string, email: string): Promise<ISchool | IUser | null>;
 
-  generateOtp(req: Request): Promise<serviceReturnType>;
+  generateOtp(id:string): Promise<serviceReturnType>;
 
   findValidOtp(email: string, otp: string): Promise<IOtp | null>;
 

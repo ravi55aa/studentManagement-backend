@@ -34,7 +34,7 @@ export class DocumentController {
     }
   }
 
-  //Plural
+  //1x Single File
   public async deleteDocuments(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { status, resBody } = await this._documentService.deleteDocument(req, res);
@@ -45,7 +45,7 @@ export class DocumentController {
     }
   }
 
-  //Singular
+  //2x Multiples files
   public async deleteADocumentFile(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { status, resBody } = await this._documentService.deleteAFile(req);

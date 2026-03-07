@@ -32,8 +32,20 @@
 
     "baseUrl": "./src",
     "paths": {
-      "@services/*": ["services/*"],
-      "@controllers/*": ["controllers/*"]
+      "@Services/*": ["Services/*"],
+      "@Repository/*": ["Repository/*"],
+      "@Controllers/*": ["Controllers/*"],
+      "@Constants/*": ["Constants/*"],
+      "@DI/*": ["DI/*"],
+      "@Document/*": ["Document/*"],
+      "@dto/*": ["dto/*"],
+      "@Interfaces/*": ["Interfaces/*"],
+      "@Middlewares/*": ["Middlewares/*"],
+      "@Models/*": ["Models/*"],
+      "@Routes/*": ["Routes/*"],
+      "@types/*": ["types/*"],
+      "@Utils/*": ["Utils/*"],
+      "@Validators/*": ["Validators/*"]
     },
 
     // Style Options

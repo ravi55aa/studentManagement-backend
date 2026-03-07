@@ -60,11 +60,13 @@ export class SchoolService implements ISchoolService {
       return ApiResponse.failure('School cannot create');
     }
 
-
-
     //update late with
     // this._userRepository.updateById(admin._id,{tenantId:createdSchool._id});
-    await adminModel.findByIdAndUpdate(admin._id,{$set:{tenantId:createdSchool._id}},{new:true});
+    await adminModel.findByIdAndUpdate(
+      admin._id,
+      { $set: { tenantId: createdSchool._id } },
+      { new: true },
+    );
 
     const payload: IJwtPayload = {
       userId: admin._id,

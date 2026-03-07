@@ -14,17 +14,6 @@ export class AddressController {
     private _addressService: IAddressService,
   ) {}
 
-  public async getSchoolAddress(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const { id } = req.params;
-      const { status, resBody } = await this._addressService.getSchoolAddress(id!);
-
-      res.status(status).json(resBody);
-    } catch (err) {
-      next(err);
-    }
-  }
-
   public async getAddressById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;

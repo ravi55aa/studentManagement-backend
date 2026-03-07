@@ -3,16 +3,14 @@ import './DI/register';
 
 import http from 'http';
 
-import { initSocket } from './Config/socket.config';
+//import { initSocket } from './Config/socket.config';
 import { env } from './Config';
 import app from './app'; //express.server
 import logger from './Utils/logger';
 
 const server = http.createServer(app);
 
-export const io = initSocket(server);
-
-logger.info(io);
+//export const io = initSocket(server);
 
 const PORT = env.PORT || 5000;
 

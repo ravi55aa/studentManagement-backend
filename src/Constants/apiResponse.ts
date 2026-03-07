@@ -84,4 +84,52 @@ export class ApiResponse {
       },
     };
   }
+
+  static toManyRequest(message = 'To many request') {
+    return {
+      status: StatusCodes.RATE_LIMIT,
+      resBody: {
+        success: false,
+        data: null,
+        error: message,
+        message,
+      },
+    };
+  }
+
+  static internalServerError(message = 'Internal server error') {
+    return {
+      status: StatusCodes.INTERNAL_SERVER_ERROR,
+      resBody: {
+        success: false,
+        data: null,
+        error: message,
+        message,
+      },
+    };
+  }
+
+  static serviceUnavailable(message = 'Service temporarily unavailable') {
+    return {
+      status: StatusCodes.SERVICE_UNAVAILABLE,
+      resBody: {
+        success: false,
+        data: null,
+        error: message,
+        message,
+      },
+    };
+  }
+
+  static gatewayTimeout(message = 'Gateway timeout') {
+    return {
+      status: StatusCodes.GATEWAY_TIMEOUT,
+      resBody: {
+        success: false,
+        data: null,
+        error: message,
+        message,
+      },
+    };
+  }
 }

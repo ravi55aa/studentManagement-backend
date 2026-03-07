@@ -130,7 +130,12 @@ const TeacherSchema: Schema = new Schema(
       default: 'active',
     },
 
-    assignedSubjects: [{ type: Schema.Types.ObjectId, ref: 'AcademicSubjects', required: true }],
+    assignedSubjects: [
+      { type: Schema.Types.ObjectId, 
+        ref: 'AcademicSubjects', 
+        required: true 
+      }],
+    
     designation: {
       type: String,
       enum: ['teacher', 'head_of_department', 'assistant_teacher', 'head_Master'],

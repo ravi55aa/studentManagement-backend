@@ -111,3 +111,49 @@ export const teacherBioFormSchema = z.object({
 
   gender: z.enum(['male', 'female', 'other'], { message: 'Gender is required' }).optional(),
 });
+
+
+//HOMEWORK
+const uploadedDocSchema = z.object({
+  url: z.string().url(),
+  fileName: z.string(),
+});
+
+export const HomeworkSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(1, "Title is required"),
+
+  description: z
+    .string()
+    .min(1, "Description is required"),
+
+  subjectId: z
+    .string()
+    .min(1, "Subject ID is required"),
+
+  batchId: z
+    .string()
+    .min(1, "Batch ID is required"),
+
+  teacherId: z
+    .string()
+    .min(1, "Teacher ID is required"),
+
+  status: z.enum(["pending", "submitted", "reviewed"]),
+
+  dueDate: z.coerce.date({
+    error: "Due date is required",
+  }),
+
+  attachments: z
+    .array(uploadedDocSchema)
+    .nullable()
+    .optional(),
+
+  isDelete: z
+    .boolean()
+    .optional()
+    .default(false),
+});

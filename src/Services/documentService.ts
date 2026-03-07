@@ -7,7 +7,7 @@ import { IDocumentService } from '../Interfaces/services/IDocument.service';
 import { IDocument } from '../Models/documentModel';
 import { DocumentsDto } from '../dto/schoolDTO';
 import { ApiResponse } from '../Constants/apiResponse';
-import { DocumentMessage } from '../Constants/resposeMessages';
+import { DocumentMessage, ServerMessage } from '../Constants/resposeMessages';
 import logger from '../Utils/logger';
 import { IDocumentRepository } from '../Interfaces/repository/IDocument.interface';
 
@@ -30,7 +30,7 @@ export class DocumentService implements IDocumentService {
       return ApiResponse.success(uploaded, DocumentMessage.DocumentUploaded);
     } catch (error) {
       logger.error('Error uploading document:', error);
-      return ApiResponse.failure('Internal server error');
+      return  ApiResponse.internalServerError(ServerMessage.ServerError)
     }
   }
 
@@ -48,7 +48,7 @@ export class DocumentService implements IDocumentService {
       return ApiResponse.success(updated, DocumentMessage.DocumentUpdated);
     } catch (error) {
       logger.error('Error updating document:', error);
-      return ApiResponse.failure('Internal server error');
+      return  ApiResponse.internalServerError(ServerMessage.ServerError)
     }
   }
 
@@ -66,7 +66,7 @@ export class DocumentService implements IDocumentService {
       return ApiResponse.success(updated, DocumentMessage.DocumentUpdated);
     } catch (error) {
       logger.error('Error updating additional documents:', error);
-      return ApiResponse.failure('Internal server error');
+      return  ApiResponse.internalServerError(ServerMessage.ServerError)
     }
   }
 
@@ -84,7 +84,7 @@ export class DocumentService implements IDocumentService {
       return ApiResponse.success(null, DocumentMessage.DocumentDeleted);
     } catch (error) {
       logger.error('Error deleting document:', error);
-      return ApiResponse.failure('Internal server error');
+      return  ApiResponse.internalServerError(ServerMessage.ServerError)
     }
   }
 
@@ -102,7 +102,7 @@ export class DocumentService implements IDocumentService {
       return ApiResponse.success(null, DocumentMessage.FileDeleted);
     } catch (error) {
       logger.error('Error deleting document file:', error);
-      return ApiResponse.failure('Internal server error');
+      return  ApiResponse.internalServerError(ServerMessage.ServerError)
     }
   }
 }

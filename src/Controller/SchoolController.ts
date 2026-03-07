@@ -13,7 +13,7 @@ export class SchoolController {
     private _schoolService: ISchoolService,
   ) {}
 
-  //*create
+
   public async createSchool(req: Request, res: Response, next: NextFunction) {
     try {
       const { status, resBody } = await this._schoolService.createSchool(req, res);
@@ -36,7 +36,6 @@ export class SchoolController {
     }
   }
 
-  //*update
   public async updateSchoolMeta(req: Request, res: Response, next: NextFunction) {
     try {
       const { status, resBody } = await this._schoolService.updateSchoolMeta(req, res);
@@ -47,7 +46,7 @@ export class SchoolController {
     }
   }
 
-  //*Read
+
   public async getSchool(req: Request, res: Response, next: NextFunction) {
     try {
       const { status, resBody } = await this._schoolService.getSchool(req, res);
@@ -71,15 +70,15 @@ export class SchoolController {
 
   // public async updateSchool(req:Request,res:Response):Promise<void>{}
 
-  public async deleteSchool(req:Request,res:Response,next:NextFunction):Promise<void>{
-  {
-    try {
-      const { status, resBody } = await this._schoolService.deleteSchool(req);
+  public async deleteSchool(req: Request, res: Response, next: NextFunction): Promise<void> {
+    {
+      try {
+        const { status, resBody } = await this._schoolService.deleteSchool(req);
 
-      res.status(status).json(resBody);
-    } catch (err) {
-      next(err);
+        res.status(status).json(resBody);
+      } catch (err) {
+        next(err);
+      }
     }
-  }
   }
 }

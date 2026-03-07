@@ -4,6 +4,7 @@ import { IFeeService } from 'Interfaces/services/IFeeService';
 
 import { TYPES } from '../DI/types';
 import { ApiResponse } from '../Constants/apiResponse';
+import { FeesMessage } from '../Constants/resposeMessages';
 
 @injectable()
 export class FeeController {
@@ -29,14 +30,11 @@ export class FeeController {
       const { id } = req.params;
 
       if (!id) {
-        res.status(400).json({
-          success: false,
-          message: 'Fee ID is required',
-        });
-        return;
+        const {status,resBody}=ApiResponse.failure(FeesMessage.FeesIdNotFound);
+        res.status(status).json(resBody);
       }
 
-      const { status, resBody } = await this._feeService.updateFee(id, req);
+      const { status, resBody } = await this._feeService.updateFee(id!, req);
 
       res.status(status).json(resBody);
     } catch (error) {
@@ -61,7 +59,7 @@ export class FeeController {
       const { id } = req.params;
 
       if (!id) {
-        const { status, resBody } = ApiResponse.notFound('UserIdNotFound');
+        const { status, resBody } = ApiResponse.failure(FeesMessage.FeesIdNotFound);
         res.status(status).json(resBody);
       }
 
@@ -79,10 +77,8 @@ export class FeeController {
       const { id } = req.params;
 
       if (!id) {
-        res.status(400).json({
-          success: false,
-          message: 'Fee ID is required',
-        });
+        const {status,resBody}=ApiResponse.failure(FeesMessage.FeesIdNotFound);
+        res.status(status).json(resBody);
         return;
       }
 

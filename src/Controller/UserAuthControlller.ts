@@ -6,7 +6,7 @@ import { jwtTokensGenerator } from '../Utils/jwt';
 import { AuthUserDTO } from '../dto/userAuth.dto';
 import { IUserAuthService } from '../Interfaces/services/IAdminAuthService';
 import { ApiResponse } from '../Constants/apiResponse';
-import { AuthMessage } from '../Constants/resposeMessages';
+import { AuthMessage, UserMessage } from '../Constants/resposeMessages';
 import { TYPES } from '../DI/types';
 
 @injectable()
@@ -24,7 +24,7 @@ export class UserAuthController {
       const newUser = await this._authService.register(userSchema, addressSchema);
 
       if (!newUser) {
-        const { status, resBody } = ApiResponse.failure('User not created');
+        const { status, resBody } = ApiResponse.failure(UserMessage.UserNotCreated);
         res.status(status).json(resBody);
         return;
       }

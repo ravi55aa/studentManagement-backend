@@ -7,7 +7,7 @@ export interface IUploadedDoc {
   fileName: string;
 }
 
-const uploadedDocSchema = new mongoose.Schema<IUploadedDoc>(
+export const uploadedDocSchema = new mongoose.Schema<IUploadedDoc>(
   {
     url: { type: String, required: true },
     fileName: { type: String, required: true },

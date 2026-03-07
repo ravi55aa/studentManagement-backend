@@ -15,6 +15,7 @@ import { PasswordResetController } from '../Controller/ResetpasswordController';
 import { SchoolController } from '../Controller/SchoolController';
 import { CentersController } from '../Controller/CentersControllert';
 import { BatchController } from '../Controller/BatchController';
+import { HomeworkController } from '../Controller/HomeworkController';
 
 export const addressController = container.resolve(AddressController);
 
@@ -41,3 +42,4 @@ export const teacherController = container.resolve(TeacherController);
 export const notificationController = container.resolve(NotificationController);
 
 export const feeController = container.resolve(FeeController);
+export const homeworkController = container.resolve(HomeworkController);

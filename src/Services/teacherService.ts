@@ -12,6 +12,8 @@ import { ApiResponse } from '../Constants/apiResponse';
 import logger from '../Utils/logger';
 import { TeacherMessage } from '../Constants/resposeMessages';
 import { ITeacherRepo } from '../Interfaces/repository/ITeacherRepo';
+// import { getIO } from '../Config/socket.config';
+// import { otp } from 'Utils/generateOtp';
 
 @injectable()
 export class TeacherService implements ITeacherService {
@@ -349,5 +351,20 @@ export class TeacherService implements ITeacherService {
     }
 
     return updated;
+  }
+
+  public async verifyTeacherWithEmail(mail:string):Promise<serviceReturnType>{
+    if(!mail||mail.length<=0){
+      return ApiResponse.failure(TeacherMessage.InvalidTeacherEmail);
+    }
+
+    const query:FilterQuery<{email:string}>={email:mail};
+    const teacher=await this._teacherRepo.findOne(query);
+
+    if(!teacher){
+      return ApiResponse.notFound(TeacherMessage.TeacherNotFound);
+    }
+
+    return ApiResponse.success({id:teacher._id},TeacherMessage.TeacherVerify);
   }
 }

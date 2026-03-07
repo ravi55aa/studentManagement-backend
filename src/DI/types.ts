@@ -37,4 +37,7 @@ export const TYPES = {
 
   ForgotPasswordRepository: Symbol.for('ForgotPasswordRepository'),
   ForgotPasswordService: Symbol.for('ForgotPasswordService'),
+
+  HomeworkRepository: Symbol.for('HomeworkRepository'),
+  HomeworkService: Symbol.for('HomeworkService'),
 };

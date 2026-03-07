@@ -107,6 +107,7 @@ export enum UserMessage {
   // Error messages
   UserNotFound = 'User not found',
   NoProfileImage = 'Profile image is not given',
+  UserNotCreated = 'User not created',
 
   // Success messages
   ProfileImageUpdated = 'Profile image is updated',
@@ -148,6 +149,11 @@ export enum DocumentMessage {
   FileDeleted = 'File deleted successfully',
 }
 
+export enum CommonMessage {
+  IdNotFound='Id not found',
+  EmailNotFound='Email not found',
+}
+
 /**
  * Address  related messages
  */
@@ -155,6 +161,7 @@ export enum AddressMessage {
   // Error
   AddressNotFound = 'Address not found',
   AddressCreateFailed = 'Failed to create address',
+  AddressIdNotFound = 'ID not found',
 
   // Success
   AddressCreated = 'Address created successfully',
@@ -272,12 +279,17 @@ export enum WishlistMessage {
 export enum HomeworkMessage {
   //Success messages
   HomeworkAdded = 'Homework added',
-  HomeworkDeleted = 'Homework deleted',
-  HomeworkUpdated = 'Homework updated',
   HomeworkSubmitted = 'Homework submitted',
   HomeworkGraded = 'Homework graded',
   HomeworkUngraded = 'Homework ungraded',
   HomeworkReSubmitted = 'Homework resubmitted',
+
+  HomeworkCreated = "Homework created successfully",
+  HomeworkUpdated = "Homework updated successfully",
+  HomeworkDeleted = "Homework deleted successfully",
+  HomeworkFetched = "Homework fetched successfully",
+  HomeworkListed= "Homework list fetched successfully",
+  HomeworkNotFound= "Homework not found"
 }
 
 export enum DiscussionMessage {
@@ -309,6 +321,7 @@ export enum FeesMessage {
   // Error messages
   FeesExists = 'Fees record already exists',
   FeesNotFound = 'Fees record not found',
+  FeesIdNotFound = 'Fees Id not found',
 
   // Success messages
   FeesAdded = 'New fees record created',
@@ -350,6 +363,7 @@ export enum TeacherMessage {
   TeacherExists = 'Teacher already exists with provided credentials',
   TeacherNotFound = 'Teacher not found',
   InvalidTeacherId = 'Invalid teacher ID',
+  InvalidTeacherEmail = 'Invalid teacher Email',
 
   TeacherCreateFailed = 'Failed to create teacher',
   TeacherUpdateFailed = 'Failed to update teacher',
@@ -375,6 +389,7 @@ export enum TeacherMessage {
   TeacherDeleted = 'Teacher deleted successfully',
 
   TeacherFetched = 'Teacher fetched successfully',
+  TeacherVerify = 'Teacher verify successfully',
   TeachersListed = 'Teachers fetched successfully',
 
   ClassAssigned = 'Class assigned to teacher successfully',
@@ -420,3 +435,28 @@ export enum NotificationMessage {
   NotificationDeleted = 'Notification deleted successfully',
   NotificationSent = 'Notification sent successfully',
 }
+
+
+/**
+ *SERVER-MESSAGE  
+ */ 
+export enum ServerMessage {
+  // Error messages
+  ServerError = 'Internal server error',
+  ServerNotRunning = 'Server is not running',
+  PortInUse = 'Port is already in use',
+  DatabaseConnectionFailed = 'Database connection failed',
+  DatabaseDisconnected = 'Database disconnected',
+  UnauthorizedAccess = 'Unauthorized access',
+  ForbiddenAccess = 'Access forbidden',
+  ResourceNotFound = 'Requested resource not found',
+  InvalidRequest = 'Invalid request data',
+
+  // Success messages
+  ServerStarted = 'Server started successfully',
+  ServerStopped = 'Server stopped successfully',
+  DatabaseConnected = 'Database connected successfully',
+  HealthCheckSuccess = 'Server health check successful',
+}
+
+

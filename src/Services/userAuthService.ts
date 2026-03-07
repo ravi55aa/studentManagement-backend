@@ -11,6 +11,7 @@ import { AddressFormatter, UserValidator } from '../Constants/userValidator';
 import { handleJwtTokensGenerator, IJwtPayload } from '../Utils/jwt';
 import { ApiResponse } from '../Constants/apiResponse';
 import { IUserRepository } from '../Interfaces/repository/IAdminRepository';
+import { AuthMessage, UserMessage } from '../Constants/resposeMessages';
 
 @injectable()
 export class UserAuthService implements IUserAuthService {
@@ -24,7 +25,7 @@ export class UserAuthService implements IUserAuthService {
 
     const createUser = await this._userRepository.create(userData);
     if (!createUser) {
-      throw new Error('Cant create the user');
+      throw new Error(UserMessage.UserNotCreated);
     }
 
     await this._userRepository.addAddress({
@@ -44,21 +45,21 @@ export class UserAuthService implements IUserAuthService {
       });
 
       if (!isUser) {
-        return ApiResponse.notFound('AdminNotFound, invalid credentials');
+        return ApiResponse.notFound(UserMessage.UserNotFound);
       }
 
       const comparePasswords: boolean = await bcrypt.compare(userData.password, isUser.password!);
 
       if (!comparePasswords) {
-        return ApiResponse.notFound('AdminNotFound, Password is incorrect');
+        return ApiResponse.notFound(AuthMessage.InvalidCurrentPassword);
       }
       const payload: IJwtPayload = { userId: isUser._id!, role: 'Admin', tenantId: null };
       handleJwtTokensGenerator(payload, req, res);
 
-      return ApiResponse.success(isUser, 'Admin Login successfully');
+      return ApiResponse.success(isUser, AuthMessage.UserLoggedIn);
     } catch (err: unknown) {
       logger.error(err);
-      throw new Error('Failed to sign in', { cause: err });
+      throw new Error(AuthMessage.InvalidCredentials, { cause: err });
     }
   }
 }

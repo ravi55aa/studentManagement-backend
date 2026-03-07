@@ -12,6 +12,8 @@ import { ISchool } from '../Models/schoolModel';
 import { IUser } from '../Models/userModel';
 import { serviceReturnType } from '../Constants/interfaces';
 import { TYPES } from '../DI/types';
+import { ApiResponse } from '../Constants/apiResponse';
+import { CommonMessage } from '../Constants/resposeMessages';
 
 @injectable()
 export class PasswordResetController {
@@ -37,7 +39,16 @@ export class PasswordResetController {
 
   async getOtp(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody }: serviceReturnType = await this._fps.generateOtp(req);
+      const {id}=req.params;
+      
+      if(!id){
+        const {status,resBody}=ApiResponse.badRequest(CommonMessage.IdNotFound);
+
+        res.status(status).json(resBody);
+        return 
+      }
+
+      const { status, resBody }: serviceReturnType = await this._fps.generateOtp(id!);
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -62,7 +73,7 @@ export class PasswordResetController {
       res.status(status).json(resBody);
     } catch (err) {
       next(err);
-    }
+    } 
   }
 
   async updatePasswordVersion2(req: Request, res: Response, next: NextFunction) {

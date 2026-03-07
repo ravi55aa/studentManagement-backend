@@ -18,4 +18,6 @@ export interface ITeacherService {
   getUnassignedTeachers(query: FilterQuery<Partial<ITeacher>>): Promise<serviceReturnType>;
 
   assignClassToTeacher(req: Request): Promise<serviceReturnType>;
+
+  verifyTeacherWithEmail(teacherEmail:string):Promise<serviceReturnType>
 }

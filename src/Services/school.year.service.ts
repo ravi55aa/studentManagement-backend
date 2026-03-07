@@ -25,6 +25,7 @@ import {
   AcademicSubjectMessage,
   AcademicYearMessage,
   CourseMessage,
+  ServerMessage,
 } from '../Constants/resposeMessages';
 import logger from '../Utils/logger';
 import { ApiResponse } from '../Constants/apiResponse';
@@ -68,7 +69,7 @@ export class SchoolYear implements ISchoolAcademicYear {
         error,
       });
 
-      return ApiResponse.failure('Internal server error');
+      return  ApiResponse.internalServerError(ServerMessage.ServerError)
     }
   }
 
@@ -89,7 +90,7 @@ export class SchoolYear implements ISchoolAcademicYear {
         error,
       });
 
-      return ApiResponse.failure('Internal server error');
+      return  ApiResponse.internalServerError(ServerMessage.ServerError)
     }
   }
 
@@ -116,7 +117,7 @@ export class SchoolYear implements ISchoolAcademicYear {
         error,
       });
 
-      return ApiResponse.failure('Internal server error');
+      return  ApiResponse.internalServerError(ServerMessage.ServerError)
     }
   }
 
@@ -145,7 +146,7 @@ export class SchoolYear implements ISchoolAcademicYear {
         error,
       });
 
-      return ApiResponse.failure('Internal server error');
+      return  ApiResponse.internalServerError(ServerMessage.ServerError)
     }
   }
 
@@ -172,7 +173,7 @@ export class SchoolYear implements ISchoolAcademicYear {
         error,
       });
 
-      return ApiResponse.failure('Internal server error');
+      return  ApiResponse.internalServerError(ServerMessage.ServerError)
     }
   }
 }
@@ -217,7 +218,7 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
         error,
       });
 
-      return ApiResponse.failure('Internal server error');
+      return  ApiResponse.internalServerError(ServerMessage.ServerError)
     }
   }
 
@@ -243,7 +244,7 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
         error,
       });
 
-      return ApiResponse.failure('Internal server error');
+      return  ApiResponse.internalServerError(ServerMessage.ServerError)
     }
   }
 
@@ -270,7 +271,7 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
         error,
       });
 
-      return ApiResponse.failure('Internal server error');
+      return  ApiResponse.internalServerError(ServerMessage.ServerError)
     }
   }
 
@@ -299,7 +300,7 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
         error,
       });
 
-      return ApiResponse.failure('Internal server error');
+      return  ApiResponse.internalServerError(ServerMessage.ServerError)
     }
   }
 
@@ -326,7 +327,7 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
         error,
       });
 
-      return ApiResponse.failure('Internal server error');
+      return  ApiResponse.internalServerError(ServerMessage.ServerError)
     }
   }
 }
@@ -412,7 +413,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
         error,
       });
 
-      return ApiResponse.failure('Internal server error');
+      return  ApiResponse.internalServerError(ServerMessage.ServerError)
     }
   }
 
@@ -445,7 +446,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
         error,
       });
 
-      return ApiResponse.failure('Internal server error');
+      return  ApiResponse.internalServerError(ServerMessage.ServerError)
     }
   }
 
@@ -484,7 +485,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
         error,
       });
 
-      return ApiResponse.failure('Internal server error');
+      return  ApiResponse.internalServerError(ServerMessage.ServerError)
     }
   }
 
@@ -555,7 +556,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
         error,
       });
 
-      return ApiResponse.failure('Internal server error');
+      return  ApiResponse.internalServerError(ServerMessage.ServerError)
     }
   }
   async deleteAnAcademicCourse(req: Request, res: Response): Promise<serviceReturnType> {
@@ -592,7 +593,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
         error,
       });
 
-      return ApiResponse.failure('Internal server error');
+      return  ApiResponse.internalServerError(ServerMessage.ServerError)
     }
   }
 }
