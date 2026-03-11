@@ -127,3 +127,4 @@ const Student = mongoose.model<IStudent>('Student', StudentSchema);
 
 export default Student;
 
+console.log('studetnt');
