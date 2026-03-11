@@ -2,7 +2,7 @@ import { injectable } from "tsyringe";
 import { Types } from "mongoose";
 import { IHomework } from "@Interfaces/model/Teacher/IHomework";
 import { IHomeworkRepository } from "@Interfaces/repository/IHomeworkRepository";
-import { HomeworkModel } from "@Models/Teacher/homework.model";
+import { homeworkModel } from "@Models/Teacher/homework.model";
 import { BaseRepository } from "@Repository/BaseRepository";
 import logger from "@Utils/logger";
 
@@ -13,7 +13,7 @@ export class HomeworkRepository
     implements IHomeworkRepository
     {
     constructor() {
-        super(HomeworkModel);
+        super(homeworkModel);
     }
 
     async createHomework(homeworkData: Partial<IHomework>): Promise<IHomework | null> {

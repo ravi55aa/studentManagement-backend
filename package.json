@@ -5,7 +5,7 @@
   "type": "commonjs",
   "scripts": {
     "dev": "ts-node --esm src/app.ts",
-    "start": "nodemon src/server.ts",
+    "start": "nodemon -r tsconfig-paths/register src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "lint": "eslint .",
@@ -41,6 +41,7 @@
     "reflect-metadata": "^0.2.2",
     "socket.io": "^4.8.3",
     "stripe": "^20.3.1",
+    "tsconfig-paths": "^4.2.0",
     "tsyringe": "^4.10.0",
     "winston": "^3.19.0",
     "zod": "^4.1.13"

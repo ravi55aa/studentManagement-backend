@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { FilterQuery } from 'mongoose';
+import logger from '@Utils/logger';
 
 import { ISchool } from '../Models/schoolModel';
 import { handleTokenVerification } from '../Utils/jwt';
@@ -93,6 +94,8 @@ export class SchoolAcademicYearDto {
       tenantId: decoded.tenantId,
       role: decoded.role,
     };
+
+    logger.info('@schoolDto dtoData',dtoData);
 
     return dtoData;
   }

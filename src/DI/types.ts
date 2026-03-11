@@ -10,6 +10,7 @@ export const TYPES = {
 
   UserRepository: Symbol.for('UserRepository'),
   UserAuthService: Symbol.for('UserAuthService'),
+  UserAuthService2: Symbol.for('UserAuthService2'),
 
   SchoolRepository: Symbol.for('SchoolRepository'),
   SchoolService: Symbol.for('SchoolService'),

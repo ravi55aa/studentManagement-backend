@@ -10,6 +10,7 @@ import { batchModel } from '../Models/batchModel';
 
 import { BaseRepository } from './BaseRepository';
 
+
 @injectable()
 export class TeacherRepository extends BaseRepository<ITeacherBio> implements ITeacherRepo {
   constructor() {
@@ -33,11 +34,8 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
       if (!Types.ObjectId.isValid(teacherId)) return null;
 
       return await teacherModel
-        .findById(teacherId)
-        .populate('classTeacherOf')
+        .findOne({teacherId:teacherId})
         .populate('assignedSubjects')
-        .populate('academicYearId')
-        .populate('centerId')
         .lean<ITeacher>();
     } catch (error) {
       logger.error('Error fetching teacher:', error);
@@ -160,9 +158,13 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
   /* ==============GET UNASSIGNED TEACHERS================= */
   async getUnassignedTeachers(query: FilterQuery<Partial<ITeacher>>): Promise<ITeacherBio[]> {
     try {
-      const assignedIds = await batchModel
-        .find({ ...query, batchCounselor: { $ne: null } })
-        .distinct('batchCounselor');
+
+      let assignedIds=null;
+      if(query){
+        assignedIds = await batchModel
+          .find({ ...query, batchCounselor: { $ne: null } })
+          .distinct('batchCounselor');
+      }
 
       return await this.model.find({ _id: { $nin: assignedIds } }).lean<ITeacherBio[]>();
     } catch (error) {
@@ -188,3 +190,4 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
     }
   }
 }
+

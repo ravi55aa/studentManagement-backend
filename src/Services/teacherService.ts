@@ -117,7 +117,7 @@ export class TeacherService implements ITeacherService {
     }
   }
 
-  /* ===================GET TEACHER BY ID====================== */
+  /* ===========GET TEACHER BY ID=========== */
   public async getTeacherById(teacherId: string): Promise<serviceReturnType> {
     try {
       if (!Types.ObjectId.isValid(teacherId)) {
@@ -129,6 +129,9 @@ export class TeacherService implements ITeacherService {
       const professional = await this._teacherRepo.findProfessionalById(teacherId);
 
       if (!bio || !professional) {
+        
+        logger.info('bio',bio,"\n professional",professional);
+
         return ApiResponse.notFound(TeacherMessage.TeacherNotFound);
       }
 
@@ -249,13 +252,17 @@ export class TeacherService implements ITeacherService {
   public async getUnassignedTeachers(
     query: FilterQuery<Partial<ITeacher>>,
   ): Promise<serviceReturnType> {
+    if(query.center=='School'){
+      query.center=null;
+    }
+
     const teachers = await this._teacherRepo.getUnassignedTeachers(query);
 
     if (!teachers.length) {
-      return ApiResponse.notFound('No unassigned teachers found');
+      return ApiResponse.notFound(TeacherMessage.NoUnassignedTeachersFound);
     }
 
-    return ApiResponse.success(teachers, 'Unassigned teachers fetched successfully');
+    return ApiResponse.success(teachers, TeacherMessage.UnassignedTeachersFetched);
   }
 
   /* ----------FETCH ALL TEACHERS------------- */

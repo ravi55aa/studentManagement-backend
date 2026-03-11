@@ -1,12 +1,12 @@
 import { Types,Document } from "mongoose";
 import { HomeWorkStatus } from "types/homework";
-import { uploadedDocSchema } from "Models/documentModel";
+import { IUploadedDoc } from "Models/documentModel";
 
 
 export interface IHomework extends Document{
     title: string;
     description: string;
-    attachments?: typeof uploadedDocSchema[];
+    attachments?: IUploadedDoc[];
     
     subjectId: Types.ObjectId;
     batchId: Types.ObjectId;

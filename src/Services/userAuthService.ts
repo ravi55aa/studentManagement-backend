@@ -1,17 +1,21 @@
 import { Request, Response } from 'express';
 import { injectable, inject } from 'tsyringe';
 import bcrypt from 'bcrypt';
+import { serviceReturnType } from '@Constants/interfaces';
+import { ITeacherRepo } from '@Interfaces/repository/ITeacherRepo';
+import { TYPES } from '@DI/types';
+import logger from '@Utils/logger';
+import { IAuthService, IUserAuthService } from '@Interfaces/services/IAdminAuthService';
+import { IUser } from '@Models/userModel';
+import { IAddress } from '@Models/addressModel';
+import { AddressFormatter, UserValidator } from '@Constants/userValidator';
+import { handleJwtTokensGenerator, IJwtPayload } from '@Utils/jwt';
+import { ApiResponse } from '@Constants/apiResponse';
+import { IUserRepository } from '@Interfaces/repository/IAdminRepository';
+import { AuthMessage, UserMessage } from '@Constants/resposeMessages';
 
-import { TYPES } from '../DI/types';
-import logger from '../Utils/logger';
-import { IUserAuthService } from '../Interfaces/services/IAdminAuthService';
-import { IUser } from '../Models/userModel';
-import { IAddress } from '../Models/addressModel';
-import { AddressFormatter, UserValidator } from '../Constants/userValidator';
-import { handleJwtTokensGenerator, IJwtPayload } from '../Utils/jwt';
-import { ApiResponse } from '../Constants/apiResponse';
-import { IUserRepository } from '../Interfaces/repository/IAdminRepository';
-import { AuthMessage, UserMessage } from '../Constants/resposeMessages';
+import { AuthPayloadType, IRepositoryMap } from '../types/auth.types';
+
 
 @injectable()
 export class UserAuthService implements IUserAuthService {
@@ -61,5 +65,83 @@ export class UserAuthService implements IUserAuthService {
       logger.error(err);
       throw new Error(AuthMessage.InvalidCredentials, { cause: err });
     }
+  }
+}
+
+@injectable()
+export class UserAuthServiceV2 implements IAuthService{
+  
+  private _repositoryMap:IRepositoryMap={Teacher:null,Admin:null,School:null};
+
+  constructor(
+    @inject(TYPES.TeacherRepository)
+    private _teacherRepo:ITeacherRepo,
+
+    @inject(TYPES.UserRepository)
+    private _adminRepo:IUserRepository
+  ){
+      this._repositoryMap.Teacher=this._teacherRepo
+      this._repositoryMap.Admin=this._adminRepo
+  }
+
+  async login(payload: AuthPayloadType, req: Request, res: Response): Promise<serviceReturnType> {
+
+    const { email, password, userType } = payload;
+
+    if (!email || !password || !userType) {
+      return ApiResponse.badRequest(AuthMessage.InvalidCredentials);
+    }
+
+    const repo = this._repositoryMap?.[userType];
+
+    if (!repo) {
+      return ApiResponse.badRequest(AuthMessage.InvalidUser);
+    }
+
+    let user: any = null;
+
+    // Teacher login
+    if (userType === "Teacher") {
+      user = await repo.findOne({ email, phone: password });
+    }
+    // Admin or School login
+    else {
+      user = await repo.findOne({ email });
+
+      if (!user) {
+        return ApiResponse.failure(AuthMessage.not_Found);
+      }
+
+      const isValid = await bcrypt.compare(password, user.password);
+
+      if (!isValid) {
+        return ApiResponse.badRequest(AuthMessage.InvalidCredentials);
+      }
+    }
+
+    if (!user) {
+      return ApiResponse.failure(AuthMessage.not_Found);
+    }
+
+    // determine tenantId
+    let tenantId: string | null = null;
+
+    if (userType === "School") {
+      tenantId = user._id;
+    }
+
+    if (userType === "Teacher") {
+      tenantId = user.tenantId;
+    }
+
+    const tokenPayload: IJwtPayload = {
+      userId: user._id,
+      role: userType,
+      tenantId: tenantId
+    };
+
+    handleJwtTokensGenerator(tokenPayload, req, res);
+
+    return ApiResponse.success(user, AuthMessage.UserLoggedIn);
   }
 }

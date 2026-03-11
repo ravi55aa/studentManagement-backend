@@ -21,9 +21,11 @@ export enum AuthMessage {
   InvalidAccessToken = 'Invalid token',
   NoAccess = 'You have no access',
   InvalidCurrentPassword = 'Current password is invalid',
+  InvalidUser='Invalid user type',
 
   // Success messages
   OTPResent = 'OTP resent',
+  not_Found = 'User not found',
   RegisterOtpSent = 'OTP sent to your email, verify to complete registration',
   UserRegistered = 'New user created',
   UserLoggedIn = 'Login successful',

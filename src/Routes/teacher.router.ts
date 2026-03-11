@@ -43,12 +43,6 @@ router.patch('/assignToBatch/:id', authMiddleware, (req, res, next) =>
 
 router.get('/verify/:email', (req, res, next) => teacherController.verifyTeacher(req, res, next));
 
-router
-  .route('/:id')
-  .get(authMiddleware, (req, res, next) => teacherController.getTeacherById(req, res, next))
-  .patch(authMiddleware, (req, res, next) => teacherController.createTeacher(req, res, next))
-  .delete(authMiddleware, (req, res, next) => teacherController.createTeacher(req, res, next))
-  .post(authMiddleware, (req, res, next) => teacherController.createTeacher(req, res, next));
 
 export default router;
 
@@ -60,13 +54,25 @@ export default router;
 
 /*****HOMEWORK******/
 router
-  .route('/homework/:id')
-  .get(authMiddleware, (req, res, next) => homeworkController.getOneHomework(req, res, next))
-  .patch(authMiddleware, (req, res, next) => homeworkController.updateHomework(req, res, next))
-  .put(authMiddleware, (req, res, next) => homeworkController.updateHomework(req, res, next))
-  .delete(authMiddleware, (req, res, next) => homeworkController.deleteHomework(req, res, next))
-  .post(authMiddleware, (req, res, next) => homeworkController.createHomework(req, res, next));
+  .route('/homework')
+  .get(authMiddleware, 
+    (req, res, next) => homeworkController.getOneHomework(req, res, next))
+  .patch(authMiddleware, 
+    (req, res, next) => homeworkController.updateHomework(req, res, next))
+  .put(authMiddleware, 
+    (req, res, next) => homeworkController.updateHomework(req, res, next))
+  .delete(authMiddleware, 
+    (req, res, next) => homeworkController.deleteHomework(req, res, next))
+  .post(authMiddleware, uploadCloud.array('docs',10) ,
+    (req, res, next) => homeworkController.createHomework(req, res, next));
 
 router.get('/homework/getall', authMiddleware, (req, res, next) =>
   homeworkController.getAllHomework(req, res, next),
 );
+
+    router
+      .route('/:id')
+      .get(authMiddleware, (req, res, next) => teacherController.getTeacherById(req, res, next))
+      .patch(authMiddleware, (req, res, next) => teacherController.createTeacher(req, res, next))
+      .delete(authMiddleware, (req, res, next) => teacherController.createTeacher(req, res, next))
+      .post(authMiddleware, (req, res, next) => teacherController.createTeacher(req, res, next));

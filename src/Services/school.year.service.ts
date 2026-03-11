@@ -225,11 +225,13 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
   /* =============LIST ALL SUBJECTS============= */
   async listAllAcademicSubjects(req: Request, res: Response): Promise<serviceReturnType> {
     try {
-      const { tenantId, adminId } = SchoolAcademicYearDto.getTenantId(req, res);
+      const { tenantId } = SchoolAcademicYearDto.getTenantId(req, res);
+      const query=req.query;
+      logger.info("@school.y.s tenantId",tenantId);
 
       const subjects = await this._repo.getAllSubjects({
         tenantId,
-        adminId,
+        ...query
       });
 
       if (!subjects || subjects.length === 0) {

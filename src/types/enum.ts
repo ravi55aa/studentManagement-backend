@@ -39,3 +39,10 @@ export enum Gender_types {
   Female = 'female',
   Other = 'other',
 }
+
+export enum Student_Status{
+  Active='active', 
+  Inactive='inactive', 
+  Graduated='graduated', 
+  Suspended='suspended'
+}

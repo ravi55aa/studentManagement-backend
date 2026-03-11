@@ -5,7 +5,6 @@ import { serviceReturnType } from '@Constants/interfaces';
 import { HomeworkMessage } from '@Constants/resposeMessages';
 import { IHomework } from '@Interfaces/model/Teacher/IHomework';
 import { IHomeworkService } from '@Interfaces/services/IHomeworkService';
-import logger from '@Utils/logger';
 import { TYPES } from '@DI/types';
 import { IHomeworkRepository } from '@Interfaces/repository/IHomeworkRepository';
 import { HomeWorkDto } from '@dto/homeworkDto';
@@ -19,7 +18,8 @@ export class HomeworkService implements IHomeworkService {
 
     async createHomework(req: Request, res: Response): Promise<serviceReturnType> {
         const dto: Partial<IHomework> = HomeWorkDto.createHomework(req,res);
-        logger.info(res);
+
+        //const validation=handleValidationOF(HomeworkSchema,dto,res);
 
         const doc = await this._homeworkRepo.createHomework(dto);
 

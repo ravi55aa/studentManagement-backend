@@ -1,16 +1,15 @@
 import { FilterQuery } from 'mongoose';
 import { Request, Response } from 'express';
 import { injectable, inject } from 'tsyringe';
-
-import { TYPES } from '../DI/types';
-import { IAddressService } from '../Interfaces/services/IAddressService';
-import { IAddress } from '../Models/addressModel';
-import { serviceReturnType } from '../Constants/interfaces';
-import { AddressDTO } from '../dto/addressDTO';
-import { ApiResponse } from '../Constants/apiResponse';
-import { AddressMessage, ServerMessage } from '../Constants/resposeMessages';
-import { IAddressRepository } from '../Interfaces/repository/IAddressRepository';
-import logger from '../Utils/logger';
+import { TYPES } from '@DI/types';
+import { IAddressService } from '@Interfaces/services/IAddressService';
+import { IAddress } from '@Models/addressModel';
+import { serviceReturnType } from '@Constants/interfaces';
+import { AddressDTO } from '@dto/addressDTO';
+import { ApiResponse } from '@Constants/apiResponse';
+import { AddressMessage, ServerMessage } from '@Constants/resposeMessages';
+import { IAddressRepository } from '@Interfaces/repository/IAddressRepository';
+import logger from '@Utils/logger';
 
 @injectable()
 export class AddressService implements IAddressService {

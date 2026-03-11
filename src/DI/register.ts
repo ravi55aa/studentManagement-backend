@@ -1,4 +1,5 @@
 import { container } from 'tsyringe';
+import { UserAuthServiceV2 } from '@Services/userAuthService';
 
 import { AddressService } from '../Services/addressService';
 import { DocumentRepository } from '../Repository/documentRepository';
@@ -46,6 +47,8 @@ container.registerSingleton(TYPES.DocumentService, DocumentService);
 container.registerSingleton(TYPES.UserRepository, UserRepository);
 
 container.registerSingleton(TYPES.UserAuthService, UserAuthService);
+
+container.registerSingleton(TYPES.UserAuthService2, UserAuthServiceV2);
 
 container.registerSingleton(TYPES.SchoolRepository, SchoolRepository);
 

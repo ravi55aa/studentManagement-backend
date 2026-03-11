@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
-import { IHomework } from "Interfaces/model/Teacher/IHomework"; 
-import { uploadedDocSchema } from "Models/documentModel";
+import { IHomework } from "@Interfaces/model/Teacher/IHomework"; 
+import { uploadedDocSchema } from "@Models/documentModel";
 
 const homeworkSchema = new Schema<IHomework>(
     {
@@ -57,7 +57,7 @@ const homeworkSchema = new Schema<IHomework>(
     { timestamps: true }
 );
 
-export const HomeworkModel = mongoose.model<IHomework>(
+export const homeworkModel = mongoose.model<IHomework>(
     "Homework",
     homeworkSchema
 );
