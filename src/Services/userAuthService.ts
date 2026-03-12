@@ -13,6 +13,7 @@ import { handleJwtTokensGenerator, IJwtPayload } from '@Utils/jwt';
 import { ApiResponse } from '@Constants/apiResponse';
 import { IUserRepository } from '@Interfaces/repository/IAdminRepository';
 import { AuthMessage, UserMessage } from '@Constants/resposeMessages';
+import { IStudentRepository } from '@Interfaces/repository/IStudentRepository';
 
 import { AuthPayloadType, IRepositoryMap } from '../types/auth.types';
 
@@ -71,17 +72,21 @@ export class UserAuthService implements IUserAuthService {
 @injectable()
 export class UserAuthServiceV2 implements IAuthService{
   
-  private _repositoryMap:IRepositoryMap={Teacher:null,Admin:null,School:null};
+  private _repositoryMap:IRepositoryMap={Teacher:null,Admin:null,School:null,Student:null};
 
   constructor(
     @inject(TYPES.TeacherRepository)
     private _teacherRepo:ITeacherRepo,
 
     @inject(TYPES.UserRepository)
-    private _adminRepo:IUserRepository
+    private _adminRepo:IUserRepository,
+    
+    @inject(TYPES.StudentRepository)
+    private _studentRepo:IStudentRepository
   ){
       this._repositoryMap.Teacher=this._teacherRepo
       this._repositoryMap.Admin=this._adminRepo
+      this._repositoryMap.Student=this._studentRepo
   }
 
   async login(payload: AuthPayloadType, req: Request, res: Response): Promise<serviceReturnType> {
@@ -112,7 +117,7 @@ export class UserAuthServiceV2 implements IAuthService{
         return ApiResponse.failure(AuthMessage.not_Found);
       }
 
-      const isValid = await bcrypt.compare(password, user.password);
+      const isValid = await bcrypt.compare(password,user.password);
 
       if (!isValid) {
         return ApiResponse.badRequest(AuthMessage.InvalidCredentials);
@@ -129,18 +134,17 @@ export class UserAuthServiceV2 implements IAuthService{
     if (userType === "School") {
       tenantId = user._id;
     }
-
-    if (userType === "Teacher") {
-      tenantId = user.tenantId;
-    }
-
+    
+    tenantId = user.tenantId;
+    
     const tokenPayload: IJwtPayload = {
       userId: user._id,
       role: userType,
       tenantId: tenantId
     };
-
+    
     handleJwtTokensGenerator(tokenPayload, req, res);
+    
 
     return ApiResponse.success(user, AuthMessage.UserLoggedIn);
   }

@@ -53,19 +53,8 @@ export default router;
  * */
 
 /*****HOMEWORK******/
-router
-  .route('/homework')
-  .get(authMiddleware, 
+router.get('/homework/get/:id',authMiddleware, 
     (req, res, next) => homeworkController.getOneHomework(req, res, next))
-  .patch(authMiddleware, 
-    (req, res, next) => homeworkController.updateHomework(req, res, next))
-  .put(authMiddleware, 
-    (req, res, next) => homeworkController.updateHomework(req, res, next))
-  .delete(authMiddleware, 
-    (req, res, next) => homeworkController.deleteHomework(req, res, next))
-  .post(authMiddleware, uploadCloud.array('docs',10) ,
-    (req, res, next) => homeworkController.createHomework(req, res, next));
-
 router.get('/homework/getall', authMiddleware, (req, res, next) =>
   homeworkController.getAllHomework(req, res, next),
 );

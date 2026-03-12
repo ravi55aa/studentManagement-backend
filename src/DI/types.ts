@@ -21,6 +21,9 @@ export const TYPES = {
   TeacherRepository: Symbol.for('TeacherRepository'),
   TeacherService: Symbol.for('TeacherService'),
 
+  HomeworkRepository: Symbol.for('HomeworkRepository'),
+  HomeworkService: Symbol.for('HomeworkService'),
+
   NotificationRepository: Symbol.for('NotificationRepository'),
   NotificationService: Symbol.for('NotificationService'),
 
@@ -39,6 +42,11 @@ export const TYPES = {
   ForgotPasswordRepository: Symbol.for('ForgotPasswordRepository'),
   ForgotPasswordService: Symbol.for('ForgotPasswordService'),
 
-  HomeworkRepository: Symbol.for('HomeworkRepository'),
-  HomeworkService: Symbol.for('HomeworkService'),
+
+  StudentRepository: Symbol.for('StudentRepository'),
+  StudentService: Symbol.for('StudentService'),
+
+  StudentHomeworkRepository: Symbol.for('StudentHomeworkRepository'),
+  StudentHomeworkService: Symbol.for('StudentHomeworkService'),
+
 };

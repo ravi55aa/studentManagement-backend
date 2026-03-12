@@ -1,5 +1,5 @@
 import { injectable } from "tsyringe";
-import { Types } from "mongoose";
+import { FilterQuery, Types } from "mongoose";
 import { IHomework } from "@Interfaces/model/Teacher/IHomework";
 import { IHomeworkRepository } from "@Interfaces/repository/IHomeworkRepository";
 import { homeworkModel } from "@Models/Teacher/homework.model";
@@ -27,16 +27,20 @@ export class HomeworkRepository
 
     async findById(id: string): Promise<IHomework | null> {
         try {
-        return await this.findById(id);
+        return await this.model.findById(id);
         } catch (error) {
         logger.error("Error while finding homework by id:", error);
         return null;
         }
     }
 
-    async getAllHomework(): Promise<IHomework[]> {
+    async getAllHomework(query:FilterQuery<Partial<IHomework>>): Promise<IHomework[]> {
         try {
-        return await this.findMany({ isDelete: false });
+            const homeworks= await this.model.find({...query,isDelete: false }).populate('subjectId').lean<IHomework[]|[]>();
+            
+            logger.info("query",query,"homeworks",homeworks);
+
+            return homeworks;
         } catch (error) {
         logger.error("Error while fetching homework list:", error);
         return [];

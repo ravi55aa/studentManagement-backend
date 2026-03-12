@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-
-import { serviceReturnType } from "../../Constants/interfaces"; 
+import { serviceReturnType } from "@Constants/interfaces"; 
+import { FilterQuery } from "mongoose";
+import { IHomework } from "@Interfaces/model/Teacher/IHomework";
 
 export interface IHomeworkService {
     createHomework(req: Request, res: Response): Promise<serviceReturnType>;
@@ -9,9 +10,9 @@ export interface IHomeworkService {
 
     deleteHomework(req: Request): Promise<serviceReturnType>;
 
-    getOneHomework(id: string): Promise<serviceReturnType>;
+    getHomework(id: string): Promise<serviceReturnType>;
 
     viewHomework(req: Request): Promise<serviceReturnType>;
 
-    listAllHomework(): Promise<serviceReturnType>;
+    listAllHomework(query:FilterQuery<Partial<IHomework>>): Promise<serviceReturnType>;
 }

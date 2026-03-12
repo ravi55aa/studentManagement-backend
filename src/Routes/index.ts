@@ -5,6 +5,7 @@ export { default as addressRouter } from './address.router';
 export { default as documentsRouter } from './document.router';
 export { default as resetPassword } from './resetPassword.routes';
 export { default as teacherRouter } from './teacher.router';
+export { default as studentRouter } from './student.route';
 export { default as notificationRouter } from './notificatoinRouter';
 export { default as stripeRouter } from './stripe.route';
 export { default as feesRouter } from './fees.routes';

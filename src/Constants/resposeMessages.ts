@@ -357,6 +357,48 @@ export enum BatchMessage {
   TeacherAssigned = 'Teacher assigned successfully',
 }
 
+export enum StudentMessage {
+
+  // ======================
+  // Error Messages
+  // ======================
+
+  StudentExists = 'Student already exists',
+  StudentNotFound = 'Student not found',
+  StudentIdNotFound = 'Student ID not provided',
+
+  InvalidStudentId = 'Invalid student ID',
+  InvalidStudentEmail = 'Invalid student email',
+
+  StudentCreateFailed = 'Failed to create student',
+  StudentUpdateFailed = 'Failed to update student',
+  StudentDeleteFailed = 'Failed to delete student',
+
+  AdmissionNumberExists = 'Admission number already exists',
+
+  BatchNotFound = 'Batch not found',
+  StudentAlreadyAssignedToBatch = 'Student already assigned to a batch',
+
+  NoStudentsFound = 'No students found',
+
+
+  // ======================
+  // Success Messages
+  // ======================
+
+  StudentCreated = 'Student created successfully',
+  StudentUpdated = 'Student updated successfully',
+  StudentDeleted = 'Student deleted successfully',
+
+  StudentFetched = 'Student fetched successfully',
+  StudentsListed = 'Students fetched successfully',
+
+  StudentAssignedToBatch = 'Student assigned to batch successfully',
+  StudentRemovedFromBatch = 'Student removed from batch successfully',
+
+  StudentStatusUpdated = 'Student status updated successfully',
+}
+
 export enum TeacherMessage {
   // ======================
   // Error Messages

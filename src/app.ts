@@ -18,6 +18,7 @@ import {
   notificationRouter,
   stripeRouter,
   feesRouter,
+  studentRouter
 } from './Routes/index';
 import logger from './Utils/logger';
 
@@ -42,6 +43,7 @@ app.use('/address', addressRouter);
 app.use('/documents', documentsRouter);
 app.use('/password', resetPassword);
 app.use('/teacher', teacherRouter);
+app.use('/student', studentRouter);
 app.use('/notification', notificationRouter);
 app.use('/stripe', stripeRouter);
 app.use('/fee', feesRouter);

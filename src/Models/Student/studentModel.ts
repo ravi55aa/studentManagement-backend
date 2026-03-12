@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, ObjectId, Types } from 'mongoose';
+import mongoose, { Schema, Document, Types } from 'mongoose';
 
 import { Gender_types, Student_Status } from '../../types/enum';
 
@@ -16,13 +16,11 @@ export interface IStudent extends Document {
     phone: string | null;
     parentName:string|null;
     parentPhone:string|null;
-    centerId: ObjectId | null;
-    tenantId: ObjectId | null;
-    batchId: ObjectId | null;
+    center: Types.ObjectId | null;
+    tenantId: Schema.Types.ObjectId | null;
+    batch: Types.ObjectId | null;
     isDeleted:boolean|null;
 }
-
-
 
 const StudentSchema = new Schema<IStudent>(
     {
@@ -95,7 +93,7 @@ const StudentSchema = new Schema<IStudent>(
         trim: true,
         },
 
-        centerId: {
+        center: {
         type: Types.ObjectId,
         ref: "Center",
         required: true,
@@ -107,7 +105,7 @@ const StudentSchema = new Schema<IStudent>(
         required: true,
         },
 
-        batchId: {
+        batch: {
         type: Types.ObjectId,
         ref: "Batch",
         },
@@ -123,8 +121,6 @@ const StudentSchema = new Schema<IStudent>(
 );
 
 
-const Student = mongoose.model<IStudent>('Student', StudentSchema);
+const studentModel = mongoose.model<IStudent>('Student', StudentSchema);
 
-export default Student;
-
-console.log('studetnt');
+export default studentModel;

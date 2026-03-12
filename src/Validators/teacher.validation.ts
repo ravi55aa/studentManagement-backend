@@ -114,10 +114,11 @@ export const teacherBioFormSchema = z.object({
 
 
 //HOMEWORK
-const uploadedDocSchema = z.object({
-  url: z.string().url(),
-  fileName: z.string(),
+export const uploadedDocSchema = z.object({
+    url: z.string().min(1, "File url is required"),
+    fileName: z.string().min(1, "File name is required"),
 });
+
 
 export const HomeworkSchema = z.object({
   title: z

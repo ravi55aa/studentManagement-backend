@@ -8,6 +8,7 @@ import { IHomeworkService } from '@Interfaces/services/IHomeworkService';
 import { TYPES } from '@DI/types';
 import { IHomeworkRepository } from '@Interfaces/repository/IHomeworkRepository';
 import { HomeWorkDto } from '@dto/homeworkDto';
+import { FilterQuery } from 'mongoose';
 
 @injectable()
 export class HomeworkService implements IHomeworkService {
@@ -26,7 +27,7 @@ export class HomeworkService implements IHomeworkService {
         return ApiResponse.success(doc, HomeworkMessage.HomeworkCreated);
     }
 
-    async getOneHomework(id:string): Promise<serviceReturnType> {
+    async getHomework(id:string): Promise<serviceReturnType> {
 
         const doc = await this._homeworkRepo.findById(id!);
 
@@ -37,8 +38,8 @@ export class HomeworkService implements IHomeworkService {
         return ApiResponse.success(doc, HomeworkMessage.HomeworkFetched);
     }
 
-    async listAllHomework(): Promise<serviceReturnType> {
-        const docs = await this._homeworkRepo.getAllHomework();
+    async listAllHomework(query:FilterQuery<Partial<IHomework>>): Promise<serviceReturnType> {
+        const docs = await this._homeworkRepo.getAllHomework(query);
 
         if (!docs || docs.length === 0) {
         return ApiResponse.failure(HomeworkMessage.HomeworkNotFound);

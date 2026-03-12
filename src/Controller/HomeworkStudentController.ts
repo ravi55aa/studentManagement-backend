@@ -1,21 +1,22 @@
 import { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
+import { IStudentHomeworkService } from "@Interfaces/services/IHomeworkStudentService";
 
 import { TYPES } from "../DI/types";
 import { serviceReturnType } from "../Constants/interfaces";
-import { IHomeworkService } from "../Interfaces/services/IHomeworkService";
+
 
 @injectable()
-export class HomeworkController {
+export class StudentHomeworkController {
     constructor(
-        @inject(TYPES.HomeworkService)
-        private _homeworkService: IHomeworkService,
+        @inject(TYPES.StudentHomeworkService)
+        private _homeworkService: IStudentHomeworkService
     ) {}
 
-    async createHomework(req: Request, res: Response, next: NextFunction) {
+    async submitHomework(req: Request, res: Response, next: NextFunction) {
         try {
         const { status, resBody }: serviceReturnType =
-            await this._homeworkService.createHomework(req, res);
+            await this._homeworkService.submitHomework(req,res);
 
         res.status(status).json(resBody);
         } catch (err: unknown) {
@@ -23,11 +24,12 @@ export class HomeworkController {
         }
     }
 
-    async getAllHomework(req: Request, res: Response, next: NextFunction) {
+    async listStudentSubmissions(req: Request, res: Response, next: NextFunction) {
         try {
-        const query=req.query;
+        const query = req.query;
+
         const { status, resBody }: serviceReturnType =
-            await this._homeworkService.listAllHomework(query);
+            await this._homeworkService.listStudentSubmissions(query);
 
         res.status(status).json(resBody);
         } catch (err: unknown) {
@@ -35,11 +37,12 @@ export class HomeworkController {
         }
     }
 
-    async getOneHomework(req: Request, res: Response, next: NextFunction) {
+    async getSubmission(req: Request, res: Response, next: NextFunction) {
         try {
-        const {id}=req.params;
+        const { id } = req.params;
+
         const { status, resBody }: serviceReturnType =
-            await this._homeworkService.getHomework(id!);
+            await this._homeworkService.getSubmission(id!);
 
         res.status(status).json(resBody);
         } catch (err: unknown) {
@@ -58,21 +61,21 @@ export class HomeworkController {
         }
     }
 
-    async updateHomework(req: Request, res: Response, next: NextFunction) {
+    // async updateSubmission(req: Request, res: Response, next: NextFunction) {
+    //     try {
+    //     const { status, resBody }: serviceReturnType =
+    //         await this._homeworkService.updateSubmission(req);
+
+    //     res.status(status).json(resBody);
+    //     } catch (err: unknown) {
+    //     next(err);
+    //     }
+    // }
+
+    async deleteSubmission(req: Request, res: Response, next: NextFunction) {
         try {
         const { status, resBody }: serviceReturnType =
-            await this._homeworkService.updateHomework(req, res);
-
-        res.status(status).json(resBody);
-        } catch (err: unknown) {
-        next(err);
-        }
-    }
-
-    async deleteHomework(req: Request, res: Response, next: NextFunction) {
-        try {
-        const { status, resBody }: serviceReturnType =
-            await this._homeworkService.deleteHomework(req);
+            await this._homeworkService.deleteSubmission(req);
 
         res.status(status).json(resBody);
         } catch (err: unknown) {
