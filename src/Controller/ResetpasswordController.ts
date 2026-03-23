@@ -39,13 +39,13 @@ export class PasswordResetController {
 
   async getOtp(req: Request, res: Response, next: NextFunction) {
     try {
-      const {id}=req.params;
-      
-      if(!id){
-        const {status,resBody}=ApiResponse.badRequest(CommonMessage.IdNotFound);
+      const { id } = req.params;
+
+      if (!id) {
+        const { status, resBody } = ApiResponse.badRequest(CommonMessage.IdNotFound);
 
         res.status(status).json(resBody);
-        return 
+        return;
       }
 
       const { status, resBody }: serviceReturnType = await this._fps.generateOtp(id!);
@@ -73,7 +73,7 @@ export class PasswordResetController {
       res.status(status).json(resBody);
     } catch (err) {
       next(err);
-    } 
+    }
   }
 
   async updatePasswordVersion2(req: Request, res: Response, next: NextFunction) {

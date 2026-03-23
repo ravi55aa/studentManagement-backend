@@ -42,11 +42,12 @@ export const TYPES = {
   ForgotPasswordRepository: Symbol.for('ForgotPasswordRepository'),
   ForgotPasswordService: Symbol.for('ForgotPasswordService'),
 
-
   StudentRepository: Symbol.for('StudentRepository'),
   StudentService: Symbol.for('StudentService'),
 
   StudentHomeworkRepository: Symbol.for('StudentHomeworkRepository'),
   StudentHomeworkService: Symbol.for('StudentHomeworkService'),
 
+  StudentAttendanceRepository: Symbol.for('StudentAttendanceRepository'),
+  StudentAttendanceService: Symbol.for('StudentAttendanceService'),
 };

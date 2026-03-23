@@ -10,7 +10,6 @@ import { batchModel } from '../Models/batchModel';
 
 import { BaseRepository } from './BaseRepository';
 
-
 @injectable()
 export class TeacherRepository extends BaseRepository<ITeacherBio> implements ITeacherRepo {
   constructor() {
@@ -34,7 +33,7 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
       if (!Types.ObjectId.isValid(teacherId)) return null;
 
       return await teacherModel
-        .findOne({teacherId:teacherId})
+        .findOne({ teacherId: teacherId })
         .populate('assignedSubjects')
         .lean<ITeacher>();
     } catch (error) {
@@ -158,9 +157,8 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
   /* ==============GET UNASSIGNED TEACHERS================= */
   async getUnassignedTeachers(query: FilterQuery<Partial<ITeacher>>): Promise<ITeacherBio[]> {
     try {
-
-      let assignedIds=null;
-      if(query){
+      let assignedIds = null;
+      if (query) {
         assignedIds = await batchModel
           .find({ ...query, batchCounselor: { $ne: null } })
           .distinct('batchCounselor');
@@ -190,4 +188,3 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
     }
   }
 }
-

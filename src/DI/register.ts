@@ -3,7 +3,9 @@ import { UserAuthServiceV2 } from '@Services/userAuthService';
 import { StudentRepository } from '@Repository/Student/studentRepostiroy';
 import { StudentService } from '@Services/Student/StudentService';
 import { StudentHomeworkRepository } from '@Repository/Student/homeworkStudentRepository';
-import { StudentHomeworkService } from '@Services/Student/StudentHomeworkService'; 
+import { StudentHomeworkService } from '@Services/Student/studentHomeworkService';
+import { StudentAttendanceService } from '@Services/Student/attendanceService';
+import { StudentAttendanceRepository } from '@Repository/Student/attendanceRepository';
 
 import { AddressService } from '../Services/addressService';
 import { DocumentRepository } from '../Repository/documentRepository';
@@ -82,8 +84,6 @@ container.registerSingleton(TYPES.SchoolAcademicCoursesService, SchoolAcademicCo
 
 container.registerSingleton(TYPES.SchoolAcademicSubjectService, SchoolAcademicSubjectSer);
 
-
-
 /* ================= Notification ================= */
 container.registerSingleton(TYPES.NotificationRepository, NotificationRepo);
 
@@ -100,14 +100,12 @@ container.registerSingleton(TYPES.ForgotPasswordRepository, ForgotPasswordReposi
 
 container.registerSingleton(TYPES.ForgotPasswordService, ForgotPasswordService);
 
-
-
 /* ================= Teacher ================= */
 
 container.registerSingleton(TYPES.TeacherRepository, TeacherRepository);
 
 container.registerSingleton(TYPES.TeacherService, TeacherService);
-  /* Homework */
+/* Homework */
 container.registerSingleton(TYPES.HomeworkRepository, HomeworkRepository);
 
 container.registerSingleton(TYPES.HomeworkService, HomeworkService);
@@ -116,7 +114,10 @@ container.registerSingleton(TYPES.HomeworkService, HomeworkService);
 container.registerSingleton(TYPES.StudentRepository, StudentRepository);
 
 container.registerSingleton(TYPES.StudentService, StudentService);
-  /* Homework */
+/* Homework */
 container.registerSingleton(TYPES.StudentHomeworkRepository, StudentHomeworkRepository);
 
 container.registerSingleton(TYPES.StudentHomeworkService, StudentHomeworkService);
+/* Attendance */
+container.registerSingleton(TYPES.StudentAttendanceService, StudentAttendanceService);
+container.registerSingleton(TYPES.StudentAttendanceRepository, StudentAttendanceRepository);

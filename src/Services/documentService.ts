@@ -7,7 +7,7 @@ import { IDocumentService } from '../Interfaces/services/IDocument.service';
 import { IDocument } from '../Models/documentModel';
 import { DocumentsDto } from '../dto/schoolDTO';
 import { ApiResponse } from '../Constants/apiResponse';
-import { DocumentMessage, ServerMessage } from '../Constants/resposeMessages';
+import { CommonMessage, DocumentMessage, ServerMessage } from '../Constants/resposeMessages';
 import logger from '../Utils/logger';
 import { IDocumentRepository } from '../Interfaces/repository/IDocument.interface';
 
@@ -19,6 +19,24 @@ export class DocumentService implements IDocumentService {
   ) {}
 
   //  Upload Documents
+  async getDocs(userId: string): Promise<serviceReturnType> {
+    try {
+      if (!userId) {
+        return ApiResponse.badRequest(CommonMessage.IdNotFound);
+      }
+      const documents = await this._documentRepository.getDocumentsOf(userId);
+
+      if (!documents) {
+        return ApiResponse.success(DocumentMessage.DocumentNotFound);
+      }
+
+      return ApiResponse.success(documents, DocumentMessage.DocumentUploaded);
+    } catch (error) {
+      logger.error('Error uploading document:', error);
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
+    }
+  }
+
   async uploadDocs(data: Partial<IDocument>): Promise<serviceReturnType> {
     try {
       const uploaded = await this._documentRepository.uploadDocuments(data);
@@ -30,7 +48,7 @@ export class DocumentService implements IDocumentService {
       return ApiResponse.success(uploaded, DocumentMessage.DocumentUploaded);
     } catch (error) {
       logger.error('Error uploading document:', error);
-      return  ApiResponse.internalServerError(ServerMessage.ServerError)
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 
@@ -48,7 +66,7 @@ export class DocumentService implements IDocumentService {
       return ApiResponse.success(updated, DocumentMessage.DocumentUpdated);
     } catch (error) {
       logger.error('Error updating document:', error);
-      return  ApiResponse.internalServerError(ServerMessage.ServerError)
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 
@@ -66,7 +84,7 @@ export class DocumentService implements IDocumentService {
       return ApiResponse.success(updated, DocumentMessage.DocumentUpdated);
     } catch (error) {
       logger.error('Error updating additional documents:', error);
-      return  ApiResponse.internalServerError(ServerMessage.ServerError)
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 
@@ -84,7 +102,7 @@ export class DocumentService implements IDocumentService {
       return ApiResponse.success(null, DocumentMessage.DocumentDeleted);
     } catch (error) {
       logger.error('Error deleting document:', error);
-      return  ApiResponse.internalServerError(ServerMessage.ServerError)
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 
@@ -102,7 +120,7 @@ export class DocumentService implements IDocumentService {
       return ApiResponse.success(null, DocumentMessage.FileDeleted);
     } catch (error) {
       logger.error('Error deleting document file:', error);
-      return  ApiResponse.internalServerError(ServerMessage.ServerError)
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 }

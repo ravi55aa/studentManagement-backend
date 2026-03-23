@@ -7,6 +7,7 @@ const router = Router();
 
 router
   .route('/:userId')
+  .get(authMiddleware, (req, res, next) => documentController.getDocuments(req, res, next))
   .delete(authMiddleware, (req, res, next) =>
     documentController.deleteADocumentFile(req, res, next),
   )

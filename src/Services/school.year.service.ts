@@ -69,7 +69,7 @@ export class SchoolYear implements ISchoolAcademicYear {
         error,
       });
 
-      return  ApiResponse.internalServerError(ServerMessage.ServerError)
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 
@@ -90,7 +90,7 @@ export class SchoolYear implements ISchoolAcademicYear {
         error,
       });
 
-      return  ApiResponse.internalServerError(ServerMessage.ServerError)
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 
@@ -117,7 +117,7 @@ export class SchoolYear implements ISchoolAcademicYear {
         error,
       });
 
-      return  ApiResponse.internalServerError(ServerMessage.ServerError)
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 
@@ -146,7 +146,7 @@ export class SchoolYear implements ISchoolAcademicYear {
         error,
       });
 
-      return  ApiResponse.internalServerError(ServerMessage.ServerError)
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 
@@ -173,7 +173,7 @@ export class SchoolYear implements ISchoolAcademicYear {
         error,
       });
 
-      return  ApiResponse.internalServerError(ServerMessage.ServerError)
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 }
@@ -218,7 +218,7 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
         error,
       });
 
-      return  ApiResponse.internalServerError(ServerMessage.ServerError)
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 
@@ -226,12 +226,12 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
   async listAllAcademicSubjects(req: Request, res: Response): Promise<serviceReturnType> {
     try {
       const { tenantId } = SchoolAcademicYearDto.getTenantId(req, res);
-      const query=req.query;
-      logger.info("@school.y.s tenantId",tenantId);
+      const query = req.query;
+      logger.info('@school.y.s tenantId', tenantId);
 
       const subjects = await this._repo.getAllSubjects({
         tenantId,
-        ...query
+        ...query,
       });
 
       if (!subjects || subjects.length === 0) {
@@ -246,7 +246,7 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
         error,
       });
 
-      return  ApiResponse.internalServerError(ServerMessage.ServerError)
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 
@@ -273,7 +273,7 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
         error,
       });
 
-      return  ApiResponse.internalServerError(ServerMessage.ServerError)
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 
@@ -302,7 +302,7 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
         error,
       });
 
-      return  ApiResponse.internalServerError(ServerMessage.ServerError)
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 
@@ -329,7 +329,7 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
         error,
       });
 
-      return  ApiResponse.internalServerError(ServerMessage.ServerError)
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 }
@@ -415,7 +415,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
         error,
       });
 
-      return  ApiResponse.internalServerError(ServerMessage.ServerError)
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 
@@ -448,7 +448,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
         error,
       });
 
-      return  ApiResponse.internalServerError(ServerMessage.ServerError)
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 
@@ -487,7 +487,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
         error,
       });
 
-      return  ApiResponse.internalServerError(ServerMessage.ServerError)
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 
@@ -558,7 +558,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
         error,
       });
 
-      return  ApiResponse.internalServerError(ServerMessage.ServerError)
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
   async deleteAnAcademicCourse(req: Request, res: Response): Promise<serviceReturnType> {
@@ -595,7 +595,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
         error,
       });
 
-      return  ApiResponse.internalServerError(ServerMessage.ServerError)
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 }

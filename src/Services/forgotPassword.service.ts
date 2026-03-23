@@ -18,10 +18,8 @@ import { AuthMessage } from '../Constants/resposeMessages';
 import { IForgotPasswordRepository } from '../Interfaces/repository/IForgotPassword.repository';
 import { getIO } from '../Config/socket.config';
 
-
 @injectable()
 export class ForgotPasswordService implements IForgotPasswordService {
-
   constructor(
     @inject(TYPES.ForgotPasswordRepository)
     private _repository: IForgotPasswordRepository,
@@ -32,20 +30,20 @@ export class ForgotPasswordService implements IForgotPasswordService {
       return this._repository.findAdmin(email);
     } else if (modelName === 'School') {
       return this._repository.findSchool(email);
-    } 
+    }
     return null;
   }
 
   //generate-sendMail-storeDB
-  public async generateOtp(id:string): Promise<serviceReturnType> {
+  public async generateOtp(id: string): Promise<serviceReturnType> {
     const newOtp = otp;
     const mailOptions = handleMailOptions(newOtp);
     await sendMail(mailOptions);
 
     const newOtpDoc = await this._repository.storeOtp(id!, newOtp);
-    
-    const socket:Server=getIO();
-    socket.emit("otp:new",`Your otp is ${newOtp}`);
+
+    const socket: Server = getIO();
+    socket.emit('otp:new', `Your otp is ${newOtp}`);
 
     return ApiResponse.success(newOtpDoc, AuthMessage.OtpVerified);
   }

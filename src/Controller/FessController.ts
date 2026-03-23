@@ -30,7 +30,7 @@ export class FeeController {
       const { id } = req.params;
 
       if (!id) {
-        const {status,resBody}=ApiResponse.failure(FeesMessage.FeesIdNotFound);
+        const { status, resBody } = ApiResponse.failure(FeesMessage.FeesIdNotFound);
         res.status(status).json(resBody);
       }
 
@@ -77,7 +77,7 @@ export class FeeController {
       const { id } = req.params;
 
       if (!id) {
-        const {status,resBody}=ApiResponse.failure(FeesMessage.FeesIdNotFound);
+        const { status, resBody } = ApiResponse.failure(FeesMessage.FeesIdNotFound);
         res.status(status).json(resBody);
         return;
       }

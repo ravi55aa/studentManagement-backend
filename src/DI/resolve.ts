@@ -1,6 +1,7 @@
 import { container } from 'tsyringe';
 import { StudentsController } from 'Controller/StudentController';
 import { StudentHomeworkController } from 'Controller/HomeworkStudentController';
+import { StudentAttendanceController } from 'Controller/AttendanceController';
 
 import {
   SchoolAcademicController,
@@ -18,7 +19,6 @@ import { SchoolController } from '../Controller/SchoolController';
 import { CentersController } from '../Controller/CentersControllert';
 import { BatchController } from '../Controller/BatchController';
 import { HomeworkController } from '../Controller/HomeworkController';
-
 
 export const addressController = container.resolve(AddressController);
 
@@ -49,3 +49,4 @@ export const homeworkController = container.resolve(HomeworkController);
 
 export const studentController = container.resolve(StudentsController);
 export const studentHomeworkController = container.resolve(StudentHomeworkController);
+export const studentAttendanceController = container.resolve(StudentAttendanceController);

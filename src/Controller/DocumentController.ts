@@ -56,6 +56,16 @@ export class DocumentController {
     }
   }
 
+  public async getDocuments(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { status, resBody } = await this._documentService.deleteAFile(req);
+
+      res.status(status).json(resBody);
+    } catch (err) {
+      next(err);
+    }
+  }
+
   public async uploadAdditionDocuments(
     req: Request,
     res: Response,

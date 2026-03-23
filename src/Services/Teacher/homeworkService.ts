@@ -12,77 +12,76 @@ import { FilterQuery } from 'mongoose';
 
 @injectable()
 export class HomeworkService implements IHomeworkService {
-    constructor(
-        @inject(TYPES.HomeworkRepository)
-        private _homeworkRepo: IHomeworkRepository,
-    ) {}
+  constructor(
+    @inject(TYPES.HomeworkRepository)
+    private _homeworkRepo: IHomeworkRepository,
+  ) {}
 
-    async createHomework(req: Request, res: Response): Promise<serviceReturnType> {
-        const dto: Partial<IHomework> = HomeWorkDto.createHomework(req,res);
+  async createHomework(req: Request, res: Response): Promise<serviceReturnType> {
+    const dto: Partial<IHomework> = HomeWorkDto.createHomework(req, res);
 
-        //const validation=handleValidationOF(HomeworkSchema,dto,res);
+    //const validation=handleValidationOF(HomeworkSchema,dto,res);
 
-        const doc = await this._homeworkRepo.createHomework(dto);
+    const doc = await this._homeworkRepo.createHomework(dto);
 
-        return ApiResponse.success(doc, HomeworkMessage.HomeworkCreated);
+    return ApiResponse.success(doc, HomeworkMessage.HomeworkCreated);
+  }
+
+  async getHomework(id: string): Promise<serviceReturnType> {
+    const doc = await this._homeworkRepo.findById(id!);
+
+    if (!doc) {
+      return ApiResponse.failure(HomeworkMessage.HomeworkNotFound);
     }
 
-    async getHomework(id:string): Promise<serviceReturnType> {
+    return ApiResponse.success(doc, HomeworkMessage.HomeworkFetched);
+  }
 
-        const doc = await this._homeworkRepo.findById(id!);
+  async listAllHomework(query: FilterQuery<Partial<IHomework>>): Promise<serviceReturnType> {
+    const docs = await this._homeworkRepo.getAllHomework(query);
 
-        if (!doc) {
-        return ApiResponse.failure(HomeworkMessage.HomeworkNotFound);
-        }
-
-        return ApiResponse.success(doc, HomeworkMessage.HomeworkFetched);
+    if (!docs || docs.length === 0) {
+      return ApiResponse.failure(HomeworkMessage.HomeworkNotFound);
     }
 
-    async listAllHomework(query:FilterQuery<Partial<IHomework>>): Promise<serviceReturnType> {
-        const docs = await this._homeworkRepo.getAllHomework(query);
+    return ApiResponse.success(docs, HomeworkMessage.HomeworkListed);
+  }
 
-        if (!docs || docs.length === 0) {
-        return ApiResponse.failure(HomeworkMessage.HomeworkNotFound);
-        }
+  async updateHomework(req: Request, res: Response): Promise<serviceReturnType> {
+    const { id } = req.params;
 
-        return ApiResponse.success(docs, HomeworkMessage.HomeworkListed);
+    const dto: Partial<IHomework> = HomeWorkDto.createHomework(req, res);
+
+    const updatedDoc = await this._homeworkRepo.updateHomework(id!, dto);
+
+    if (!updatedDoc) {
+      return ApiResponse.failure(HomeworkMessage.HomeworkNotFound);
     }
 
-    async updateHomework(req: Request, res: Response): Promise<serviceReturnType> {
-        const { id } = req.params;
+    return ApiResponse.success(updatedDoc, HomeworkMessage.HomeworkUpdated);
+  }
 
-        const dto: Partial<IHomework> = HomeWorkDto.createHomework(req,res);
+  async deleteHomework(req: Request): Promise<serviceReturnType> {
+    const { id } = req.params;
 
-        const updatedDoc = await this._homeworkRepo.updateHomework(id!, dto);
+    const deleted = await this._homeworkRepo.deleteHomework(id!);
 
-        if (!updatedDoc) {
-        return ApiResponse.failure(HomeworkMessage.HomeworkNotFound);
-        }
-
-        return ApiResponse.success(updatedDoc, HomeworkMessage.HomeworkUpdated);
+    if (!deleted) {
+      return ApiResponse.failure(HomeworkMessage.HomeworkNotFound);
     }
 
-    async deleteHomework(req: Request): Promise<serviceReturnType> {
-        const { id } = req.params;
+    return ApiResponse.success(null, HomeworkMessage.HomeworkDeleted);
+  }
 
-        const deleted = await this._homeworkRepo.deleteHomework(id!);
+  async viewHomework(req: Request): Promise<serviceReturnType> {
+    const { id } = req.params;
 
-        if (!deleted) {
-        return ApiResponse.failure(HomeworkMessage.HomeworkNotFound);
-        }
+    const doc = await this._homeworkRepo.findById(id!);
 
-        return ApiResponse.success(null, HomeworkMessage.HomeworkDeleted);
+    if (!doc) {
+      return ApiResponse.failure(HomeworkMessage.HomeworkNotFound);
     }
 
-    async viewHomework(req: Request): Promise<serviceReturnType> {
-        const { id } = req.params;
-
-        const doc = await this._homeworkRepo.findById(id!);
-
-        if (!doc) {
-        return ApiResponse.failure(HomeworkMessage.HomeworkNotFound);
-        }
-
-        return ApiResponse.success(doc, HomeworkMessage.HomeworkFetched);
-    }
+    return ApiResponse.success(doc, HomeworkMessage.HomeworkFetched);
+  }
 }

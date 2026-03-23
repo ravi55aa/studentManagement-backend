@@ -4,6 +4,8 @@ import { serviceReturnType } from '../../Constants/interfaces';
 import { IDocument } from '../../Models/documentModel';
 
 export interface IDocumentService {
+  getDocs(userId: string): Promise<serviceReturnType>;
+
   uploadDocs(data: Partial<IDocument>): Promise<serviceReturnType>;
 
   updateDocs(req: Request, res: Response): Promise<serviceReturnType>;

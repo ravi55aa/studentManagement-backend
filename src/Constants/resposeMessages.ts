@@ -21,7 +21,7 @@ export enum AuthMessage {
   InvalidAccessToken = 'Invalid token',
   NoAccess = 'You have no access',
   InvalidCurrentPassword = 'Current password is invalid',
-  InvalidUser='Invalid user type',
+  InvalidUser = 'Invalid user type',
 
   // Success messages
   OTPResent = 'OTP resent',
@@ -152,8 +152,8 @@ export enum DocumentMessage {
 }
 
 export enum CommonMessage {
-  IdNotFound='Id not found',
-  EmailNotFound='Email not found',
+  IdNotFound = 'Id not found',
+  EmailNotFound = 'Email not found',
 }
 
 /**
@@ -285,13 +285,14 @@ export enum HomeworkMessage {
   HomeworkGraded = 'Homework graded',
   HomeworkUngraded = 'Homework ungraded',
   HomeworkReSubmitted = 'Homework resubmitted',
+  HomeworkSubmissionNotFound = 'No Homework submission',
 
-  HomeworkCreated = "Homework created successfully",
-  HomeworkUpdated = "Homework updated successfully",
-  HomeworkDeleted = "Homework deleted successfully",
-  HomeworkFetched = "Homework fetched successfully",
-  HomeworkListed= "Homework list fetched successfully",
-  HomeworkNotFound= "Homework not found"
+  HomeworkCreated = 'Homework created successfully',
+  HomeworkUpdated = 'Homework updated successfully',
+  HomeworkDeleted = 'Homework deleted successfully',
+  HomeworkFetched = 'Homework fetched successfully',
+  HomeworkListed = 'Homework list fetched successfully',
+  HomeworkNotFound = 'Homework not found',
 }
 
 export enum DiscussionMessage {
@@ -358,7 +359,6 @@ export enum BatchMessage {
 }
 
 export enum StudentMessage {
-
   // ======================
   // Error Messages
   // ======================
@@ -380,7 +380,6 @@ export enum StudentMessage {
   StudentAlreadyAssignedToBatch = 'Student already assigned to a batch',
 
   NoStudentsFound = 'No students found',
-
 
   // ======================
   // Success Messages
@@ -480,10 +479,9 @@ export enum NotificationMessage {
   NotificationSent = 'Notification sent successfully',
 }
 
-
 /**
- *SERVER-MESSAGE  
- */ 
+ *SERVER-MESSAGE
+ */
 export enum ServerMessage {
   // Error messages
   ServerError = 'Internal server error',
@@ -503,4 +501,31 @@ export enum ServerMessage {
   HealthCheckSuccess = 'Server health check successful',
 }
 
+// ATTENDANCE
+export const AttendanceMessage = {
+  AttendanceMarked: 'Attendance marked successfully',
+  AttendanceFetched: 'Attendance fetched successfully',
+  AttendanceListed: 'Attendance list fetched',
+  AttendanceUpdated: 'Attendance updated successfully',
+  AttendanceDeleted: 'Attendance deleted successfully',
+  AttendanceNotFound: 'Attendance not found',
+  AttendanceNotUpdated: 'Attendance not updated',
+  AttendanceAlreadyMarked: 'Attendance already marked for this date',
+};
 
+export const LeaveMessage = {
+  LeaveApplied: 'Leave applied successfully',
+  LeaveFetched: 'Leave fetched successfully',
+  LeaveListed: 'Leave list fetched',
+  LeaveUpdated: 'Leave updated successfully',
+  LeaveDeleted: 'Leave deleted successfully',
+
+  LeaveNotFound: 'Leave not found',
+  LeaveCredentialsNotFound: 'Leave credential are invalid',
+  LeaveNotUpdated: 'Leave not updated',
+
+  LeaveAlreadyApplied: 'Leave already applied for this date',
+
+  LeaveApproved: 'Leave approved successfully',
+  LeaveRejected: 'Leave rejected successfully',
+};

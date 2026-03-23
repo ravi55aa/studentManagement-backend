@@ -103,13 +103,9 @@ export class TeacherController {
     }
   }
 
-  public async verifyTeacher(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  public async verifyTeacher(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const {email}=req.params;
+      const { email } = req.params;
       const { status, resBody } = await this._teacherService.verifyTeacherWithEmail(email!);
 
       res.status(status).json(resBody);

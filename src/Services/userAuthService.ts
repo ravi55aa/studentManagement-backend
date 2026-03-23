@@ -17,7 +17,6 @@ import { IStudentRepository } from '@Interfaces/repository/IStudentRepository';
 
 import { AuthPayloadType, IRepositoryMap } from '../types/auth.types';
 
-
 @injectable()
 export class UserAuthService implements IUserAuthService {
   constructor(
@@ -70,27 +69,30 @@ export class UserAuthService implements IUserAuthService {
 }
 
 @injectable()
-export class UserAuthServiceV2 implements IAuthService{
-  
-  private _repositoryMap:IRepositoryMap={Teacher:null,Admin:null,School:null,Student:null};
+export class UserAuthServiceV2 implements IAuthService {
+  private _repositoryMap: IRepositoryMap = {
+    Teacher: null,
+    Admin: null,
+    School: null,
+    Student: null,
+  };
 
   constructor(
     @inject(TYPES.TeacherRepository)
-    private _teacherRepo:ITeacherRepo,
+    private _teacherRepo: ITeacherRepo,
 
     @inject(TYPES.UserRepository)
-    private _adminRepo:IUserRepository,
-    
+    private _adminRepo: IUserRepository,
+
     @inject(TYPES.StudentRepository)
-    private _studentRepo:IStudentRepository
-  ){
-      this._repositoryMap.Teacher=this._teacherRepo
-      this._repositoryMap.Admin=this._adminRepo
-      this._repositoryMap.Student=this._studentRepo
+    private _studentRepo: IStudentRepository,
+  ) {
+    this._repositoryMap.Teacher = this._teacherRepo;
+    this._repositoryMap.Admin = this._adminRepo;
+    this._repositoryMap.Student = this._studentRepo;
   }
 
   async login(payload: AuthPayloadType, req: Request, res: Response): Promise<serviceReturnType> {
-
     const { email, password, userType } = payload;
 
     if (!email || !password || !userType) {
@@ -106,7 +108,7 @@ export class UserAuthServiceV2 implements IAuthService{
     let user: any = null;
 
     // Teacher login
-    if (userType === "Teacher") {
+    if (userType === 'Teacher') {
       user = await repo.findOne({ email, phone: password });
     }
     // Admin or School login
@@ -117,7 +119,7 @@ export class UserAuthServiceV2 implements IAuthService{
         return ApiResponse.failure(AuthMessage.not_Found);
       }
 
-      const isValid = await bcrypt.compare(password,user.password);
+      const isValid = await bcrypt.compare(password, user.password);
 
       if (!isValid) {
         return ApiResponse.badRequest(AuthMessage.InvalidCredentials);
@@ -131,20 +133,19 @@ export class UserAuthServiceV2 implements IAuthService{
     // determine tenantId
     let tenantId: string | null = null;
 
-    if (userType === "School") {
+    if (userType === 'School') {
       tenantId = user._id;
     }
-    
+
     tenantId = user.tenantId;
-    
+
     const tokenPayload: IJwtPayload = {
       userId: user._id,
       role: userType,
-      tenantId: tenantId
+      tenantId: tenantId,
     };
-    
+
     handleJwtTokensGenerator(tokenPayload, req, res);
-    
 
     return ApiResponse.success(user, AuthMessage.UserLoggedIn);
   }

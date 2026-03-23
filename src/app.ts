@@ -18,7 +18,7 @@ import {
   notificationRouter,
   stripeRouter,
   feesRouter,
-  studentRouter
+  studentRouter,
 } from './Routes/index';
 import logger from './Utils/logger';
 

@@ -19,5 +19,5 @@ export interface ITeacherService {
 
   assignClassToTeacher(req: Request): Promise<serviceReturnType>;
 
-  verifyTeacherWithEmail(teacherEmail:string):Promise<serviceReturnType>
+  verifyTeacherWithEmail(teacherEmail: string): Promise<serviceReturnType>;
 }

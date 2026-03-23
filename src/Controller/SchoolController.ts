@@ -13,7 +13,6 @@ export class SchoolController {
     private _schoolService: ISchoolService,
   ) {}
 
-
   public async createSchool(req: Request, res: Response, next: NextFunction) {
     try {
       const { status, resBody } = await this._schoolService.createSchool(req, res);
@@ -45,7 +44,6 @@ export class SchoolController {
       next(err);
     }
   }
-
 
   public async getSchool(req: Request, res: Response, next: NextFunction) {
     try {

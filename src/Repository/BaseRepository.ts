@@ -17,7 +17,7 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
         return null;
       }
 
-      return await this.model.findOne(filter).select("+password").lean<T>();
+      return await this.model.findOne(filter).select('+password').lean<T>();
     } catch (error) {
       logger.error('Error in findOne:', error);
       return null;

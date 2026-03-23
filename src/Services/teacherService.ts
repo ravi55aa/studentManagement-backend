@@ -129,8 +129,7 @@ export class TeacherService implements ITeacherService {
       const professional = await this._teacherRepo.findProfessionalById(teacherId);
 
       if (!bio || !professional) {
-        
-        logger.info('bio',bio,"\n professional",professional);
+        logger.info('bio', bio, '\n professional', professional);
 
         return ApiResponse.notFound(TeacherMessage.TeacherNotFound);
       }
@@ -252,8 +251,8 @@ export class TeacherService implements ITeacherService {
   public async getUnassignedTeachers(
     query: FilterQuery<Partial<ITeacher>>,
   ): Promise<serviceReturnType> {
-    if(query.center=='School'){
-      query.center=null;
+    if (query.center == 'School') {
+      query.center = null;
     }
 
     const teachers = await this._teacherRepo.getUnassignedTeachers(query);
@@ -360,18 +359,18 @@ export class TeacherService implements ITeacherService {
     return updated;
   }
 
-  public async verifyTeacherWithEmail(mail:string):Promise<serviceReturnType>{
-    if(!mail||mail.length<=0){
+  public async verifyTeacherWithEmail(mail: string): Promise<serviceReturnType> {
+    if (!mail || mail.length <= 0) {
       return ApiResponse.failure(TeacherMessage.InvalidTeacherEmail);
     }
 
-    const query:FilterQuery<{email:string}>={email:mail};
-    const teacher=await this._teacherRepo.findOne(query);
+    const query: FilterQuery<{ email: string }> = { email: mail };
+    const teacher = await this._teacherRepo.findOne(query);
 
-    if(!teacher){
+    if (!teacher) {
       return ApiResponse.notFound(TeacherMessage.TeacherNotFound);
     }
 
-    return ApiResponse.success({id:teacher._id},TeacherMessage.TeacherVerify);
+    return ApiResponse.success({ id: teacher._id }, TeacherMessage.TeacherVerify);
   }
 }

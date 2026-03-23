@@ -4,6 +4,8 @@ import { IDocument, IUploadedDoc } from '../../Models/documentModel';
 import { BaseRepository } from '../../Repository/BaseRepository';
 
 export interface IDocumentRepository extends BaseRepository<IDocument> {
+  getDocumentsOf(userId: string): Promise<IDocument | null>;
+
   uploadDocuments(data: Partial<IDocument>): Promise<IDocument | null>;
 
   updateDocuments(

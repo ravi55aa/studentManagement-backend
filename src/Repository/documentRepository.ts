@@ -13,6 +13,15 @@ export class DocumentRepository extends BaseRepository<IDocument> implements IDo
     super(documentModel);
   }
 
+  async getDocumentsOf(userId: string): Promise<IDocument | null> {
+    try {
+      return await this.model.findOne({ userId: userId }).lean<IDocument>();
+    } catch (error) {
+      logger.error('Error uploading document:', error);
+      return null;
+    }
+  }
+
   //  Upload Document
   async uploadDocuments(data: Partial<IDocument>): Promise<IDocument | null> {
     try {

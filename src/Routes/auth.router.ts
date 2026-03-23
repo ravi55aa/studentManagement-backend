@@ -10,10 +10,7 @@ router.post('/admin/login', validateData(signInSchema), (req, res, next) =>
   userAuthController.login(req, res, next),
 );
 
-router.post('/login', 
-  (req, res, next) =>userAuthController.login(req, res, next),
-);
-
+router.post('/login', (req, res, next) => userAuthController.login(req, res, next));
 
 router.post(
   '/admin/register',

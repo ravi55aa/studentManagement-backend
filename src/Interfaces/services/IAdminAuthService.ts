@@ -11,6 +11,6 @@ export interface IUserAuthService {
   signIn(req: Request, res: Response): Promise<serviceReturnType>;
 }
 
-export interface IAuthService{
-  login(payload:AuthPayloadType,req:Request,res:Response):Promise<serviceReturnType>
+export interface IAuthService {
+  login(payload: AuthPayloadType, req: Request, res: Response): Promise<serviceReturnType>;
 }

@@ -16,4 +16,8 @@ router.put('/edit/:id', authMiddleware, (req, res, next) =>
   addressController.updateAddress(req, res, next),
 );
 
+router.patch('/edit/:id', authMiddleware, (req, res, next) =>
+  addressController.updateAddress(req, res, next),
+);
+
 export default router;
