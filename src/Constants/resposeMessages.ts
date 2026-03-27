@@ -21,6 +21,7 @@ export enum AuthMessage {
   InvalidAccessToken = 'Invalid token',
   NoAccess = 'You have no access',
   InvalidCurrentPassword = 'Current password is invalid',
+  passwordNotUpdated = 'Password not updated',
   InvalidUser = 'Invalid user type',
 
   // Success messages
@@ -164,6 +165,7 @@ export enum AddressMessage {
   AddressNotFound = 'Address not found',
   AddressCreateFailed = 'Failed to create address',
   AddressIdNotFound = 'ID not found',
+  AddressNotUpdated = 'Address not updated',
 
   // Success
   AddressCreated = 'Address created successfully',
@@ -259,6 +261,26 @@ export enum TrainerRequestMessage {
   RequestApproved = 'Request has been approved',
   RequestRejected = 'Request has been rejected',
 }
+
+/**
+ *  STRIPE MESSAGES 
+ */
+export enum StripeMessage {
+  // Error
+  PaymentIntentCreationFailed = 'Failed to create payment intent',
+  PaymentFailed = 'Payment failed',
+  WebhookSignatureInvalid = 'Invalid webhook signature',
+  WebhookProcessingFailed = 'Failed to process webhook',
+  PaymentNotFound = 'Payment not found',
+  MetadataMissing = 'Required metadata missing',
+
+  // Success
+  PaymentIntentCreated = 'Payment intent created successfully',
+  PaymentSuccess = 'Payment completed successfully',
+  PaymentStatusUpdated = 'Payment status updated successfully',
+  WebhookReceived = 'Webhook received successfully',
+}
+
 
 /**
  * Chat response messages
@@ -365,6 +387,7 @@ export enum StudentMessage {
 
   StudentExists = 'Student already exists',
   StudentNotFound = 'Student not found',
+  StudentNotUpdated = 'Student not updated',
   StudentIdNotFound = 'Student ID not provided',
 
   InvalidStudentId = 'Invalid student ID',
@@ -396,6 +419,16 @@ export enum StudentMessage {
   StudentRemovedFromBatch = 'Student removed from batch successfully',
 
   StudentStatusUpdated = 'Student status updated successfully',
+
+    // ======================
+    // Success Messages
+    // ======================
+
+  StudentFeeCreated = 'Student fee created successfully',
+  StudentFeeFetched = 'Student fee Fetched successfully',
+  StudentFeeNotFound = 'Student fee fot found',
+  StudentFeeUpdated = 'Student fee updated successfully',
+  StudentFeeDeleted = 'Student fee deleted successfully',
 }
 
 export enum TeacherMessage {

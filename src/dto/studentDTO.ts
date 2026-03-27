@@ -1,4 +1,4 @@
-import {  Types } from 'mongoose';
+import { Types } from 'mongoose';
 import { IStudent } from '@Models/Student/studentModel';
 import { Request, Response } from 'express';
 import { IAttendance } from '@Models/Student/attendanceModel';
@@ -7,9 +7,8 @@ import { CommonMessage } from '@Constants/resposeMessages';
 
 import { SchoolAcademicYearDto } from './schoolDTO';
 
-
-
 export class StudentDTO {
+
   static createStudent(req: Request): Partial<IStudent> {
     const data: Partial<IStudent> = req.body;
 
@@ -35,43 +34,43 @@ export class StudentDTO {
   static updateStudent(req: Request): Partial<IStudent> {
     const data: Partial<IStudent> = req.body;
 
-    const profile = this.handleProfile(req);
+    const profile = this.handleProfileV2(req);
 
     const returnUpdated: Partial<IStudent> = {
-      ...(data.name && {
+      ...(data?.name && {
         name: data.name,
       }),
 
-      ...(data.email && {
+      ...(data?.email && {
         email: data.email,
       }),
 
-      ...(data.phone && {
+      ...(data?.phone && {
         phone: data.phone,
       }),
 
-      ...(data.gender && {
+      ...(data?.gender && {
         gender: data.gender,
       }),
 
-      ...(data.parentName && {
+      ...(data?.parentName && {
         parentName: data.parentName,
       }),
 
-      ...(data.parentPhone && {
+      ...(data?.parentPhone && {
         parentPhone: data.parentPhone,
       }),
 
-      ...(data.status && {
+      ...(data?.status && {
         status: data.status,
       }),
 
-      ...(data.dateOfBirth && {
+      ...(data?.dateOfBirth && {
         dateOfBirth: data.dateOfBirth!,
       }),
 
       ...(profile && {
-        profile: profile,
+        profile: req.file?.path,
       }),
     };
 
@@ -87,33 +86,40 @@ export class StudentDTO {
 
     return profile;
   }
+
+  static handleProfileV2(req: Request) {
+    const profile = req.file?.path;
+
+    return profile;
+  }
 }
 
 // Attendance Dto
 
 export class AttendanceDto {
+
   static markAttendance(req: Request, res: Response): Partial<IAttendance> {
-    const {batchId}=req.params;
-    
+    const { batchId } = req.params;
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     const decoded = SchoolAcademicYearDto.getTenantId(req, res);
 
     return {
-      batchId:new Types.ObjectId(batchId),
-      date:today,
-      students:req.body,
+      batchId: new Types.ObjectId(batchId),
+      date: today,
+      students: req.body,
       teacherId: decoded.adminId,
     };
   }
 
   static applyLeave(req: Request): Partial<IStudentLeave> {
-    const {  reason, body } = req.body;
-    const {studentId}=req.params;
-    const {batchId}=req.query;
+    const { reason, body } = req.body;
+    const { studentId } = req.params;
+    const { batchId } = req.query;
 
-    const attachment = req.file?.path || ""; 
+    const attachment = req.file?.path || '';
 
     if (!batchId || !studentId || !reason || !body) {
       throw new Error(CommonMessage.IdNotFound);
@@ -132,4 +138,5 @@ export class AttendanceDto {
       ],
     };
   }
+
 }

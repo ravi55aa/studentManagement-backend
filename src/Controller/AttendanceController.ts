@@ -106,23 +106,23 @@ export class StudentAttendanceController {
     //----Apply leave----
     async applyLeave(req: Request, res: Response, next: NextFunction) {
         try {
-            const { status, resBody }: serviceReturnType =
-                await this._attendanceService.setApplyLeave(req);
+        const { status, resBody }: serviceReturnType =
+            await this._attendanceService.setApplyLeave(req);
 
-            res.status(status).json(resBody);
+        res.status(status).json(resBody);
         } catch (err) {
-            next(err);
+        next(err);
         }
     }
 
     async getLeaveList(req: Request, res: Response, next: NextFunction) {
         try {
-            const { status, resBody }: serviceReturnType =
-                await this._attendanceService.getStudentLeaveHistory (req);
+        const { status, resBody }: serviceReturnType =
+            await this._attendanceService.getStudentLeaveHistory(req);
 
-            res.status(status).json(resBody);
+        res.status(status).json(resBody);
         } catch (err) {
-            next(err);
+        next(err);
         }
     }
 }

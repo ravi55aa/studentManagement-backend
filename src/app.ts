@@ -1,9 +1,10 @@
 /// <reference  path='./types/express/index.d.ts'/>
 
-import express from 'express';
+import express,{Request,Response} from 'express';
 const app = express();
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import { stripeController } from '@DI/resolve';
 
 import handleErrorsMiddleware from './Middlewares/error.middleware';
 import { sessionConfig, connectDB } from './Config/index';
@@ -31,8 +32,9 @@ app.use(
 );
 app.use(cookieParser());
 app.use(sessionConfig());
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.post('/stripe/webhook',express.raw({type:'application/json'}),(req:Request,res:Response)=>stripeController.callWebHook(req,res));
+app.use(express.json());
 
 connectDB();
 

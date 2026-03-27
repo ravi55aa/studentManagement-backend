@@ -2,6 +2,7 @@ import { container } from 'tsyringe';
 import { StudentsController } from 'Controller/StudentController';
 import { StudentHomeworkController } from 'Controller/HomeworkStudentController';
 import { StudentAttendanceController } from 'Controller/AttendanceController';
+import { StripeController } from 'Controller/StripeController';
 
 import {
   SchoolAcademicController,
@@ -50,3 +51,4 @@ export const homeworkController = container.resolve(HomeworkController);
 export const studentController = container.resolve(StudentsController);
 export const studentHomeworkController = container.resolve(StudentHomeworkController);
 export const studentAttendanceController = container.resolve(StudentAttendanceController);
+export const stripeController = container.resolve(StripeController);

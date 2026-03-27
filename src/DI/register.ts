@@ -6,6 +6,8 @@ import { StudentHomeworkRepository } from '@Repository/Student/homeworkStudentRe
 import { StudentHomeworkService } from '@Services/Student/studentHomeworkService';
 import { StudentAttendanceService } from '@Services/Student/attendanceService';
 import { StudentAttendanceRepository } from '@Repository/Student/attendanceRepository';
+import { StripeService } from '@Services/stripeService';
+import { StudentFeeRepository } from '@Repository/stripeRepository';
 
 import { AddressService } from '../Services/addressService';
 import { DocumentRepository } from '../Repository/documentRepository';
@@ -43,29 +45,25 @@ import { HomeworkService } from '../Services/Teacher/homeworkService';
 import { TYPES } from './types';
 
 container.registerSingleton(TYPES.AddressRepository, AddressRepository);
-
 container.registerSingleton(TYPES.AddressService, AddressService);
 
-container.registerSingleton(TYPES.DocumentRepository, DocumentRepository);
+container.registerSingleton(TYPES.StripeRepository,StudentFeeRepository );
+container.registerSingleton(TYPES.StripeService, StripeService);
 
+container.registerSingleton(TYPES.DocumentRepository, DocumentRepository);
 container.registerSingleton(TYPES.DocumentService, DocumentService);
 
 container.registerSingleton(TYPES.UserRepository, UserRepository);
-
 container.registerSingleton(TYPES.UserAuthService, UserAuthService);
-
 container.registerSingleton(TYPES.UserAuthService2, UserAuthServiceV2);
 
 container.registerSingleton(TYPES.SchoolRepository, SchoolRepository);
-
 container.registerSingleton(TYPES.SchoolService, SchoolService);
 
 container.registerSingleton(TYPES.CenterRepository, CenterRepository);
-
 container.registerSingleton(TYPES.CenterService, CentersService);
 
 container.registerSingleton(TYPES.BatchRepository, BatchRepository);
-
 container.registerSingleton(TYPES.BatchService, BatchService);
 
 /* ================= Academic Repositories ================= */

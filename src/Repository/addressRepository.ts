@@ -25,11 +25,11 @@ export class AddressRepository extends BaseRepository<IAddress> implements IAddr
       }
 
       return await this.model
-        .findOneAndUpdate(
+        .updateOne(
           query,
           { $set: data },
           {
-            new: true,
+            upsert:true,
             runValidators: true,
           },
         )

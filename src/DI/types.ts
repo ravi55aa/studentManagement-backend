@@ -1,6 +1,10 @@
 export const TYPES = {
+  
   AddressRepository: Symbol.for('AddressRepository'),
   AddressService: Symbol.for('AddressService'),
+
+  StripeRepository: Symbol.for('StripeRepository'),
+  StripeService: Symbol.for('StripeService'),
 
   DocumentRepository: Symbol.for('DocumentRepository'),
   DocumentService: Symbol.for('DocumentService'),

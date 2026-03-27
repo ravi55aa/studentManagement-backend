@@ -3,7 +3,7 @@ import { FilterQuery } from 'mongoose';
 
 import { ISchool } from '../Models/schoolModel';
 import { handleTokenVerification } from '../Utils/jwt';
-import { IAcademicCourse, IAcademicCourseMeta, IUpload_document } from '../Models/courses.model';
+import { IAcademicCourse, IAcademicCourseMeta } from '../Models/courses.model';
 import { academicYearModel, IAcademicSubject, IAcademicYear } from '../Models/academicYear';
 import { IDocument, IUploadedDoc } from '../Models/documentModel';
 
@@ -302,12 +302,12 @@ export class SchoolCoursesDto {
       tenantId: decoded.tenantId,
     };
 
-    let arrayOfAttachMents: IUpload_document[] = [];
+    let arrayOfAttachMents: IUploadedDoc[] = [];
     if (Array.isArray(req.files)) {
       arrayOfAttachMents = req?.files?.map((ele) => {
         return {
           fileName: ele.originalname || 'SomeOne',
-          fileUrl: ele.path,
+          url: ele.path,
         };
       });
     }
@@ -383,12 +383,12 @@ export class SchoolCoursesDto {
       tenantId: decoded.tenantId,
     };
 
-    let arrayOfAttachMents: IUpload_document[] = [];
+    let arrayOfAttachMents: IUploadedDoc[] = [];
 
     if (Array.isArray(req.files)) {
       arrayOfAttachMents = req.files.map((ele) => ({
         fileName: ele.originalname || 'SomeOne',
-        fileUrl: ele.path,
+        url: ele.path,
       }));
     }
 

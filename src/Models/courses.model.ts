@@ -1,5 +1,7 @@
 import mongoose, { Types, Schema, Document, ObjectId } from 'mongoose';
 
+import { IUploadedDoc } from './documentModel';
+
 export interface IAcademicCourse extends Document {
   name: string | null;
   tenantId: ObjectId | null;
@@ -120,10 +122,6 @@ export default coursesModel;
 
 /******************** COURSES_META {BOOKS,References,teachers,etc...} *********************/
 
-export interface IUpload_document {
-  fileName: string;
-  fileUrl: string;
-}
 
 enum SubjectType {
   ACADEMIC = 'ACADEMIC',
@@ -140,7 +138,7 @@ export interface IAcademicCourseMeta extends Document {
   subjects: ICourseSubjects[] | null;
   coordinators: ObjectId[] | null;
   eligibilityCriteria: string | null;
-  attachments: IUpload_document[];
+  attachments: IUploadedDoc[];
   classes: string[] | null;
   syllabusUrl?: string | null;
   maxStudents: string | null;

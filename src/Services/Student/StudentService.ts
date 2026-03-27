@@ -108,28 +108,26 @@ export class StudentService implements IStudentService {
       return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
+  
+  async updateStudent(req: Request): Promise<serviceReturnType> {
+      try {
 
-  // Update Student
-  // async updateStudent(req: Request, res: Response): Promise<serviceReturnType> {
-  //     try {
+      const dto = StudentDTO.updateStudent(req);
+      const {studentId}=req.params;
 
-  //     const dto = StudentDTO.updateStudent(req, res);
+      const updated = await this._studentRepository.updateStudent(studentId!, dto);
 
-  //     const query = { _id: dto.studentId };
+      if (!updated) {
+          return ApiResponse.notFound(StudentMessage.StudentNotUpdated);
+      }
 
-  //     const updated = await this._studentRepository.updateStudent(query, dto);
+      return ApiResponse.success(updated, StudentMessage.StudentUpdated);
 
-  //     if (!updated) {
-  //         return ApiResponse.notFound(StudentMessage.StudentNotFound);
-  //     }
-
-  //     return ApiResponse.success(updated, StudentMessage.StudentUpdated);
-
-  //     } catch (error) {
-  //     logger.error(StudentMessage.StudentUpdateFailed, error);
-  //     return ApiResponse.internalServerError(ServerMessage.ServerError);
-  //     }
-  // }
+      } catch (error) {
+      logger.error(StudentMessage.StudentUpdateFailed, error);
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
+      }
+  }
 
   // Delete Student (Soft Delete)
   async deleteStudent(id: string): Promise<serviceReturnType> {

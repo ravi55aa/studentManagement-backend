@@ -17,12 +17,18 @@ export interface IStudentAttendanceRepository {
   ): Promise<IAttendance | null>;
 
   deleteAttendance(id: string): Promise<boolean>;
-  
-  getAttendanceOfAStudent(studentId: string|unknown,year: number|unknown,month: number|unknown,): Promise<Record<number, string>>;
 
+  getAttendanceOfAStudent(
+    studentId: string | unknown,
+    year: number | unknown,
+    month: number | unknown,
+  ): Promise<Record<number, string>>;
 
   //APPLY-LEAVE
-  applyLeave(filter: FilterQuery<Partial<IStudentLeave>>, update: FilterQuery<Partial<IStudentLeave>>):Promise<void> 
+  applyLeave(
+    filter: FilterQuery<Partial<IStudentLeave>>,
+    update: FilterQuery<Partial<IStudentLeave>>,
+  ): Promise<void>;
 
-  getLeaves(filter: FilterQuery<Partial<IStudentLeave>>):Promise<IStudentLeave|null>
+  getLeaves(filter: FilterQuery<Partial<IStudentLeave>>): Promise<IStudentLeave | null>;
 }

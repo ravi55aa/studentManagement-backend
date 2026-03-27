@@ -1,12 +1,12 @@
 import { FilterQuery, Schema } from 'mongoose';
 import { injectable } from 'tsyringe';
+import studentModel from '@Models/Student/studentModel';
 
 import { IForgotPasswordRepository } from '../Interfaces/repository/IForgotPassword.repository';
 import { adminModel } from '../Models';
 import { IOtp, OtpModel } from '../Models/otpModel';
 import schoolModel, { ISchool } from '../Models/schoolModel';
 import { IUser } from '../Models/userModel';
-import { getUserModel } from '../Utils/userModelResolver';
 import { UserRole } from '../types/auth.types';
 import logger from '../Utils/logger';
 
@@ -64,18 +64,30 @@ export class ForgotPasswordRepository implements IForgotPasswordRepository {
 
   async updatePassword<T>(role: UserRole, id: string, data: Partial<T>): Promise<T | null> {
     try {
-      const Model = getUserModel(role);
+      if(role=='School'){
+          return await schoolModel.findByIdAndUpdate(
+          id ,
+          data ,
+          { new: true, runValidators: true },
+        ).lean<T>();
+      }
 
-      return await Model.findOneAndUpdate(
-        { _id: id },
-        { $set: data },
-        { new: true, runValidators: true },
-      ).lean<T>();
+      if(role=='Student'){
+          return await studentModel.findByIdAndUpdate(
+          id ,
+          data ,
+          { new: true, runValidators: true },
+        ).lean<T>();
+      }
+
+      return null;
+
     } catch (error) {
       logger.error('Error updating password:', error);
       return null;
     }
   }
+
 
   async findAndUpdateAdmin(id: string, newPassword: string): Promise<IUser | null> {
     try {

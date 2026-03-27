@@ -95,7 +95,7 @@ export class AddressService implements IAddressService {
       const updated = await this._addressRepository.updateAddress(query, dto);
 
       if (!updated) {
-        return ApiResponse.notFound(AddressMessage.AddressNotFound);
+        return ApiResponse.notFound(AddressMessage.AddressNotUpdated);
       }
 
       return ApiResponse.success(updated, AddressMessage.AddressUpdated);

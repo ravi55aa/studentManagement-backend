@@ -4,7 +4,7 @@ import { Gender_types, Student_Status } from '../../types/enum';
 
 export interface IStudent extends Document {
   admissionNumber: string | null;
-  profile: string | null;
+  profile: string | null|undefined;
   email: string | null;
   password: string | null;
   name: string | null;

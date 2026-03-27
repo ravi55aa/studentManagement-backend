@@ -422,12 +422,12 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
   /* ============LIST ALL COURSES============== */
   async listAllAcademicCourses(req: Request, res: Response): Promise<serviceReturnType> {
     try {
-      const { tenantId, adminId } = SchoolAcademicYearDto.getTenantId(req, res);
+      const { tenantId } = SchoolAcademicYearDto.getTenantId(req, res);
 
-      const query = { tenantId, adminId };
+      const query = { tenantId };
 
       /* ==========================================
-       Fetch Courses
+        Fetch Courses
     ========================================== */
       const courses = await this._courseRepo.getAllCourses(query);
 
@@ -436,7 +436,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
       }
 
       /* ==========================================
-       Fetch Meta
+        Fetch Meta
     ========================================== */
       const meta = await this._courseRepo.getAllCourseMeta(query);
 
@@ -461,9 +461,9 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
         return ApiResponse.badRequest(AcademicCourseMessage.InvalidCourseId);
       }
 
-      const { tenantId, adminId } = SchoolAcademicYearDto.getTenantId(req, res);
+      const { tenantId } = SchoolAcademicYearDto.getTenantId(req, res);
 
-      const query = { _id: id, tenantId, adminId };
+      const query = { _id: id, tenantId };
 
       /* ===============Fetch Course==================== */
       const course = await this._courseRepo.findOneCourse(query);

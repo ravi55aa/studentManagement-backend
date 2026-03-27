@@ -23,10 +23,10 @@ export interface IStudentAttendanceService {
   viewAttendance(req: Request): Promise<serviceReturnType>;
 
   //view attendance of a student
-  getAttendanceOfAStudent(req: Request): Promise<serviceReturnType>
+  getAttendanceOfAStudent(req: Request): Promise<serviceReturnType>;
 
   //----Apply leave----
-  setApplyLeave(req: Request): Promise<serviceReturnType>
-  
-  getStudentLeaveHistory(req: Request): Promise<serviceReturnType>
+  setApplyLeave(req: Request): Promise<serviceReturnType>;
+
+  getStudentLeaveHistory(req: Request): Promise<serviceReturnType>;
 }

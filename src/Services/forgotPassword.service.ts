@@ -2,6 +2,7 @@ import { Request } from 'express';
 import { injectable, inject } from 'tsyringe';
 import bcrypt from 'bcrypt';
 import { Server } from 'socket.io';
+import { IStudent } from '@Models/Student/studentModel';
 
 import { TYPES } from '../DI/types';
 import { IForgotPasswordService } from '../Interfaces/services/IForgotPasswordService.';
@@ -98,9 +99,19 @@ export class ForgotPasswordService implements IForgotPasswordService {
       const data: Partial<ISchool> = { password: hashedPassword };
       updated = await this._repository.updatePassword<ISchool>(role, id, data);
     }
+    
+    if(role=='Student'){
+      const data: Partial<IStudent> = { password: hashedPassword };
+      updated = await this._repository.updatePassword<IStudent>(role, id, data);
+    }
+
+    // if(role=='Teacher'){
+    //   const data: Partial<ITeacherBio> = { password: hashedPassword };
+    //   updated = await this._repository.updatePassword<ITeacherBio>(role, id, data);
+    // }
 
     if (!updated) {
-      return ApiResponse.failure(AuthMessage.InvalidCredentials);
+      return ApiResponse.failure(AuthMessage.passwordNotUpdated);
     }
 
     return ApiResponse.success(null, AuthMessage.PasswordReset);
