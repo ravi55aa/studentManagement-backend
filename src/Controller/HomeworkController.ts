@@ -73,8 +73,9 @@ export class HomeworkController {
 
   async deleteHomework(req: Request, res: Response, next: NextFunction) {
     try {
+      const {id}=req.params; //homework_id
       const { status, resBody }: serviceReturnType =
-        await this._homeworkService.deleteHomework(req);
+        await this._homeworkService.deleteHomework(id!);
 
       res.status(status).json(resBody);
     } catch (err: unknown) {

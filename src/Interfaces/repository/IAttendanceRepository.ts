@@ -24,6 +24,10 @@ export interface IStudentAttendanceRepository {
     month: number | unknown,
   ): Promise<Record<number, string>>;
 
+  getAttendanceOfBatchByBatchId( batchId: string,
+      start: Date|string,
+      end: Date): Promise<IAttendance | null> 
+
   //APPLY-LEAVE
   applyLeave(
     filter: FilterQuery<Partial<IStudentLeave>>,

@@ -227,7 +227,6 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
     try {
       const { tenantId } = SchoolAcademicYearDto.getTenantId(req, res);
       const query = req.query;
-      logger.info('@school.y.s tenantId', tenantId);
 
       const subjects = await this._repo.getAllSubjects({
         tenantId,

@@ -101,8 +101,14 @@ export class AttendanceDto {
   static markAttendance(req: Request, res: Response): Partial<IAttendance> {
     const { batchId } = req.params;
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const now = new Date();
+    const today = new Date(
+      Date.UTC(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+      )
+    );
 
     const decoded = SchoolAcademicYearDto.getTenantId(req, res);
 

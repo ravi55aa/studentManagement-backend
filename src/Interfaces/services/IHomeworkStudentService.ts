@@ -6,7 +6,8 @@ import { IHomeworkSubmission } from '@Models/Student/homeworkSubmitModel';
 export interface IStudentHomeworkService {
   submitHomework(req: Request, res: Response): Promise<serviceReturnType>;
 
-  updateSubmission(req: Request, res: Response): Promise<serviceReturnType>;
+  updateSubmission(req: Request): Promise<serviceReturnType>;
+  updateAllSubmission(req: Request): Promise<serviceReturnType>;
 
   deleteSubmission(req: Request): Promise<serviceReturnType>;
 

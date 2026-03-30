@@ -8,7 +8,7 @@ export interface IHomeworkService {
 
   updateHomework(req: Request, res: Response): Promise<serviceReturnType>;
 
-  deleteHomework(req: Request): Promise<serviceReturnType>;
+  deleteHomework(id: string): Promise<serviceReturnType>;
 
   getHomework(id: string): Promise<serviceReturnType>;
 

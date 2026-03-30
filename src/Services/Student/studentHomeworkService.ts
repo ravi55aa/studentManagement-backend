@@ -61,21 +61,6 @@ export class StudentHomeworkService implements IStudentHomeworkService {
     return ApiResponse.success(docs, HomeworkMessage.HomeworkListed);
   }
 
-  // Update Submission (Resubmit)
-  async updateSubmission(req: Request, res: Response): Promise<serviceReturnType> {
-    const { id } = req.params;
-
-    const dto: Partial<IHomeworkSubmission> = HomeworkSubmissionDto.submitHomework(req, res);
-
-    const updatedDoc = await this._homeworkRepo.updateSubmission(id!, dto);
-
-    if (!updatedDoc) {
-      return ApiResponse.failure(HomeworkMessage.HomeworkNotFound);
-    }
-
-    return ApiResponse.success(updatedDoc, HomeworkMessage.HomeworkUpdated);
-  }
-
   // Delete Submission
   async deleteSubmission(req: Request): Promise<serviceReturnType> {
     const { id } = req.params;
@@ -100,5 +85,32 @@ export class StudentHomeworkService implements IStudentHomeworkService {
     }
 
     return ApiResponse.success(doc, HomeworkMessage.HomeworkFetched);
+  }
+
+    // Update Submission (Resubmit)
+  async updateSubmission(req: Request): Promise<serviceReturnType> {
+    const { id } = req.params;
+
+    const dto: Partial<IHomeworkSubmission> = HomeworkSubmissionDto.updateHomework(req);
+
+    const updatedDoc = await this._homeworkRepo.updateSubmission(id!, dto);
+
+    if (!updatedDoc) {
+      return ApiResponse.failure(HomeworkMessage.HomeworkNotFound);
+    }
+
+    return ApiResponse.success(updatedDoc, HomeworkMessage.HomeworkUpdated);
+  }
+
+  public async updateAllSubmission(req: Request): Promise<serviceReturnType> {
+      const { homeworkId } = req.params;
+
+      const doc = await this._homeworkRepo.findSubmissionById(homeworkId!);
+
+      if (!doc) {
+        return ApiResponse.failure(HomeworkMessage.HomeworkNotFound);
+      }
+
+      return ApiResponse.success(doc, HomeworkMessage.HomeworkFetched);
   }
 }

@@ -60,6 +60,10 @@ router.get('/homework/getall', authMiddleware, (req, res, next) =>
   homeworkController.getAllHomework(req, res, next),
 );
 
+router.delete('/homework/delete/:id', authMiddleware, (req, res, next) =>
+  homeworkController.deleteHomework(req, res, next)
+);
+
 router
   .route('/:id')
   .get(authMiddleware, (req, res, next) => teacherController.getTeacherById(req, res, next))

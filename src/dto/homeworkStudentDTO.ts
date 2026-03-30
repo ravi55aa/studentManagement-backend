@@ -26,4 +26,22 @@ export class HomeworkSubmissionDto {
       homeworkId: new mongoose.Types.ObjectId(homeworkId),
     };
   }
+
+  static updateHomework(req: Request): Partial<IHomeworkSubmission> {
+    const data:Partial<IHomeworkSubmission> = req.body;
+
+    const attachments = ((req.files as Express.Multer.File[]) || []).map((file) => ({
+      url: file.path,
+      fileName: file.originalname,
+    }));
+
+
+    return {
+      ...data,
+      ...(data.note && {note:data.note}),
+      ...(data.attachments && {attachments:attachments}),
+      ...(data.links && {links:data.links}),
+      ...(data.status && {status:data.status}),
+    };
+  }
 }

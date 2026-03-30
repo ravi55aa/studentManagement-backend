@@ -43,6 +43,14 @@ router.get('/homework/getall', authMiddleware, (req, res, next) =>
   studentHomeworkController.getallHomeworkSubmission(req, res, next),
 );
 
+router.put('/homework/update/:id', authMiddleware, (req, res, next) =>
+  studentHomeworkController.updateSubmissionsByTeacher(req, res, next),
+);
+
+router.delete('/homework/delete/:id', authMiddleware, (req, res, next) =>
+  studentHomeworkController.updateSubmissionsByTeacher(req, res, next),
+);
+
 /******* Attendance *******/
 router.post('/attendance/update/:batchId', authMiddleware, (req, res, next) =>
   studentAttendanceController.markAttendance(req, res, next),
@@ -54,6 +62,10 @@ router.get('/attendance/getall', authMiddleware, (req, res, next) =>
 
 router.get('/attendance/getOne', authMiddleware, (req, res, next) =>
   studentAttendanceController.getAAttendanceList(req, res, next),
+);
+
+router.get('/attendance/batch', authMiddleware, (req, res, next) =>
+  studentAttendanceController.getAAttendanceOfABatch(req, res, next),
 );
 
 // router.get('/attendance/get/:batchId', studentAttendanceController.updateAttendance);

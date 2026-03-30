@@ -61,8 +61,7 @@ export class HomeworkService implements IHomeworkService {
     return ApiResponse.success(updatedDoc, HomeworkMessage.HomeworkUpdated);
   }
 
-  async deleteHomework(req: Request): Promise<serviceReturnType> {
-    const { id } = req.params;
+  async deleteHomework(id: string): Promise<serviceReturnType> {
 
     const deleted = await this._homeworkRepo.deleteHomework(id!);
 

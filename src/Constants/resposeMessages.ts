@@ -562,3 +562,36 @@ export const LeaveMessage = {
   LeaveApproved: 'Leave approved successfully',
   LeaveRejected: 'Leave rejected successfully',
 };
+
+
+//*CHAT MESSAGES
+export enum ChatMessage {
+  //  Error Messages
+  ChatRoomNotFound = "Chat room not found",
+  MessageNotFound = "Message not found",
+  CannotSendMessage = "Unable to send message",
+  CannotFetchMessages = "Unable to fetch messages",
+  InvalidChatType = "Invalid chat type",
+  UserNotInChat = "User is not part of this chat",
+  UnauthorizedToSend = "You are not allowed to send messages in this chat",
+  EmptyMessage = "Message cannot be empty",
+  InvalidChatRoom = "Invalid chat room",
+  ChatAlreadyExists = "Chat already exists",
+  FailedToJoinRoom = "Failed to join chat room",
+
+  //  Success Messages
+  MessageSent = "Message sent successfully",
+  MessagesFetched = "Messages fetched successfully",
+  ChatCreated = "Chat room created successfully",
+  ChatFetched = "Chat room fetched successfully",
+  JoinedRoom = "Joined chat room successfully",
+  LeftRoom = "Left chat room successfully",
+  MessageDeleted = "Message deleted successfully",
+  MessageUpdated = "Message updated successfully",
+
+  // ROLE BASED MESSAGES
+  BroadcastOnlyAdmin = "Only admin or teacher can send broadcast messages",
+  DirectChatCreated = "Direct chat created",
+  BatchChatFetched = "Batch chat fetched",
+  CenterChatFetched = "Center chat fetched"
+}

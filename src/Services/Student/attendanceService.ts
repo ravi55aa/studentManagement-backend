@@ -10,6 +10,7 @@ import { IStudentAttendanceRepository } from '@Interfaces/repository/IAttendance
 import { IStudentAttendanceService } from '@Interfaces/services/IAttendanceService';
 import { IStudentLeave } from '@Models/Student/applyLeaveModel';
 import { AttendanceMessage, CommonMessage, LeaveMessage } from '@Constants/resposeMessages';
+import logger from '@Utils/logger';
 
 @injectable()
 export class StudentAttendanceService implements IStudentAttendanceService {
@@ -79,6 +80,45 @@ export class StudentAttendanceService implements IStudentAttendanceService {
         }
 
         return ApiResponse.success(updatedDoc, AttendanceMessage.AttendanceUpdated);
+    }
+
+    async getAttendanceOfBatch(req: Request): Promise<serviceReturnType> {
+    try {
+            const { batchId, date } = req.query as {
+                batchId: string;
+                date: string;
+            };
+
+            // Validation
+            if (!batchId || !date) {
+                return ApiResponse.failure("StudentId and Date are required");
+            }
+
+            // Create date range
+            const start = new Date(date);
+            const end = new Date(date);
+            end.setDate(end.getDate() + 1);
+
+            // Call repo
+            const attendance = await this._attendanceRepo.getAttendanceOfBatchByBatchId(
+                batchId,
+                start,
+                end
+            );
+
+            if (!attendance || attendance=== null) {
+                return ApiResponse.failure(AttendanceMessage.AttendanceNotFound);
+            }
+
+            return ApiResponse.success(
+                attendance,
+                AttendanceMessage.AttendanceListed
+            );
+
+        } catch (error) {
+            logger.error("Service Error:", error);
+            return ApiResponse.failure("Something went wrong");
+        }
     }
 
     // Delete Attendance

@@ -38,6 +38,23 @@ export class StudentAttendanceRepository
     }
   }
 
+  async getAttendanceOfBatchByBatchId( batchId: string,
+    start: Date|string,
+    end: Date): Promise<IAttendance | null> {
+    try {
+      return await this.model.findOne({
+          batchId: batchId,
+          date: {
+              $gte: start,
+              $lt: end,
+          },
+      });
+    } catch (error) {
+      logger.error('Error while finding attendance by id:', error);
+      return null;
+    }
+  }
+
   // Get Attendance (with populate)
   async getAttendance(query: FilterQuery<Partial<IAttendance>>): Promise<IAttendance[]> {
     try {

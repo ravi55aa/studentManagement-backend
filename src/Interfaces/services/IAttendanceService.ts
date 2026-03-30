@@ -24,6 +24,9 @@ export interface IStudentAttendanceService {
 
   //view attendance of a student
   getAttendanceOfAStudent(req: Request): Promise<serviceReturnType>;
+  
+  //view Batch Attendance by Date
+  getAttendanceOfBatch(req: Request): Promise<serviceReturnType>
 
   //----Apply leave----
   setApplyLeave(req: Request): Promise<serviceReturnType>;

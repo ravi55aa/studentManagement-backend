@@ -72,16 +72,17 @@ export class StudentHomeworkController {
     }
   }
 
-  // async updateSubmission(req: Request, res: Response, next: NextFunction) {
-  //     try {
-  //     const { status, resBody }: serviceReturnType =
-  //         await this._homeworkService.updateSubmission(req);
 
-  //     res.status(status).json(resBody);
-  //     } catch (err: unknown) {
-  //     next(err);
-  //     }
-  // }
+  async updateSubmissionsByTeacher(req: Request, res: Response, next: NextFunction) {
+      try {
+      const { status, resBody }: serviceReturnType =
+          await this._homeworkService.updateSubmission(req);
+
+      res.status(status).json(resBody);
+      } catch (err: unknown) {
+      next(err);
+      }
+  }
 
   async deleteSubmission(req: Request, res: Response, next: NextFunction) {
     try {

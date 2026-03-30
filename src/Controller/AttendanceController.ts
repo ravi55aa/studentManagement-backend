@@ -103,6 +103,17 @@ export class StudentAttendanceController {
         }
     }
 
+    async getAAttendanceOfABatch(req: Request, res: Response, next: NextFunction) {
+        try {
+        const { status, resBody }: serviceReturnType =
+            await this._attendanceService.getAttendanceOfBatch(req);
+
+        res.status(status).json(resBody);
+        } catch (err) {
+        next(err);
+        }
+    }
+
     //----Apply leave----
     async applyLeave(req: Request, res: Response, next: NextFunction) {
         try {
