@@ -9,3 +9,4 @@ export { default as studentRouter } from './student.route';
 export { default as notificationRouter } from './notificatoinRouter';
 export { default as stripeRouter } from './stripe.route';
 export { default as feesRouter } from './fees.routes';
+export { default as chatRouter } from './chat.router';

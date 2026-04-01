@@ -54,4 +54,12 @@ export const TYPES = {
 
   StudentAttendanceRepository: Symbol.for('StudentAttendanceRepository'),
   StudentAttendanceService: Symbol.for('StudentAttendanceService'),
+
+  ChatRoomRepository: Symbol.for('ChatRoomRepository'),
+  ChatMessageRepository: Symbol.for('ChatMessageRepository'),
+  ChatMessageService: Symbol.for('ChatMessageService'),
+  ChatAccessService: Symbol.for('ChatAccessService'),
+  ChatRoomService: Symbol.for('ChatRoomService'),
+
+  SocketService: Symbol.for('SocketService'),
 };

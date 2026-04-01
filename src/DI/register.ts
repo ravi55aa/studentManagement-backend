@@ -8,6 +8,9 @@ import { StudentAttendanceService } from '@Services/Student/attendanceService';
 import { StudentAttendanceRepository } from '@Repository/Student/attendanceRepository';
 import { StripeService } from '@Services/stripeService';
 import { StudentFeeRepository } from '@Repository/stripeRepository';
+import { ChatAccessService, ChatMessageService, ChatRoomService } from '@Services/chatService';
+import { ChatMessageRepository, ChatRoomRepository } from '@Repository/chatRepository';
+import { SocketService } from '@Services/Socket/SocketService';
 
 import { AddressService } from '../Services/addressService';
 import { DocumentRepository } from '../Repository/documentRepository';
@@ -116,6 +119,23 @@ container.registerSingleton(TYPES.StudentService, StudentService);
 container.registerSingleton(TYPES.StudentHomeworkRepository, StudentHomeworkRepository);
 
 container.registerSingleton(TYPES.StudentHomeworkService, StudentHomeworkService);
+
 /* Attendance */
 container.registerSingleton(TYPES.StudentAttendanceService, StudentAttendanceService);
+
 container.registerSingleton(TYPES.StudentAttendanceRepository, StudentAttendanceRepository);
+
+
+/* ================= OTHER ================= */
+/* CHAT */
+//room
+container.registerSingleton(TYPES.ChatRoomService, ChatRoomService);
+container.registerSingleton(TYPES.ChatRoomRepository, ChatRoomRepository);
+//message
+container.registerSingleton(TYPES.ChatMessageService, ChatMessageService);
+container.registerSingleton(TYPES.ChatMessageRepository, ChatMessageRepository);
+//access
+container.registerSingleton(TYPES.ChatAccessService, ChatAccessService);
+
+//socket
+container.registerSingleton(TYPES.SocketService, SocketService);

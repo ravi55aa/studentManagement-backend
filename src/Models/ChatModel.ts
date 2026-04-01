@@ -8,22 +8,20 @@
  */
 
 //ROOM - one for each convocation
-import mongoose, { Schema, model, Types } from "mongoose";
+import mongoose, { Schema, model, Types,Document } from "mongoose";
 
 import { IUploadedDoc } from "./documentModel";
 
 export type ChatRoomType = "direct" | "batch" | "center";
 
-export interface IChatRoom {
-    _id: Types.ObjectId;
-
+export interface IChatRoom extends Document {
     type: ChatRoomType;
 
     name?: string; // batch / center name
 
     participants: Types.ObjectId[]; // users in chat
 
-    //  Optional relations
+    //  Optional relations-Only for batchRoom | centerRoom
     batchId?: Types.ObjectId;
     centerId?: Types.ObjectId;
 
@@ -37,7 +35,7 @@ export interface IChatRoom {
     updatedAt: Date;
 }
 
-const chatRoomSchema = new Schema(
+const chatRoomSchema = new Schema<IChatRoom>(
     {
         type: {
         type: String,
@@ -87,7 +85,7 @@ const chatRoomSchema = new Schema(
     { timestamps: true }
 );
 
-export const chatRoomModel = model("ChatRoom", chatRoomSchema);
+export const chatRoomModel = model<IChatRoom>("ChatRoom", chatRoomSchema);
 
 
 /**
@@ -97,8 +95,7 @@ export const chatRoomModel = model("ChatRoom", chatRoomSchema);
 
 //MESSAGES-independent
 
-export interface IMessage {
-    _id: Types.ObjectId;
+export interface IMessage extends Document {
 
     chatRoomId: Types.ObjectId;
 
@@ -124,16 +121,16 @@ export const uploadedDocSchema = new mongoose.Schema<IUploadedDoc>(
     },
     { _id: false },
 );
-const messageSchema = new Schema(
+const messageSchema = new Schema<IMessage>(
     {
         chatRoomId: {
-        type: Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "ChatRoom",
         required: true,
         },
 
         senderId: {
-        type: Types.ObjectId,
+        type: Schema.Types.ObjectId,
         role: String,
         refPath: "senderId.role",
         required: true,
@@ -166,7 +163,7 @@ const messageSchema = new Schema(
     { timestamps: true }
 );
 
-export const messageModel = model("Message", messageSchema);
+export const messageModel = model<IMessage>("Message", messageSchema);
 
 
 chatRoomSchema.index({ type: 1 });

@@ -1,17 +1,16 @@
 import { Server as HttpServer } from 'http';
 
 import { Server } from 'socket.io';
+import logger from '@Utils/logger';
 
-import logger from '../Utils/logger';
-
-//import env from './env.config';
+import env from './env.config';
 
 let io: Server;
 
 export const initSocket = (server: HttpServer) => {
   io = new Server(server, {
     cors: {
-      origin: 'something', //env.FRONTEND_URL,
+      origin: env.FRONTEND_URL,
       methods: ['GET', 'POST'],
       credentials: true,
     },
@@ -30,6 +29,11 @@ export const initSocket = (server: HttpServer) => {
 
     // Join unique room
     socket.join(`${role}-${userId}`);
+
+    socket.on("joinRoom", (roomId: string) => {
+      socket.join(roomId);
+      logger.info('join chat room',roomId);
+    });
 
     logger.warn(`\n User joined room: ${role}-${userId} \n`);
 

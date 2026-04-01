@@ -25,6 +25,18 @@ export class ApiResponse {
     };
   }
 
+  static forbidden(message = 'Method forbidden') {
+    return {
+      status: StatusCodes.FORBIDDEN,
+      resBody: {
+        success: true,
+        data: null,
+        error: null,
+        message,
+      },
+    };
+  }
+
   static noContent(message = 'No content') {
     return {
       status: StatusCodes.NO_CONTENT,
