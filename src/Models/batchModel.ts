@@ -1,16 +1,16 @@
 //Add pre, if batch already exist, while promoting
 
-import { model, Types, Schema, Document, ObjectId } from 'mongoose';
+import { model, Types, Schema, Document } from 'mongoose';
 
 export interface IBatches extends Document {
-  tenantId: ObjectId | null;
-  adminId: ObjectId | null;
+  tenantId: Types.ObjectId | null;
+  adminId: Types.ObjectId | null;
 
   modelType: 'School' | 'Centers';
   center: Types.ObjectId | null;
 
-  academicYear: ObjectId | null;
-  batchCounselor: ObjectId | null;
+  academicYear: Types.ObjectId | null;
+  batchCounselor: Types.ObjectId | null;
 
   name: string | null;
   code: string | null;

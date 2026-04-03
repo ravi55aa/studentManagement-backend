@@ -5,7 +5,6 @@ import {
     IMessageService,
 } from "@Interfaces/services/IChatService";
 import { SchoolAcademicYearDto } from "@dto/schoolDTO";
-import logger from "@Utils/logger";
 
 import { TYPES } from "../DI/types";
 
@@ -27,10 +26,27 @@ export class ChatController {
     ) {
         try {
         const { user1, user2 } = req.body;
-        logger.info(user1,user2);
 
         const { status, resBody } =
             await this._chatRoomService.createDirectChat(user1, user2);
+
+        res.status(status).json(resBody);
+        } catch (err) {
+        next(err);
+        }
+    }
+
+    //  Create Direct Chat
+    async createBatchChat(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) {
+        try {
+        const { batchId } = req.body;
+
+        const { status, resBody } =
+            await this._chatRoomService.createBatchChat(batchId);
 
         res.status(status).json(resBody);
         } catch (err) {

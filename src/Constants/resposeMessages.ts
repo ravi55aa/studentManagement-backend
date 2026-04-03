@@ -366,6 +366,7 @@ export enum BatchMessage {
   BatchDeleteFailed = 'Failed to delete batch',
 
   BatchAlreadyHasTeacher = 'Batch already has a class teacher',
+  BatchTeacherNotFound = 'Batch class teacher not found',
   TeacherAlreadyAssigned = 'Teacher is already assigned to another batch',
 
   // ======================
@@ -593,5 +594,6 @@ export enum ChatMessage {
   BroadcastOnlyAdmin = "Only admin or teacher can send broadcast messages",
   DirectChatCreated = "Direct chat created",
   BatchChatFetched = "Batch chat fetched",
+  BatchRoomCantCreate = "Batch room cant create, invalid credentials",
   CenterChatFetched = "Center chat fetched"
 }

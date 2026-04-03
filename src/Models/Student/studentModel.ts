@@ -17,7 +17,7 @@ export interface IStudent extends Document {
   parentName: string | null;
   parentPhone: string | null;
   center: Types.ObjectId | null;
-  tenantId: Schema.Types.ObjectId | null;
+  tenantId: Types.ObjectId | null;
   batch: Types.ObjectId | null;
   isDeleted: boolean | null;
 }
@@ -106,8 +106,8 @@ const StudentSchema = new Schema<IStudent>(
     },
 
     batch: {
-      type: Types.ObjectId,
-      ref: 'Batch',
+      type: Schema.Types.ObjectId,
+      ref: 'Batches',
     },
 
     isDeleted: {

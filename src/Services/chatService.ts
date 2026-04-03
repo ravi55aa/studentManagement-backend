@@ -1,11 +1,14 @@
 import { ApiResponse } from "@Constants/apiResponse";
 import { serviceReturnType } from "@Constants/interfaces";
-import { ChatMessage, CommonMessage, ServerMessage } from "@Constants/resposeMessages";
+import { BatchMessage, ChatMessage, CommonMessage, ServerMessage } from "@Constants/resposeMessages";
 import { TYPES } from "@DI/types";
 import { IRealtimeService } from "@Interfaces/Other/IRealTimeSevice";
+import { IBatchRepository } from "@Interfaces/repository/IBatchRepository";
 import { IChatRoomRepository, IMessageRepository } from "@Interfaces/repository/IChatRepository";
+import { IStudentRepository } from "@Interfaces/repository/IStudentRepository";
 import { IChatAccessService, IChatRoomService, IMessageService, iSender } from "@Interfaces/services/IChatService";
 import {  chatRoomModel, IChatRoom } from "@Models/ChatModel"; 
+import { IStudent } from "@Models/Student/studentModel";
 import logger from "@Utils/logger";
 import { Types } from "mongoose";
 import { inject,injectable } from "tsyringe";
@@ -49,7 +52,13 @@ export class ChatAccessService implements IChatAccessService {
 export class ChatRoomService implements IChatRoomService {
     constructor(
         @inject(TYPES.ChatRoomRepository)
-        private _chatRoomRepository: IChatRoomRepository
+        private _chatRoomRepository: IChatRoomRepository,
+        
+        @inject(TYPES.StudentRepository)
+        private _studentRepository: IStudentRepository,
+        
+        @inject(TYPES.BatchRepository)
+        private _batchRepository: IBatchRepository,
     ) {}
 
     //  Create Direct Chat
@@ -58,32 +67,79 @@ export class ChatRoomService implements IChatRoomService {
         user2: string
     ): Promise<serviceReturnType> {
         try {
-        if (!user1 || !user2) {
+            if (!user1 || !user2) {
+                return ApiResponse.badRequest(CommonMessage.IdNotFound);
+            }
+
+            //  Check existing chat
+            const existing = await this._chatRoomRepository.findDirectChat(
+                user1,
+                user2
+            );
+
+            if (existing) {
+                return ApiResponse.success(existing, ChatMessage.ChatAlreadyExists);
+            }
+
+            // Create new chat
+            const newChat = await this._chatRoomRepository.createChatRoom({
+                type: "direct",
+                participants: [new Types.ObjectId(user1), new Types.ObjectId(user2)],
+                createdBy: new Types.ObjectId(user1),
+            });
+
+            return ApiResponse.success(newChat, ChatMessage.ChatCreated);
+        } catch (error) {
+            logger.error("Error creating direct chat:", error);
+            return ApiResponse.internalServerError(ServerMessage.ServerError);
+        }
+    }
+
+    async createBatchChat(batchId: string): Promise<serviceReturnType> {
+        
+        if(!batchId){
             return ApiResponse.badRequest(CommonMessage.IdNotFound);
         }
 
-        //  Check existing chat
-        const existing = await this._chatRoomRepository.findDirectChat(
-            user1,
-            user2
-        );
+        //room exist
+        const existing=await this._chatRoomRepository.findOne({type:'batch',batchId:batchId});
 
-        if (existing) {
+        if(existing){
             return ApiResponse.success(existing, ChatMessage.ChatAlreadyExists);
         }
 
-        // Create new chat
+        //Valid batch
+        const batch=await this._batchRepository.findById(batchId)//taking one only batch teacher;
+
+        if(!batch){
+            return ApiResponse.failure(BatchMessage.BatchNotFound);
+        } else if(!batch.batchCounselor){
+            return ApiResponse.failure(BatchMessage.BatchTeacherNotFound);
+        }
+        
+        //do teachers and students into one group
+        const teachers=[new Types.ObjectId(batch.batchCounselor)];
+        
+        const students=await this._studentRepository.findMany({batch:batchId});
+        logger.info('students',students);
+        
+        const studentsArray=students.map((student:IStudent)=>new Types.ObjectId(student._id));
+
+        if(teachers.length<=0 || studentsArray.length<=0){
+            return ApiResponse.failure(ChatMessage.BatchRoomCantCreate);
+        }
+
+        const participants=[...studentsArray,...teachers];
+
+        // Create new room
         const newChat = await this._chatRoomRepository.createChatRoom({
-            type: "direct",
-            participants: [new Types.ObjectId(user1), new Types.ObjectId(user2)],
-            createdBy: new Types.ObjectId(user1),
+            type: "batch",
+            batchId: new Types.ObjectId(batchId),
+            participants:participants,
+            createdBy: batch?.batchCounselor,
         });
 
-        return ApiResponse.success(newChat, ChatMessage.ChatCreated);
-        } catch (error) {
-        logger.error("Error creating direct chat:", error);
-        return ApiResponse.internalServerError(ServerMessage.ServerError);
-        }
+        return ApiResponse.success(newChat, ChatMessage.ChatFetched);
     }
 
     // Get all chats of a user
@@ -109,7 +165,7 @@ export class ChatRoomService implements IChatRoomService {
     //  Get chat by ID
     async getChatById(chatRoomId: string): Promise<serviceReturnType> {
         try {
-        if (!chatRoomId) {
+        if (!chatRoomId || chatRoomId==='undefined') {
             return ApiResponse.badRequest(CommonMessage.IdNotFound);
         }
 
@@ -204,6 +260,7 @@ export class ChatMessageService implements IMessageService {
         //  Save message
         const newMessage = await this._messageRepository.createMessage({
             chatRoomId: new Types.ObjectId(chatRoomId),
+            role:sender.role=='Student'?'Student':'TeacherBio',
             senderId: new Types.ObjectId(sender.id),
             message,
             readBy: [new Types.ObjectId(sender.id)],
@@ -232,7 +289,7 @@ export class ChatMessageService implements IMessageService {
         user: iSender
     ): Promise<serviceReturnType> {
         try {
-        if (!chatRoomId || !user?.id) {
+        if (!chatRoomId || chatRoomId==='undefined' || !user?.id) {
             return ApiResponse.badRequest(CommonMessage.IdNotFound);
         }
 

@@ -35,7 +35,7 @@ export class StudentService implements IStudentService {
         return ApiResponse.notFound(StudentMessage.StudentIdNotFound);
       }
 
-      const student = await this._studentRepository.findById(id);
+      const student:IStudent|null = await this._studentRepository.findById(id);
 
       if (!student) {
         return ApiResponse.notFound(StudentMessage.StudentNotFound);
@@ -90,7 +90,7 @@ export class StudentService implements IStudentService {
       }
 
       studentData.center = batch?.center;
-      studentData.tenantId = batch?.tenantId;
+      studentData.tenantId = batch.tenantId!;
       studentData.batch = batch?._id;
       studentData.password = await bcrypt.hash(studentData.password!, 10);
       studentData.admissionNumber = await generateAdmissionNo(batchId);

@@ -99,6 +99,7 @@ export interface IMessage extends Document {
 
     chatRoomId: Types.ObjectId;
 
+    role: string;
     senderId: Types.ObjectId;
 
     message: string;
@@ -128,11 +129,13 @@ const messageSchema = new Schema<IMessage>(
         ref: "ChatRoom",
         required: true,
         },
-
+        role: {
+            type:String,
+            default:'Student'
+        },
         senderId: {
         type: Schema.Types.ObjectId,
-        role: String,
-        refPath: "senderId.role",
+        refPath: "role",
         required: true,
         },
 

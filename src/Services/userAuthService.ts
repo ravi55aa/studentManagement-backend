@@ -95,6 +95,8 @@ export class UserAuthServiceV2 implements IAuthService {
   async login(payload: AuthPayloadType, req: Request, res: Response): Promise<serviceReturnType> {
     const { email, password, userType } = payload;
 
+    logger.info('login request made by the  user');
+
     if (!email || !password || !userType) {
       return ApiResponse.badRequest(AuthMessage.InvalidCredentials);
     }

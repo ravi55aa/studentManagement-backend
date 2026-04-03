@@ -20,6 +20,10 @@ export interface IChatRoomService {
         user2: string
     ): Promise<serviceReturnType>;
 
+    createBatchChat(
+        batchId: string,
+    ): Promise<serviceReturnType>;
+
     getUserChats(userId: string): Promise<serviceReturnType>;
 
     getChatById(chatRoomId: string): Promise<serviceReturnType>;

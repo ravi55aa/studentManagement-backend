@@ -165,6 +165,7 @@ export class ChatMessageRepository
         try {
         return await this.model
             .find({ chatRoomId })
+            .populate('senderId','firstName name ')
             .sort({ createdAt: -1 })
             .limit(limit || 50)
             .lean<IMessage[]>();
