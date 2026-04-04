@@ -29,7 +29,7 @@ export interface IStudentAttendanceService {
   getAttendanceOfBatch(req: Request): Promise<serviceReturnType>
 
   //----Apply leave----
-  setApplyLeave(req: Request): Promise<serviceReturnType>;
+  setApplyLeave(req: Request,res:Response): Promise<serviceReturnType>;
 
   getStudentLeaveHistory(req: Request): Promise<serviceReturnType>;
 }

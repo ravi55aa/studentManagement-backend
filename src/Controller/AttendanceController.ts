@@ -118,7 +118,7 @@ export class StudentAttendanceController {
     async applyLeave(req: Request, res: Response, next: NextFunction) {
         try {
         const { status, resBody }: serviceReturnType =
-            await this._attendanceService.setApplyLeave(req);
+            await this._attendanceService.setApplyLeave(req,res);
 
         res.status(status).json(resBody);
         } catch (err) {

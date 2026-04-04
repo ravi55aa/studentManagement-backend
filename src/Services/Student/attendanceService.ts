@@ -11,6 +11,8 @@ import { IStudentAttendanceService } from '@Interfaces/services/IAttendanceServi
 import { IStudentLeave } from '@Models/Student/applyLeaveModel';
 import { AttendanceMessage, CommonMessage, LeaveMessage } from '@Constants/resposeMessages';
 import logger from '@Utils/logger';
+import { leaveDocValidationSchema } from '@Validators/student.validation';
+import { handleValidationOF } from '@Middlewares/validateUser.middleware';
 
 @injectable()
 export class StudentAttendanceService implements IStudentAttendanceService {
@@ -161,14 +163,29 @@ export class StudentAttendanceService implements IStudentAttendanceService {
 
     //-----Apply-leave-----
 
-    async setApplyLeave(req: Request): Promise<serviceReturnType> {
+    async setApplyLeave(req: Request,res:Response): Promise<serviceReturnType> {
+        
         const dto: Partial<IStudentLeave> = AttendanceDto.applyLeave(req);
 
-        const { batchId, studentId, leaveHistory } = dto;
-
-        if (!leaveHistory || leaveHistory.length === 0) {
-        return ApiResponse.failure(LeaveMessage.LeaveCredentialsNotFound);
+        const { studentId, leaveHistory } = dto; //batchId
+        
+        if(!leaveHistory || leaveHistory==undefined){
+            return ApiResponse.badRequest(LeaveMessage.LeaveCredentialsNotFound);
         }
+        const leave = leaveHistory[0];
+        
+        if(!leave?.body || !leave?.reason) {
+            return ApiResponse.badRequest(LeaveMessage.LeaveCredentialsNotFound);
+        }
+
+        const validationData = {
+            reason:leave.reason,
+            body:leave.body,
+            attachment:leave.attachment
+        };
+
+        //validation
+        handleValidationOF(leaveDocValidationSchema,validationData,res);
 
         //const { from, to } = req.query;
 
@@ -178,12 +195,11 @@ export class StudentAttendanceService implements IStudentAttendanceService {
         // });
 
         // Normalize date
-        const leave = leaveHistory[0];
         const date = new Date(leave!.date!);
         date.setHours(0, 0, 0, 0);
 
         const updated = await this._attendanceRepo.applyLeave(
-        { batchId, studentId },
+        { studentId }, //batchId
         {
             $push: {
             leaveHistory: {
@@ -198,16 +214,15 @@ export class StudentAttendanceService implements IStudentAttendanceService {
     }
 
     async getStudentLeaveHistory(req: Request): Promise<serviceReturnType> {
-        const { batchId, studentId } = req.query;
+        const { studentId } = req.query; //batchId->if Necessary
 
-        if (!batchId || !studentId) {
-        return ApiResponse.failure(CommonMessage.IdNotFound);
+        if ( !studentId) {
+            return ApiResponse.failure(CommonMessage.IdNotFound);
         }
 
-        const data = await this._attendanceRepo.getLeaves({
-        batchId,
-        studentId,
-        });
+        const data = await this._attendanceRepo.getLeaves(
+            {studentId}
+        );
 
         if (!data) {
         return ApiResponse.success([], LeaveMessage.LeaveNotFound);

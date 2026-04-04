@@ -78,8 +78,9 @@ export class StudentAttendanceRepository
   ): Promise<Record<number, string>> {
     try {
       // Start & End of month
-      const startDate = new Date(year, month - 1, 1);
-      const endDate = new Date(year, month + 1, 0);
+      const numericMonth = Number(month);
+      const startDate = new Date(year, numericMonth , 1);
+      const endDate = new Date(year, numericMonth + 1, 0);
 
       const attendanceDocs = await this.model.find({
         'students.studentId': studentId,

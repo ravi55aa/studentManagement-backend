@@ -8,7 +8,7 @@ interface ILeaveHistory {
 }
 
 export interface IStudentLeave extends Document {
-  batchId: Types.ObjectId;
+  //batchId: Types.ObjectId;
   studentId: Types.ObjectId;
   leaveHistory: ILeaveHistory[];
 }
@@ -43,12 +43,12 @@ const LeaveHistorySchema = new Schema<ILeaveHistory>(
 
 const StudentLeaveSchema = new Schema<IStudentLeave>(
   {
-    batchId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Batches',
-      required: true,
-      index: true,
-    },
+    // batchId: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'Batches',
+    //   required: true,
+    //   index: true,
+    // },
     studentId: {
       type: Schema.Types.ObjectId,
       ref: 'Students',
@@ -65,6 +65,6 @@ const StudentLeaveSchema = new Schema<IStudentLeave>(
   },
 );
 
-StudentLeaveSchema.index({ batchId: 1, studentId: 1 }, { unique: true });
+StudentLeaveSchema.index({ studentId: 1 }, { unique: true });
 
 export const studentLeaveModel = mongoose.model<IStudentLeave>('StudentLeave', StudentLeaveSchema);

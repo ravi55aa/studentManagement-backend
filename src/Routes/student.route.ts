@@ -75,11 +75,11 @@ router.get('/attendance/batch', authMiddleware, (req, res, next) =>
 // router.get('/attendance/view/:id', studentAttendanceController.viewAttendance);
 
 /******* Attendance-Apply Leave *******/
-router.post('/apply/leave/:studentId', authMiddleware, (req, res, next) =>
+router.post('/applyLeave/:studentId', authMiddleware, (req, res, next) =>
   studentAttendanceController.applyLeave(req, res, next),
 );
 
-router.get('/get/leaveHistory', authMiddleware, (req, res, next) =>
+router.get('/leaveHistory/:studentId', authMiddleware, (req, res, next) =>
   studentAttendanceController.getLeaveList(req, res, next),
 );
 

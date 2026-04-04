@@ -123,16 +123,16 @@ export class AttendanceDto {
   static applyLeave(req: Request): Partial<IStudentLeave> {
     const { reason, body } = req.body;
     const { studentId } = req.params;
-    const { batchId } = req.query;
+    //const { batchId } = req.query;
 
     const attachment = req.file?.path || '';
 
-    if (!batchId || !studentId || !reason || !body) {
+    if ( !studentId || !reason || !body) {
       throw new Error(CommonMessage.IdNotFound);
     }
 
     return {
-      batchId: new Types.ObjectId(batchId as string),
+      //batchId: new Types.ObjectId(batchId as string),
       studentId: new Types.ObjectId(studentId),
       leaveHistory: [
         {
