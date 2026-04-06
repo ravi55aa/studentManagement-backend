@@ -10,6 +10,8 @@ export interface ITeacherService {
   createTeacherBio(req: Request, res: Response): Promise<serviceReturnType>;
 
   updateTeacherBio(teacherId: string, req: Request): Promise<serviceReturnType>;
+  
+  updateTeacher(req: Request, res: Response): Promise<serviceReturnType>;
 
   getAllTeachers(): Promise<serviceReturnType>;
 

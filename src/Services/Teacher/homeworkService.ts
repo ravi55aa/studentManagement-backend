@@ -2,7 +2,7 @@ import { inject, injectable } from 'tsyringe';
 import { Request, Response } from 'express';
 import { ApiResponse } from '@Constants/apiResponse';
 import { serviceReturnType } from '@Constants/interfaces';
-import { HomeworkMessage } from '@Constants/resposeMessages';
+import { CommonMessage, HomeworkMessage } from '@Constants/resposeMessages';
 import { IHomework } from '@Interfaces/model/Teacher/IHomework';
 import { IHomeworkService } from '@Interfaces/services/IHomeworkService';
 import { TYPES } from '@DI/types';
@@ -48,14 +48,18 @@ export class HomeworkService implements IHomeworkService {
   }
 
   async updateHomework(req: Request, res: Response): Promise<serviceReturnType> {
-    const { id } = req.params;
+    const { homeworkId } = req.params;
+
+    if(!homeworkId){
+      return ApiResponse.notFound(CommonMessage.IdNotFound);
+    }
 
     const dto: Partial<IHomework> = HomeWorkDto.createHomework(req, res);
 
-    const updatedDoc = await this._homeworkRepo.updateHomework(id!, dto);
+    const updatedDoc = await this._homeworkRepo.updateHomework(homeworkId!, dto);
 
     if (!updatedDoc) {
-      return ApiResponse.failure(HomeworkMessage.HomeworkNotFound);
+      return ApiResponse.failure(HomeworkMessage.HomeworkNotUpdated);
     }
 
     return ApiResponse.success(updatedDoc, HomeworkMessage.HomeworkUpdated);

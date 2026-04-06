@@ -107,20 +107,56 @@ export class TeacherDTO {
     }
 
     const subjectToFollowArray = [];
+
     for (const code of data.assignedSubjects!) {
       const isSub = await academicSubjectsModel.findOne({ code: code });
       if (!isSub) continue;
 
       subjectToFollowArray.push(isSub);
     }
+
     dto.assignedSubjects = subjectToFollowArray;
     dto.employeeId = getRandomId();
 
     return dto;
   }
 
-  static update(data: Partial<ITeacher>): Partial<ITeacher> {
-    return data;
+  static async update(req:Request,res:Response): Promise<Partial<ITeacher>> {
+
+    const decoded = handleTokenVerification(req, res);
+    const data=req.body;
+
+    const dto = {
+      ...(data.academicYearId && {academicYearId: data.academicYearId!}),
+      ...(data.employeeId &&{employeeId : data.employeeId!}),
+      ...(data.employmentStatus &&{employmentStatus : data.employmentStatus!}),
+      ...(data.assignedSubjects &&{assignedSubjects : data.assignedSubjects ?? []}),
+      ...(data.designation &&{designation : data.designation!}),
+      ...(data.department &&{department : data.department ?? []}),
+      ...(data.dateOfJoining &&{dateOfJoining : data.dateOfJoining!}),
+      ...(data.dateOfLeaving &&{dateOfLeaving : data?.dateOfLeaving ?? null}),
+      ...(data.modelType &&{modelType : data.modelType!}),
+      ...(data.center &&{center : data.modelType == 'School' ? decoded.tenantId : data.center!}),
+    };
+    
+    const yearDoc = await academicYearModel.findOne({ code: data.academicYearId! });
+
+    if ( yearDoc?.id) {
+      dto.academicYearId = yearDoc._id;
+    }
+
+    const subjectToFollowArray = [];
+
+    for (const code of data.assignedSubjects!) {
+      const isSub = await academicSubjectsModel.findOne({ code: code });
+      if (!isSub) continue;
+
+      subjectToFollowArray.push(isSub);
+    }
+
+    dto.assignedSubjects = subjectToFollowArray;
+
+    return dto
   }
 
   static assignClass(req: Request): { teacherId: string; batchId: string } {

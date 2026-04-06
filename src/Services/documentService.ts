@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { inject, injectable } from 'tsyringe';
+import { StatusCodes } from '@Constants/statusCodes';
 
 import { TYPES } from '../DI/types';
 import { serviceReturnType } from '../Constants/interfaces';
@@ -30,7 +31,7 @@ export class DocumentService implements IDocumentService {
         return ApiResponse.success(DocumentMessage.DocumentNotFound);
       }
 
-      return ApiResponse.success(documents, DocumentMessage.DocumentUploaded);
+      return ApiResponse.success(documents, DocumentMessage.DocumentFetched);
     } catch (error) {
       logger.error('Error uploading document:', error);
       return ApiResponse.internalServerError(ServerMessage.ServerError);
@@ -75,10 +76,24 @@ export class DocumentService implements IDocumentService {
     try {
       const { dtoData, dtoQuery } = DocumentsDto.updateDocV2(req, res);
 
+      //find the document first,
+      const isDocument=await this._documentRepository.findOne(dtoQuery);
+
+      if(!isDocument || isDocument===null){
+        const data=DocumentsDto.handleDtoOfDoc(req,res);
+        
+        const newUpload=await this.uploadDocs(data);
+
+        return newUpload.status==StatusCodes.OK 
+        ?  newUpload 
+        :  ApiResponse.failure(DocumentMessage.DocumentUpdateFailed);
+      }
+
       const updated = await this._documentRepository.updateNEWUploadDocuments(dtoQuery, dtoData);
 
+
       if (!updated) {
-        return ApiResponse.notFound(DocumentMessage.DocumentNotFound);
+        return ApiResponse.failure(DocumentMessage.DocumentUpdateFailed);
       }
 
       return ApiResponse.success(updated, DocumentMessage.DocumentUpdated);

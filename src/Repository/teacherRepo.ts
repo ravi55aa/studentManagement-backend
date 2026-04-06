@@ -66,6 +66,19 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
     }
   }
 
+  public async updateProfessionalByTeacherId(teacherId: string, data: Partial<ITeacher>): Promise<ITeacher | null> {
+    try {
+      if (!Types.ObjectId.isValid(teacherId)) return null;
+
+      return await teacherModel
+        .findOneAndUpdate({teacherId:teacherId}, { $set: data }, { new: true })
+        .lean<ITeacher>();
+    } catch (error) {
+      logger.error('Error updating teacher bio:', error);
+      return null;
+    }
+  }
+
   /* ==============SOFT DELETE================= */
   async softDelete(teacherId: string): Promise<boolean> {
     try {

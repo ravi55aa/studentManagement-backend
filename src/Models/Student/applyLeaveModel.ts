@@ -53,7 +53,6 @@ const StudentLeaveSchema = new Schema<IStudentLeave>(
       type: Schema.Types.ObjectId,
       ref: 'Students',
       required: true,
-      index: true,
     },
     leaveHistory: {
       type: [LeaveHistorySchema],
@@ -65,6 +64,5 @@ const StudentLeaveSchema = new Schema<IStudentLeave>(
   },
 );
 
-StudentLeaveSchema.index({ studentId: 1 }, { unique: true });
 
 export const studentLeaveModel = mongoose.model<IStudentLeave>('StudentLeave', StudentLeaveSchema);

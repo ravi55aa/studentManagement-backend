@@ -25,6 +25,8 @@ export interface ITeacherRepo extends BaseRepository<ITeacherBio> {
 
   updateBioById(teacherId: string, data: Partial<ITeacherBio>): Promise<ITeacherBio | null>;
 
+  updateProfessionalByTeacherId(teacherId: string, data: Partial<ITeacher>): Promise<ITeacher | null>;
+
   getUnassignedTeachers(query: FilterQuery<Partial<ITeacher>>): Promise<ITeacherBio[]>;
 
   findOneProfessional(query: FilterQuery<Partial<ITeacher>>): Promise<ITeacher | null>;

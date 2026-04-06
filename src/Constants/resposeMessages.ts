@@ -146,6 +146,7 @@ export enum DocumentMessage {
 
   // Success
   DocumentCreated = 'Document Created successfully',
+  DocumentFetched = 'Document fetched successfully',
   DocumentUploaded = 'Document uploaded successfully',
   DocumentUpdated = 'Document updated successfully',
   DocumentDeleted = 'Document deleted successfully',
@@ -307,6 +308,7 @@ export enum HomeworkMessage {
   HomeworkGraded = 'Homework graded',
   HomeworkUngraded = 'Homework ungraded',
   HomeworkReSubmitted = 'Homework resubmitted',
+  HomeworkNotUpdated = 'Homework not updated',
   HomeworkSubmissionNotFound = 'No Homework submission',
 
   HomeworkCreated = 'Homework created successfully',

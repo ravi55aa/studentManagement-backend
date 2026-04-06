@@ -431,7 +431,7 @@ export class DocumentsDto {
     return {
       userId: role == 'School' ? tenantId : adminId,
       tenantId: tenantId,
-      role: req.user?.role || 'School',
+      role: role || 'School',
       docs,
     };
   }
@@ -457,6 +457,7 @@ export class DocumentsDto {
     const { userId } = req.params;
 
     const { docs } = this.handleDtoOfDoc(req, res);
+    
     if (!docs || docs?.length <= 0) {
       throw new Error('Nothing in the docs');
     }
@@ -502,9 +503,7 @@ export class DocumentsDto {
 
     //handleTokenVerification(req,res);
 
-    const role = req.headers.role;
-
-    const filterQuery: FilterQuery<Partial<IDocument>> = { role: role, userId: userId };
+    const filterQuery: FilterQuery<Partial<IDocument>> = {userId };
 
     const pullQuery: FilterQuery<Partial<IDocument>> = { docs: { fileName: file_Name } };
 

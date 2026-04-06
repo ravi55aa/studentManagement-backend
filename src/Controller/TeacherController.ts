@@ -50,6 +50,24 @@ export class TeacherController {
     }
   }
 
+  public async updateTeacherProfessional(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { teacherId } = req.params;
+
+      if (!teacherId) {
+        const { status, resBody } = ApiResponse.notFound(TeacherMessage.InvalidTeacherId);
+        res.status(status).json(resBody);
+        return;
+      }
+
+      const { status, resBody } = await this._teacherService.updateTeacher(req,res);
+
+      res.status(status).json(resBody);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   public async getAllTeachers(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { status, resBody } = await this._teacherService.getAllTeachers();

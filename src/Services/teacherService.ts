@@ -10,7 +10,7 @@ import { serviceReturnType } from '../Constants/interfaces';
 import { ITeacherService } from '../Interfaces/services/ITeacherService';
 import { ApiResponse } from '../Constants/apiResponse';
 import logger from '../Utils/logger';
-import { TeacherMessage } from '../Constants/resposeMessages';
+import { ServerMessage, TeacherMessage } from '../Constants/resposeMessages';
 import { ITeacherRepo } from '../Interfaces/repository/ITeacherRepo';
 // import { getIO } from '../Config/socket.config';
 // import { otp } from 'Utils/generateOtp';
@@ -92,7 +92,7 @@ export class TeacherService implements ITeacherService {
         error,
       });
 
-      return ApiResponse.failure('Internal server error');
+      return ApiResponse.failure(ServerMessage.ServerError);
     }
   }
 
@@ -176,6 +176,47 @@ export class TeacherService implements ITeacherService {
     }
   }
 
+  async updateTeacher( req: Request,res:Response): Promise<serviceReturnType> {
+      try {
+      //TeacherValidation.teacher(req, res);
+
+      const {teacherId}=req.params;
+
+      const data=await TeacherDTO.update(req,res);
+
+      if (data.academicYearId) {
+      const exists = await this._teacherRepo.findOneProfessional({
+        _id: { $ne: teacherId },
+        academicYearId: data.academicYearId,
+        employmentStatus: 'active',
+        assignedSubjects:{$all:data.assignedSubjects}
+      });
+
+      if (exists) {
+        return ApiResponse.failure(TeacherMessage.ClassTeacherAlreadyAssigned);
+        //'Another teacher is already class teacher for this batch'
+      }
+      }
+
+      const updated = await this._teacherRepo.updateProfessionalByTeacherId(teacherId!,data); 
+
+      if (!updated) {
+        return ApiResponse.notFound(TeacherMessage.TeacherUpdateFailed);
+      }
+
+      return ApiResponse.success(updated,TeacherMessage.TeacherUpdated);
+
+    } catch (error) {
+      logger.error(TeacherMessage.TeacherUpdateFailed, {
+        layer: 'service',
+        module: 'teacher',
+        error,
+      });
+
+      return ApiResponse.failure(ServerMessage.ServerError);
+    }
+  }
+
   /* ===================ASSIGN CLASS====================== */
   public async assignClassToTeacher(req: Request): Promise<serviceReturnType> {
     try {
@@ -199,54 +240,26 @@ export class TeacherService implements ITeacherService {
     }
   }
 
-  /* ---------DELETE TEACpublic async deleteTeacher(teacherId: string): Promise<serviceReturnType> {tr
-      const deleted = await this._teacherRepo.softDelete(teacherId);
+  // public async deleteTeacher(teacherId: string): Promise<serviceReturnType> {tr
+  //     const deleted = await this._teacherRepo.softDelete(teacherId);
 
-      if (!deleted) {
-        return ApiResponse.notFound(TeacherMessage.TeacherNotFound);
-      }
+  //     if (!deleted) {
+  //       return ApiResponse.notFound(TeacherMessage.TeacherNotFound);
+  //     }
 
-      return ApiResponse.success(null, TeacherMessage.TeacherDeleted);
-    } catch (error) {
-      logger.error('DeleteTeacher failed', {
-        layer: 'service',
-        module: 'teacher',
-        error,
-      });
+  //     return ApiResponse.success(null, TeacherMessage.TeacherDeleted);
+  //   } catch (error) {
+  //     logger.error('DeleteTeacher failed', {
+  //       layer: 'service',
+  //       module: 'teacher',
+  //       error,
+  //     });
 
-      return ApiResponse.failure('Internal server error');
-    }
-  }
+  //     return ApiResponse.failure('Internal server error');
+  //   }
+  // }
 
-  /* ----------UPDATE TEACHER------------- */
-  static async updateTeacher(teacherId: string, updateData: Partial<ITeacher>): Promise<ITeacher> {
-    if (!Types.ObjectId.isValid(teacherId)) {
-      throw new Error('Invalid teacher id');
-    }
 
-    // Prevent reassignment conflict
-    if (updateData.academicYearId) {
-      const exists = await teacherModel.findOne({
-        _id: { $ne: teacherId },
-        academicYearId: updateData.academicYearId,
-        employmentStatus: 'active',
-      });
-
-      if (exists) {
-        throw new Error('Another teacher is already class teacher for this batch');
-      }
-    }
-
-    const updated = await teacherModel
-      .findByIdAndUpdate(teacherId, { $set: updateData }, { new: true })
-      .lean<ITeacher>();
-
-    if (!updated) {
-      throw new Error('Teacher not found');
-    }
-
-    return updated;
-  }
 
   public async getUnassignedTeachers(
     query: FilterQuery<Partial<ITeacher>>,

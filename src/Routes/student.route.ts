@@ -83,7 +83,6 @@ router.get('/leaveHistory/:studentId', authMiddleware, (req, res, next) =>
   studentAttendanceController.getLeaveList(req, res, next),
 );
 
-
 /***STUDENT FEE */
 router.get('/fee/details/:studentId', authMiddleware, (req, res, next) =>
   stripeController.getStudentFeeDetails(req, res, next),

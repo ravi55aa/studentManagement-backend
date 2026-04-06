@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { IHomework } from '@Interfaces/model/Teacher/IHomework';
 import { handleTokenVerification } from '@Utils/jwt';
+import { IUploadedDoc } from '@Models/documentModel';
 
 export class HomeWorkDto {
   static createHomework(req: Request, res: Response) {
@@ -13,6 +14,14 @@ export class HomeWorkDto {
       fileName: f.filename,
     }));
 
+      let existingDocs: IUploadedDoc[] = [];
+
+      if (req.body.existingAttachments) {
+        existingDocs = Array.isArray(req.body.existingAttachments)
+          ? req.body.existingAttachments.map((d:string) => JSON.parse(d))
+          : [JSON.parse(req.body.existingAttachments)];
+      }
+
     const decodedToken = handleTokenVerification(req, res);
 
     const homeworkDto: Partial<IHomework> = {
@@ -21,7 +30,7 @@ export class HomeWorkDto {
       subjectId,
       status,
       dueDate,
-      attachments: [...docs],
+      attachments: [...docs,...existingDocs],
       teacherId: decodedToken.userId!,
       batchId: batchId,
     };

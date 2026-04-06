@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'tsyringe';
+import { ApiResponse } from '@Constants/apiResponse';
+import { CommonMessage } from '@Constants/resposeMessages';
 
 import { DocumentsDto } from '../dto/schoolDTO';
 import { IDocumentService } from '../Interfaces/services/IDocument.service';
@@ -58,7 +60,15 @@ export class DocumentController {
 
   public async getDocuments(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { status, resBody } = await this._documentService.deleteAFile(req);
+      const {userId}=req.params;
+      
+      if(!userId){
+        const {status,resBody}= ApiResponse.badRequest(CommonMessage.IdNotFound);
+        res.status(status).json(resBody);
+        return;
+      }
+
+      const { status, resBody } = await this._documentService.getDocs(userId);
 
       res.status(status).json(resBody);
     } catch (err) {
