@@ -16,7 +16,7 @@ import { AddressDTO } from '../dto/addressDTO';
 import { ApiResponse } from '../Constants/apiResponse';
 import { adminModel } from '../Models';
 import { ISchoolRepository } from '../Interfaces/repository/ISchoolRepository';
-import { AdminMessage, AuthMessage, SchoolMessage } from '../Constants/resposeMessages';
+import { AdminMessage, AuthMessage, CommonMessage, SchoolMessage } from '../Constants/resposeMessages';
 
 @injectable()
 export class SchoolService implements ISchoolService {
@@ -92,7 +92,7 @@ export class SchoolService implements ISchoolService {
   async getSchool(req: Request, res: Response): Promise<serviceReturnType> {
     const { password, schoolName, userId } = SchoolDTO.getSchool(req, res);
 
-    const school = await this._schoolRepository.findOne({ schoolName, userId });
+    const school = await this._schoolRepository.findOne({ schoolName, userId,isDelete:false });
 
     if (school) {
       const hashedPassword = await bcrypt.compare(password, school.password!);
@@ -131,7 +131,7 @@ export class SchoolService implements ISchoolService {
   public async getSchoolAllData(req: Request, res: Response): Promise<serviceReturnType> {
     const { tenantId } = SchoolAcademicYearDto.getTenantId(req, res);
 
-    const schoolDoc: Partial<ISchool | null> = await this._schoolRepository.findById(tenantId!);
+    const schoolDoc: Partial<ISchool | null> = await this._schoolRepository.findOne({_id:tenantId,isDelete:false});
 
     const addrQuery = { userId: tenantId };
     const schoolAddressDoc = await this._addressRepo.findOne(addrQuery);
@@ -152,13 +152,13 @@ export class SchoolService implements ISchoolService {
     const schoolId = req.params.id;
 
     if (!schoolId) {
-      return ApiResponse.failure('School ID is required');
+      return ApiResponse.failure(CommonMessage.IdNotFound);
     }
 
     const existingSchool = await this._schoolRepository.findById(schoolId);
 
     if (!existingSchool) {
-      return ApiResponse.notFound('School not found');
+      return ApiResponse.notFound(SchoolMessage.NotFound);
     }
 
     //Remove tenantId from admin (if existss)
@@ -175,10 +175,10 @@ export class SchoolService implements ISchoolService {
     const deletedSchool = await this._schoolRepository.deleteSchool(schoolId);
 
     if (!deletedSchool) {
-      return ApiResponse.failure('School could not be deleted');
+      return ApiResponse.failure(SchoolMessage.NotDeleted);
     }
 
-    return ApiResponse.success(null, 'School deleted successfully');
+    return ApiResponse.success(null, SchoolMessage.Deleted);
   }
 
   public async addAddress(req: Request, res: Response): Promise<IAddress | null> {
@@ -189,7 +189,42 @@ export class SchoolService implements ISchoolService {
     return newAddress;
   }
 }
+/**
+ * 
+ * 
+ * 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ */
 // public async updateSchool(
 //     schoolId: string,
 //     updateData: Partial<ISchool>

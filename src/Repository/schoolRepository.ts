@@ -66,9 +66,11 @@ export class SchoolRepository extends BaseRepository<ISchool> implements ISchool
 
   public async deleteSchool(schoolId: string): Promise<boolean> {
     try {
-      if (!schoolId) return false;
 
-      const result = await this.model.findByIdAndDelete(schoolId);
+      const result = await this.model.findByIdAndUpdate(schoolId,
+        {$set:{isDelete:true}},
+        {new:true}
+      );
 
       return !!result;
     } catch (error) {

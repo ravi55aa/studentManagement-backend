@@ -91,7 +91,7 @@ const TeacherBioSchema: Schema = new Schema(
   },
 );
 
-export const teacherBioModel = mongoose.model<ITeacherBio>('TeacherBio', TeacherBioSchema);
+export const teacherBioModel = mongoose.model<ITeacherBio>('Teacher', TeacherBioSchema);
 
 /**
  * Teacher additional details
@@ -168,6 +168,6 @@ const TeacherSchema: Schema = new Schema(
   { timestamps: true },
 );
 
-const Teacher = mongoose.model<ITeacher>('Teacher', TeacherSchema);
+const Teacher = mongoose.model<ITeacher>('TeacherProfessional', TeacherSchema);
 
 export default Teacher;

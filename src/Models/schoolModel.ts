@@ -8,6 +8,7 @@ export interface ISchool extends Document {
   password: string | undefined;
   profile?: string | undefined;
   phone?: string | undefined;
+  isDelete?:boolean
 }
 
 const schoolMeta = new mongoose.Schema<ISchool>(
@@ -51,6 +52,11 @@ const schoolMeta = new mongoose.Schema<ISchool>(
       type: String,
       match: [/^[6-9]\d{9}$/, 'Enter valid 10 digits number'],
     },
+
+    isDelete:{
+      type:Boolean,
+      default:false
+    }
   },
   { timestamps: true },
 );

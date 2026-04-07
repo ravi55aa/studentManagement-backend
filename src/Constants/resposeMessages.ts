@@ -38,10 +38,12 @@ export enum AuthMessage {
 }
 
 export enum SchoolMessage {
-  NotFound = 'School NOT found, credentials miss match',
+  NotFound = 'School not found, credentials miss match',
+  NotUpdated = 'School Not updated',
+  NotDeleted = 'School not deleted',
+
   SchoolListed = 'School Listed Successfully',
   Updated = 'School updated',
-  NotUpdated = 'School Not updated',
   FetchAll = 'Listed All School',
   Deleted = 'School deleted successfully',
 }
