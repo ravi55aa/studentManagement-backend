@@ -509,11 +509,15 @@ export enum SubjectMessage {
 export enum NotificationMessage {
   // Error messages
   NotificationNotFound = 'Notification not found',
-
+  NotificationNotFetched = 'Notification not fetched',
+  NotificationCantRead = "Notification Couldn't read",
+  
   // Success messages
+  NotificationFetched = 'Notification fetched successfully',
   NotificationCreated = 'Notification created successfully',
   NotificationUpdated = 'Notification updated successfully',
   NotificationDeleted = 'Notification deleted successfully',
+  NotificationIsRead = "Notification read successfully",
   NotificationSent = 'Notification sent successfully',
 }
 

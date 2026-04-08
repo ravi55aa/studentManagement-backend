@@ -22,5 +22,10 @@ export interface INotificationSender {
 //------------ Service-interface
 export interface INotificationService {
   addNotification(req: Request, res: Response): Promise<boolean>;
+  
   getAllNotifications(req: Request, res: Response): Promise<serviceReturnType>;
+
+  getUserNotifications(userId: string): Promise<serviceReturnType>;
+
+  setUserNotificationIsRead(userNotificationId: string): Promise<serviceReturnType>
 }

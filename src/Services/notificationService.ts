@@ -1,5 +1,13 @@
 import { Request, Response } from 'express';
 import { injectable, inject } from 'tsyringe';
+import {
+  INotificationService,
+  NotificationPayload,
+  INotificationSender,
+} from '@Interfaces/services/INotificatoin';
+import { CommonMessage, NotificationMessage, ServerMessage } from '@Constants/resposeMessages';
+import logger from '@Utils/logger';
+import studentModel from '@Models/Student/studentModel';
 
 import { TYPES } from '../DI/types';
 import { NotificationPayloadSchema } from '../Validators/notifications';
@@ -11,12 +19,6 @@ import { NotificationDto } from '../dto/notificatoinDto';
 import { INotificationRepo } from '../Interfaces/repository/INotificationRepo';
 import { handleValidationOF } from '../Middlewares/validateUser.middleware';
 import { UserNotificationService } from '../helper/UserNotificatin.helper';
-import {
-  INotificationService,
-  NotificationPayload,
-  INotificationSender,
-} from '../Interfaces/services/INotificatoin';
-import { NotificationMessage } from '../Constants/resposeMessages';
 
 /**
     from  -> one writer (Admin | Teacher)
@@ -67,12 +69,20 @@ export class NotificationService implements INotificationService {
 
   private async _resolveRecipients(senderModel: string) {
     if (senderModel === 'Admin') {
+      
       const teachers = await teacherModel.find({}).select('_id').lean();
-
-      return teachers.map((t) => ({
+      const teachersArray= teachers.map((t) => ({
         userId: t._id,
         userModel: 'Teacher',
       }));
+
+      const students = await studentModel.find({}).select('_id').lean();
+      const studentsArray= students.map((s) => ({
+        userId: s._id,
+        userModel: "Student",
+      }));
+
+      return [...teachersArray,...studentsArray]; 
     }
 
     // if (senderModel === "Teacher") {
@@ -97,17 +107,47 @@ export class NotificationService implements INotificationService {
     const role = decoded.role;
 
     if (!userId || !role) {
-      return ApiResponse.unAuthorized('Invalid user');
+      return ApiResponse.unAuthorized(CommonMessage.IdNotFound);
     }
 
     // Fetch from UserNotification table
     const notifications = await this._notificationRepo.findByUser(userId);
 
     if (!notifications.length) {
-      return ApiResponse.success([], NotificationMessage.NotificationNotFound);
+      return ApiResponse.success([], NotificationMessage.NotificationNotFetched);
     }
 
-    return ApiResponse.success(notifications);
+    return ApiResponse.success(notifications,NotificationMessage.NotificationFetched);
+  }
+
+  public async getUserNotifications(userId: string): Promise<serviceReturnType> {
+      try {
+        const userNotifications = await this._notificationRepo.getUserNotifications(userId);
+
+        if (!userNotifications || userNotifications.length<=0) {
+          return ApiResponse.failure(NotificationMessage.NotificationNotFetched);
+        }
+
+        return ApiResponse.success(userNotifications, NotificationMessage.NotificationFetched);
+    } catch (error) {
+        logger.error('Error while fetching user notifications:', error);
+        return ApiResponse.internalServerError(ServerMessage.ServerError);
+    }
+  }
+
+  public async setUserNotificationIsRead(userNotificationId: string): Promise<serviceReturnType> {
+      try {
+        const isRead = await this._notificationRepo.setUserNotificationIsRead(userNotificationId);
+
+        if (!isRead ) {
+          return ApiResponse.failure(NotificationMessage.NotificationCantRead);
+        }
+
+        return ApiResponse.success(null, NotificationMessage.NotificationIsRead);
+    } catch (error) {
+        logger.error('Error while fetching user notifications:', error);
+        return ApiResponse.internalServerError(ServerMessage.ServerError);
+    }
   }
 }
 

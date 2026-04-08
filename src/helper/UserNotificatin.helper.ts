@@ -6,6 +6,7 @@ import { INotification } from '../Models/notificaitonModel';
 import { userNotificationModel } from '../Models/notificationUser.Model';
 
 export class UserNotificationService implements IUserNotification {
+  
   async distribute(
     notification: INotification,
     recipients: {
@@ -29,17 +30,20 @@ export class UserNotificationService implements IUserNotification {
         isRead: false,
       });
 
-      const io = getIO();
+      //const io = getIO();
+
+      // if(!io){
+      //   io.to(`Admin-78hsKi67`).emit('notification:new', {
+      //     type: notification.type,
+      //     title: notification.title,
+      //     message: notification.message,
+      //     link: notification.link,
+      //     attachmentUrl: notification.attachmentUrl,
+      //     createdAt: notification.createdAt,
+      //   });
+      // };
 
       // Emit via socket
-      io.to(`Admin-78hsKi67`).emit('notification:new', {
-        type: notification.type,
-        title: notification.title,
-        message: notification.message,
-        link: notification.link,
-        attachmentUrl: notification.attachmentUrl,
-        createdAt: notification.createdAt,
-      });
     }
 
     if (bulkDocs.length) {
