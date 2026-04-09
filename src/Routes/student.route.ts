@@ -50,6 +50,9 @@ router.put('/homework/update/:id', authMiddleware, (req, res, next) =>
 router.delete('/homework/delete/:id', authMiddleware, (req, res, next) =>
   studentHomeworkController.updateSubmissionsByTeacher(req, res, next),
 );
+router.get('/homework/get/:homeworkId', authMiddleware, (req, res, next) =>
+  studentHomeworkController.getSubmission(req, res, next),
+);
 
 /******* Attendance *******/
 router.post('/attendance/update/:batchId', authMiddleware, (req, res, next) =>

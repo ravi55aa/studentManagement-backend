@@ -115,7 +115,7 @@ const TeacherSchema: Schema = new Schema(
   {
     teacherId: {
       type: Schema.Types.ObjectId,
-      ref: 'TeacherBio',
+      ref: 'Teacher',
       required: false,
       default: null,
     },

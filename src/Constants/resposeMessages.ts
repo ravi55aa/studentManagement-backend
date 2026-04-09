@@ -351,12 +351,14 @@ export enum FeesMessage {
   FeesExists = 'Fees record already exists',
   FeesNotFound = 'Fees record not found',
   FeesIdNotFound = 'Fees Id not found',
+  FeesCodeExist = 'Fees code already exist',
 
   // Success messages
   FeesAdded = 'New fees record created',
   FeesUpdated = 'Fees record updated',
   FeesListed = 'Fees record has been listed',
   FeesUnlisted = 'Fees record has been unlisted',
+  FeesDeleted = 'Fees deleted successfully',
 }
 
 export enum BatchMessage {

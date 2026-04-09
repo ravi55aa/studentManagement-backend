@@ -40,9 +40,9 @@ export class StudentHomeworkController {
 
   async getSubmission(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
+      const { homeworkId } = req.params;
 
-      const { status, resBody }: serviceReturnType = await this._homeworkService.getSubmission(id!);
+      const { status, resBody }: serviceReturnType = await this._homeworkService.getSubmission(homeworkId!);
 
       res.status(status).json(resBody);
     } catch (err: unknown) {

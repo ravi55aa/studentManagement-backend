@@ -293,7 +293,7 @@ export class SchoolCoursesDto {
       name,
       status,
       modelType,
-      center: modelType == 'School' ? decoded.tenantId : center,
+      center: modelType == 'School' ? decoded?.tenantId : center,
       description,
       academicYear,
       schedule: courseScheduleDates,

@@ -29,11 +29,6 @@ export class ChatAccessService implements IChatAccessService {
 
         if (!isParticipant) return false;
 
-        //  Center chat restriction
-        if (chat.type === "center" && user.role === "Student") {
-        return false;
-        }
-
         return true;
     }
 
@@ -260,11 +255,10 @@ export class ChatMessageService implements IMessageService {
         //  Save message
         const newMessage = await this._messageRepository.createMessage({
             chatRoomId: new Types.ObjectId(chatRoomId),
-            role:sender.role=='Student'?'Student':'TeacherBio',
+            role:sender.role=='Student'?'Student':'Teacher',
             senderId: new Types.ObjectId(sender.id),
             message,
             readBy: [new Types.ObjectId(sender.id)],
-            isBroadcast: chat.type === "center",
         });
 
         this._realTimeService.emitToRoom(

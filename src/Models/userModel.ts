@@ -48,7 +48,7 @@ const adminSchema = new Schema<IUser>(
       default: null,
     },
 
-    role: { type: String, default: 'admin' },
+    role: { type: String, default: 'Admin' },
   },
   { timestamps: true },
 );

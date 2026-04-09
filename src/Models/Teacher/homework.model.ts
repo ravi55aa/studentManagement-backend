@@ -29,7 +29,7 @@ const homeworkSchema = new Schema<IHomework>(
 
     teacherId: {
       type: Schema.Types.ObjectId,
-      ref: 'TeacherBio',
+      ref: 'Teacher',
       required: true,
     },
 

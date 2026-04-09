@@ -3,14 +3,14 @@ import { Server as HttpServer } from 'http';
 import { Server } from 'socket.io';
 import logger from '@Utils/logger';
 
-//import env from './env.config';
+import env from './env.config';
 
 let io: Server;
 
 export const initSocket = (server: HttpServer) => {
   io = new Server(server, {
     cors: {
-      origin: 'Something', //env.FRONTEND_URL, update later
+      origin: env.FRONTEND_URL,
       methods: ['GET', 'POST'],
       credentials: true,
     },

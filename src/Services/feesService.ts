@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { injectable, inject } from 'tsyringe';
 import { IFeeRepository } from 'Interfaces/repository/IFessRepository';
+import { FeesMessage } from '@Constants/resposeMessages';
 
 import { TYPES } from '../DI/types';
 import { IFeeService } from '../Interfaces/services/IFeeService';
@@ -23,7 +24,7 @@ export class FeeService implements IFeeService {
     const existing = await this._feeRepo.findOne({ code: dto.code });
 
     if (existing) {
-      return ApiResponse.badRequest('Fee code already exists');
+      return ApiResponse.badRequest(FeesMessage.FeesCodeExist);
     }
 
     const newFee = await this._feeRepo.create(dto);
@@ -37,39 +38,39 @@ export class FeeService implements IFeeService {
     const updated = await this._feeRepo.updateById(id, dto);
 
     if (!updated) {
-      return ApiResponse.notFound('Fee not found');
+      return ApiResponse.notFound(FeesMessage.FeesNotFound);
     }
 
-    return ApiResponse.success(updated);
+    return ApiResponse.success(updated,FeesMessage.FeesUpdated);
   }
 
   public async getAllFees(): Promise<serviceReturnType> {
     const fees = await this._feeRepo.findMany({});
 
-    if (!fees.length) {
-      return ApiResponse.notFound('No Fees Found');
+    if (!fees || fees.length<=0) {
+      return ApiResponse.notFound(FeesMessage.FeesNotFound);
     }
 
-    return ApiResponse.success(fees);
+    return ApiResponse.success(fees,FeesMessage.FeesListed);
   }
 
   public async getFeeById(id: string): Promise<serviceReturnType> {
     const fee = await this._feeRepo.findById(id);
 
     if (!fee) {
-      return ApiResponse.notFound('Fee not found');
+      return ApiResponse.notFound(FeesMessage.FeesNotFound);
     }
 
-    return ApiResponse.success(fee);
+    return ApiResponse.success(fee,FeesMessage.FeesListed);
   }
 
   public async deleteFee(id: string): Promise<serviceReturnType> {
     const deleted = await this._feeRepo.deleteById(id);
 
     if (!deleted) {
-      return ApiResponse.notFound('Fee not found');
+      return ApiResponse.notFound(FeesMessage.FeesNotFound);
     }
 
-    return ApiResponse.success('Fee deleted successfully');
+    return ApiResponse.success(null,FeesMessage.FeesDeleted);
   }
 }

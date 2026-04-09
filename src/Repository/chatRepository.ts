@@ -150,9 +150,9 @@ export class ChatMessageRepository
     //  Create Message
     async createMessage(data: Partial<IMessage>): Promise<IMessage | null> {
         try {
-        return await this.create(data);
+            return await this.create(data);
         } catch (error) {
-        logger.error("Error creating message:", error);
+            logger.error("Error creating message:", error);
         return null;
         }
     }
@@ -163,9 +163,10 @@ export class ChatMessageRepository
         limit?: number
     ): Promise<IMessage[]> {
         try {
+            
         return await this.model
             .find({ chatRoomId })
-            .populate('senderId','firstName name ')
+            .populate('senderId','firstName name')
             .sort({ createdAt: -1 })
             .limit(limit || 50)
             .lean<IMessage[]>();

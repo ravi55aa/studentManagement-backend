@@ -1,18 +1,11 @@
-//      [teacher-student]  -    [center]    -   [Batch]
 
-
-/**
- * 
- * 
- * 
- */
 
 //ROOM - one for each convocation
 import mongoose, { Schema, model, Types,Document } from "mongoose";
 
 import { IUploadedDoc } from "./documentModel";
 
-export type ChatRoomType = "direct" | "batch" | "center";
+export type ChatRoomType = "direct" | "batch";
 
 export interface IChatRoom extends Document {
     type: ChatRoomType;
@@ -39,7 +32,7 @@ const chatRoomSchema = new Schema<IChatRoom>(
     {
         type: {
         type: String,
-        enum: ["direct", "batch", "center"],
+        enum: ["direct", "batch"],
         required: true,
         },
 

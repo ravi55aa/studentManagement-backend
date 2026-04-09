@@ -8,7 +8,7 @@ export interface ICenter extends Document {
   tenantId: ObjectId | null;
   adminId: ObjectId | null;
   headInCharge: ObjectId | null;
-  userModel: 'Admin' | 'TeacherBio';
+  userModel: 'Admin' | 'Teacher';
   currentStrength: number | null;
   totalCapacity: number | null;
   isMain: boolean | null;
@@ -31,7 +31,7 @@ const CentersSchema: Schema = new Schema(
 
     userModel: {
       type: String,
-      enum: ['Admin', 'TeacherBio'],
+      enum: ['Admin', 'Teacher'],
     },
 
     headInCharge: { type: Schema.Types.ObjectId, required: false, refPath: 'userModel' },

@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 
-import { getIO } from '../Config/socket.config';
+//import { getIO } from '../Config/socket.config';
 import { IUserNotification } from '../Interfaces/Other/IUserNotification';
 import { INotification } from '../Models/notificaitonModel';
 import { userNotificationModel } from '../Models/notificationUser.Model';
