@@ -9,7 +9,7 @@ import { SchoolAcademicYearDto } from "@dto/schoolDTO";
 import { TYPES } from "../DI/types";
 
 @injectable()
-export class ChatController {
+export default class ChatController {
     constructor(
         @inject(TYPES.ChatRoomService)
         private _chatRoomService: IChatRoomService,

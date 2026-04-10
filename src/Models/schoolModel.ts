@@ -1,4 +1,6 @@
 import mongoose, { Document } from 'mongoose';
+type schoolStatus='verify'|'verified'|'blocked';
+
 
 export interface ISchool extends Document {
   userId?: mongoose.Types.ObjectId;
@@ -8,7 +10,8 @@ export interface ISchool extends Document {
   password: string | undefined;
   profile?: string | undefined;
   phone?: string | undefined;
-  isDelete?:boolean
+  isDelete?:boolean,
+  status?:schoolStatus
 }
 
 const schoolMeta = new mongoose.Schema<ISchool>(
@@ -56,6 +59,11 @@ const schoolMeta = new mongoose.Schema<ISchool>(
     isDelete:{
       type:Boolean,
       default:false
+    },
+    status:{
+      type:String,
+      enum:['verify','verified','block'],
+      default:'verify'
     }
   },
   { timestamps: true },

@@ -8,7 +8,7 @@ import { IAddressService } from '../Interfaces/services/IAddressService';
 
 //resolve tokens
 @injectable()
-export class AddressController {
+export default class AddressController {
   constructor(
     @inject(TYPES.AddressService)
     private _addressService: IAddressService,

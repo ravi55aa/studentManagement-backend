@@ -329,14 +329,6 @@ export enum DiscussionMessage {
   ReplyAdded = 'Reply has been added',
 }
 
-export enum SubscriptionPlanMessage {
-  //Success messages
-  SubscriptionPlanAdded = 'Subscription plan added',
-  SubscriptionPlanUpdated = 'Subscription plan updated',
-  SubscriptionListed = 'Subscription plan listed',
-  SubscriptionUnlisted = 'Subscription plan unlisted',
-}
-
 export enum TopicMessage {
   //Error Messages
   TopicExists = 'Topic already exists',
@@ -494,6 +486,50 @@ export enum CenterMessage {
   CenterListed = 'Center has been listed',
   CenterUnlisted = 'Center has been unlisted',
   CenterDeleted = 'Center deleted successfully',
+}
+
+export enum SubscriptionPlanMessage {
+  // ======================
+  // Error Messages
+  // ======================
+
+  PlanExists = 'Plan already exists with provided details',
+  PlanNotFound = 'Plan not found',
+  InvalidPlanId = 'Invalid plan ID',
+
+  PlanCreateFailed = 'Failed to create plan',
+  PlanUpdateFailed = 'Failed to update plan',
+  PlanDeleteFailed = 'Failed to delete plan',
+
+  InvalidActiveStatus = 'Invalid active status value',
+  InvalidPopularStatus = 'Invalid popular status value',
+
+  InvalidPlanData = 'Invalid plan data provided',
+  EmptyBody = 'Request body cannot be empty',
+
+  NoPlansFound = 'No plans found',
+
+  // ======================
+  // Success Messages
+  // ======================
+
+  PlanCreated = 'Plan created successfully',
+  PlanUpdated = 'Plan updated successfully',
+  PlanDeleted = 'Plan deleted successfully',
+
+  PlanFetched = 'Plan fetched successfully',
+  PlansListed = 'Plans fetched successfully',
+
+  PlanActivated = 'Plan activated successfully',
+  PlanDeactivated = 'Plan deactivated successfully',
+
+  PlanMarkedPopular = 'Plan marked as popular successfully',
+  PlanUnmarkedPopular = 'Plan removed from popular successfully',
+  //Success messages
+  SubscriptionPlanAdded = 'Subscription plan added',
+  SubscriptionPlanUpdated = 'Subscription plan updated',
+  SubscriptionListed = 'Subscription plan listed',
+  SubscriptionUnlisted = 'Subscription plan unlisted',
 }
 
 export enum SubjectMessage {

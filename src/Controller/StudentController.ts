@@ -7,7 +7,7 @@ import { ApiResponse } from '@Constants/apiResponse';
 import { StudentMessage } from '@Constants/resposeMessages';
 
 @injectable()
-export class StudentsController {
+export default class StudentsController {
   constructor(
     @inject(TYPES.StudentService)
     private _studentService: IStudentService,

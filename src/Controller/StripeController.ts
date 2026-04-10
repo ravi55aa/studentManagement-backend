@@ -12,7 +12,7 @@ import { StudentMessage } from "@Constants/resposeMessages";
 
 
 @injectable()
-export class StripeController {
+export default class StripeController {
 
     constructor(
         @inject(TYPES.StripeService)

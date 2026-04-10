@@ -1,26 +1,28 @@
 import { container } from 'tsyringe';
-import { StudentsController } from 'Controller/StudentController';
-import { StudentHomeworkController } from 'Controller/HomeworkStudentController';
-import { StudentAttendanceController } from 'Controller/AttendanceController';
-import { StripeController } from 'Controller/StripeController';
-import { ChatController } from 'Controller/ChatController';
-
 import {
   SchoolAcademicController,
   SchoolAcademicSubjectController,
   SchoolAcademicCourseController,
-} from '../Controller/School.Acadmic.Controller';
-import { TeacherController } from '../Controller/TeacherController';
-import { NotificationController } from '../Controller/NotificatoinController';
-import { FeeController } from '../Controller/FessController';
-import { AddressController } from '../Controller/AddressController';
-import { DocumentController } from '../Controller/DocumentController';
-import { UserAuthController } from '../Controller/UserAuthControlller';
-import { PasswordResetController } from '../Controller/ResetpasswordController';
-import { SchoolController } from '../Controller/SchoolController';
-import { CentersController } from '../Controller/CentersControllert';
-import { BatchController } from '../Controller/BatchController';
-import { HomeworkController } from '../Controller/HomeworkController';
+} from 'Controller/School.Acadmic.Controller';
+import { PlanController,
+  AddressController,
+  StudentsController,
+  StudentHomeworkController,
+  StudentAttendanceController,
+  StripeController,
+  ChatController,
+  TeacherController,
+  NotificationController,
+  FeeController,
+  DocumentController,
+  UserAuthController,
+  PasswordResetController,
+  SchoolController,
+  CentersController,
+  BatchController,
+  HomeworkController,
+  } from 'Controller';
+
 
 export const addressController = container.resolve(AddressController);
 
@@ -55,3 +57,5 @@ export const studentAttendanceController = container.resolve(StudentAttendanceCo
 export const stripeController = container.resolve(StripeController);
 
 export const chatController = container.resolve(ChatController);
+
+export const planController = container.resolve(PlanController);

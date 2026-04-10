@@ -11,7 +11,7 @@ import { TYPES } from '@DI/types';
 import { AuthPayloadType, UserType } from '../types/auth.types';
 
 @injectable()
-export class UserAuthController {
+export default class UserAuthController {
   constructor(
     @inject(TYPES.UserAuthService)
     private _authService: IUserAuthService,

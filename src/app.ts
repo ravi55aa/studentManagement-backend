@@ -21,6 +21,7 @@ import {
   feesRouter,
   studentRouter,
   chatRouter,
+  adminRouter,
 } from './Routes/index';
 import logger from './Utils/logger';
 
@@ -51,6 +52,7 @@ app.use('/notification', notificationRouter);
 app.use('/stripe', stripeRouter);
 app.use('/fee', feesRouter);
 app.use('/chat', chatRouter);
+app.use('/adminRouter', adminRouter);
 
 app.use((req, res) => {
   logger.error(' Route not found:', req.method, req.originalUrl);

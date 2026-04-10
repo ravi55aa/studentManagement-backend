@@ -6,7 +6,7 @@ import { serviceReturnType } from '../Constants/interfaces';
 import { ICenterService } from '../Interfaces/services/ICenterService';
 
 @injectable()
-export class CentersController {
+export default class CentersController {
   constructor(
     @inject(TYPES.CenterService)
     private _centerService: ICenterService,

@@ -69,4 +69,12 @@ export class HomeworkRepository extends BaseRepository<IHomework> implements IHo
       return false;
     }
   }
+
+  async handleLimitOfCreatingHomework(){
+    const today = new Date().toISOString();
+    const query={createAt:today}
+
+    const data=await this.model.find(query).lean<IHomework[]>();
+    return data;
+  }
 }

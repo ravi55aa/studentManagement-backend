@@ -16,7 +16,7 @@ import { ApiResponse } from '../Constants/apiResponse';
 import { CommonMessage } from '../Constants/resposeMessages';
 
 @injectable()
-export class PasswordResetController {
+export default class PasswordResetController {
   constructor(
     @inject(TYPES.ForgotPasswordService)
     private _fps: IForgotPasswordService,

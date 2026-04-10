@@ -6,7 +6,7 @@ import { TYPES } from '../DI/types';
 import { serviceReturnType } from '../Constants/interfaces';
 
 @injectable()
-export class StudentHomeworkController {
+export default class StudentHomeworkController {
   constructor(
     @inject(TYPES.StudentHomeworkService)
     private _homeworkService: IStudentHomeworkService,

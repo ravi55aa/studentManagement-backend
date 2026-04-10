@@ -6,7 +6,7 @@ import { serviceReturnType } from '../Constants/interfaces';
 import { IBatchService } from '../Interfaces/services/IBatchService';
 
 @injectable()
-export class BatchController {
+export default class BatchController {
   constructor(
     @inject(TYPES.BatchService)
     private _batchService: IBatchService,

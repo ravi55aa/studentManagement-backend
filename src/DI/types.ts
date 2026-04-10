@@ -28,6 +28,9 @@ export const TYPES = {
   HomeworkRepository: Symbol.for('HomeworkRepository'),
   HomeworkService: Symbol.for('HomeworkService'),
 
+  PlanService: Symbol.for('PlanService'),
+  PlanRepository: Symbol.for('PlanRepository'),
+
   NotificationRepository: Symbol.for('NotificationRepository'),
   NotificationService: Symbol.for('NotificationService'),
 

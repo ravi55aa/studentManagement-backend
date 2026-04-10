@@ -8,7 +8,7 @@ import { TYPES } from '@DI/types';
 
 
 @injectable()
-export class NotificationController {
+export default class NotificationController {
   constructor(
     @inject(TYPES.NotificationService)
     private _notificationService: INotificationService,

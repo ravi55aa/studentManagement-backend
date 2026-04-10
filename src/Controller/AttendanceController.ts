@@ -5,7 +5,7 @@ import { IStudentAttendanceService } from '@Interfaces/services/IAttendanceServi
 import { serviceReturnType } from '@Constants/interfaces';
 
 @injectable()
-export class StudentAttendanceController {
+export default class StudentAttendanceController {
     constructor(
         @inject(TYPES.StudentAttendanceService)
         private _attendanceService: IStudentAttendanceService,

@@ -41,7 +41,7 @@ export class SchoolDTO {
       throw new Error('School Id is not found');
     }
 
-    const { adminName, schoolName, phone } = req.body;
+    const { adminName, schoolName, phone,status } = req.body;
     let { profile } = req.body;
 
     if (req.file) {
@@ -60,6 +60,8 @@ export class SchoolDTO {
 
     if (phone !== undefined) dtoData.phone = phone;
 
+    if(status !== undefined)dtoData.status=status;
+    
     return { id, dtoData };
   }
 }

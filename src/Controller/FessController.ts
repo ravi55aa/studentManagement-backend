@@ -7,7 +7,7 @@ import { ApiResponse } from '../Constants/apiResponse';
 import { FeesMessage } from '../Constants/resposeMessages';
 
 @injectable()
-export class FeeController {
+export default class FeeController {
   constructor(
     @inject(TYPES.FeeService)
     private _feeService: IFeeService,

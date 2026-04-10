@@ -1,5 +1,5 @@
 import { container } from 'tsyringe';
-import { UserAuthServiceV2 } from '@Services/userAuthService';
+import { UserAuthServiceV2,UserAuthService } from '@Services/userAuthService';
 import { StudentRepository } from '@Repository/Student/studentRepostiroy';
 import { StudentService } from '@Services/Student/StudentService';
 import { StudentHomeworkRepository } from '@Repository/Student/homeworkStudentRepository';
@@ -11,39 +11,39 @@ import { StudentFeeRepository } from '@Repository/stripeRepository';
 import { ChatAccessService, ChatMessageService, ChatRoomService } from '@Services/chatService';
 import { ChatMessageRepository, ChatRoomRepository } from '@Repository/chatRepository';
 import { SocketService } from '@Services/Socket/SocketService';
-
-import { AddressService } from '../Services/addressService';
-import { DocumentRepository } from '../Repository/documentRepository';
-import { DocumentService } from '../Services/documentService';
-import { UserRepository } from '../Repository/userRepository';
-import { UserAuthService } from '../Services/userAuthService';
-import { TeacherService } from '../Services/teacherService';
-import { TeacherRepository } from '../Repository/teacherRepo';
-import { NotificationRepo } from '../Repository/notificationRepo';
-import { NotificationService } from '../Services/notificationService';
-import { FeeService } from '../Services/feesService';
-import { FeeRepository } from '../Repository/feeRepository';
-import { SchoolRepository } from '../Repository/schoolRepository';
-import { SchoolService } from '../Services/schoolService';
-import { CenterRepository } from '../Repository/centerRepository';
-import { CentersService } from '../Services/centersService';
-import { BatchRepository } from '../Repository/batchRespository';
-import { BatchService } from '../Services/batchService';
+import { PlanService } from '@Services/Admin/PlanService';
+import { PlanRepository } from '@Repository/Admin/PlanRepository';
+import { AddressService } from '@Services/addressService';
+import { DocumentRepository } from '@Repository/documentRepository';
+import { DocumentService } from '@Services/documentService';
+import { UserRepository } from '@Repository/userRepository';
+import { TeacherService } from '@Services/teacherService';
+import { TeacherRepository } from '@Repository/teacherRepo';
+import { NotificationRepo } from '@Repository/notificationRepo';
+import { NotificationService } from '@Services/notificationService';
+import { FeeService } from '@Services/feesService';
+import { FeeRepository } from '@Repository/feeRepository';
+import { SchoolRepository } from '@Repository/schoolRepository';
+import { SchoolService } from '@Services/schoolService';
+import { CenterRepository } from '@Repository/centerRepository';
+import { CentersService } from '@Services/centersService';
+import { BatchRepository } from '@Repository/batchRespository';
+import { BatchService } from '@Services/batchService';
 import {
   AcademicCourseRepository,
   AcademicSubjectRepository,
   AcademicYearRepository,
-} from '../Repository/academicYear.Respository';
+} from '@Repository/academicYear.Respository';
 import {
   SchoolYear,
   SchoolAcademicCoursesService,
   SchoolAcademicSubjectSer,
-} from '../Services/school.year.service';
-import { ForgotPasswordService } from '../Services/forgotPassword.service';
-import { ForgotPasswordRepository } from '../Repository/forgotPassword.Repository';
-import { AddressRepository } from '../Repository/addressRepository';
-import { HomeworkRepository } from '../Repository/Teacher/homework.Repository';
-import { HomeworkService } from '../Services/Teacher/homeworkService';
+} from '@Services/school.year.service';
+import { ForgotPasswordService } from '@Services/forgotPassword.service';
+import { ForgotPasswordRepository } from '@Repository/forgotPassword.Repository';
+import { AddressRepository } from '@Repository/addressRepository';
+import { HomeworkRepository } from '@Repository/Teacher/homework.Repository';
+import { HomeworkService } from '@Services/Teacher/homeworkService';
 
 import { TYPES } from './types';
 
@@ -124,6 +124,12 @@ container.registerSingleton(TYPES.StudentHomeworkService, StudentHomeworkService
 container.registerSingleton(TYPES.StudentAttendanceService, StudentAttendanceService);
 
 container.registerSingleton(TYPES.StudentAttendanceRepository, StudentAttendanceRepository);
+
+
+/* ================= ADMIN ================= */
+//subscription plan
+container.registerSingleton(TYPES.PlanService, PlanService);
+container.registerSingleton(TYPES.PlanRepository, PlanRepository);
 
 
 /* ================= OTHER ================= */

@@ -7,7 +7,7 @@ import { ISchoolService } from '../Interfaces/services/ISchoolService';
 import { TYPES } from '../DI/types';
 
 @injectable()
-export class SchoolController {
+export default class SchoolController {
   constructor(
     @inject(TYPES.SchoolService)
     private _schoolService: ISchoolService,

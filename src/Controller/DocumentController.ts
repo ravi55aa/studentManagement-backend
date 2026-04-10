@@ -8,7 +8,7 @@ import { IDocumentService } from '../Interfaces/services/IDocument.service';
 import { TYPES } from '../DI/types';
 
 @injectable()
-export class DocumentController {
+export default class DocumentController {
   constructor(
     @inject(TYPES.DocumentService)
     private _documentService: IDocumentService,
