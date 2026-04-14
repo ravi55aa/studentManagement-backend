@@ -1,4 +1,4 @@
-import { IUserRepository } from '@Interfaces/repository/IAdminRepository';
+import { ISuperAdminRepository, IUserRepository } from '@Interfaces/repository/IAdminRepository';
 import { ISchoolRepository } from '@Interfaces/repository/ISchoolRepository';
 import { IStudentRepository } from '@Interfaces/repository/IStudentRepository';
 import { ITeacherRepo } from '@Interfaces/repository/ITeacherRepo';
@@ -18,4 +18,5 @@ export type IRepositoryMap = {
   Admin: IUserRepository | null;
   School: ISchoolRepository | null;
   Student: IStudentRepository | null;
+  SuperAdmin: ISuperAdminRepository | null;
 };

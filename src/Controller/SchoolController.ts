@@ -61,10 +61,26 @@ export default class SchoolController {
       const { status, resBody } = await this._schoolService.getSchoolAllData(req, res);
 
       res.status(status).json(resBody);
+
     } catch (err) {
+      
       next(err);
     }
   }
+
+
+  public async getallSchool(req: Request, res: Response, next: NextFunction): Promise<void> {
+    {
+      try {
+        const { status, resBody } = await this._schoolService.getallSchool();
+
+        res.status(status).json(resBody);
+      } catch (err) {
+        next(err);
+      }
+    }
+  }
+
 
   // public async updateSchool(req:Request,res:Response):Promise<void>{}
 

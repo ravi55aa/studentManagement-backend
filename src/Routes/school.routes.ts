@@ -28,6 +28,11 @@ router.post(
   (req, res, next) => schoolController.createSchool(req, res, next),
 );
 
+
+router.get('/getall', authMiddleware, uploadCloud.single('profile'), (req, res, next) =>
+  schoolController.getallSchool(req, res, next),
+);
+
 router.patch('/update/meta/:id', authMiddleware, uploadCloud.single('profile'), (req, res, next) =>
   schoolController.updateSchoolMeta(req, res, next),
 );

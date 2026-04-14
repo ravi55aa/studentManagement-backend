@@ -9,7 +9,7 @@ import { IDocument, IUploadedDoc } from '../Models/documentModel';
 
 export class SchoolDTO {
   static createSchool(reqBody: Partial<ISchool>): Partial<ISchool> {
-    const { adminName, schoolName, email, password, profile, phone } = reqBody;
+    const { adminName, schoolName, email, password, profile, phone,subdomain } = reqBody;
 
     return {
       adminName,
@@ -18,6 +18,7 @@ export class SchoolDTO {
       password,
       profile,
       phone,
+      subdomain:subdomain!
     };
   }
 

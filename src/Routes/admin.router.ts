@@ -2,54 +2,56 @@ import {Router} from "express";
 const router=Router();
 import { authMiddleware } from "@Middlewares/authorise.middleware";
 import { planController } from "@DI/resolve"; 
+import upload from "Config/multer.config";
 
 // import { roleMiddleware } from '@/middlewares/role.middleware';
 //import { Roles } from '@/constants/role.enum';
 
 
 router.post(
-    '/',
+    '/plans/add',
     authMiddleware,
     //roleMiddleware(Roles.Admin),
-    planController.createPlan
+    upload.single('profile'),
+    (req,res,next)=>planController.createPlan(req,res,next)
 );
 
 // GET ALL PLANS (Admin/User)
 router.get(
-    '/',
+    '/plans',
     authMiddleware,
-    planController.getAllPlans
+    (req,res,next)=>planController.getAllPlans(req,res,next)
 );
 
 
 // GET SINGLE PLAN
 router.get(
-    '/:id',
+    '/plans/:planId',
     authMiddleware,
-    planController.getPlanById
+    (req,res,next)=>planController.getPlanById(req,res,next)
 );
 
 // UPDATE PLAN (Admin)
 router.patch(
-    '/:id',
+    '/plans/:planId',
     authMiddleware,
     //roleMiddleware(Roles.Admin),
-    planController.updatePlan
+    (req,res,next)=>planController.updatePlan(req,res,next)
 );
 
 
 // DELETE PLAN (Admin)
 router.delete(
-    '/:id',
+    '/plans/:planId',
     authMiddleware,
     //roleMiddleware(Roles.Admin),
-    planController.deletePlan
+    (req,res,next)=>planController.deletePlan(req,res,next)
 );
 
 
 // TOGGLE ACTIVE STATUS
 router.patch(
-    '/active/:id',
+    '/plans/active/:planId',
     authMiddleware,
     //roleMiddleware(Roles.Admin),
     planController.toggleActive
@@ -58,7 +60,7 @@ router.patch(
 
 //  TOGGLE POPULAR PLAN
 router.patch(
-    '/popular/:id',
+    '/plans/popular/:planId',
     authMiddleware,
     //roleMiddleware(Roles.Admin),
     planController.togglePopular

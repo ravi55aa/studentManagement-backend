@@ -8,6 +8,8 @@ export interface ISchoolRepository extends BaseRepository<ISchool> {
 
   createSchool(schoolData: ISchool): Promise<ISchool | null>;
 
+  getAllSchool(): Promise<ISchool[] | null>;
+
   // UPDATE
   updateSchool(schoolId: string, updateData: Partial<ISchool>): Promise<ISchool | null>;
 

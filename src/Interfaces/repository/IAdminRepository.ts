@@ -1,3 +1,5 @@
+import { ISuperAdmin } from '@Models/superAdminModel';
+
 import { IAddress } from '../../Models/addressModel';
 import { IUser } from '../../Models/userModel';
 import { BaseRepository } from '../../Repository/BaseRepository';
@@ -7,4 +9,8 @@ export interface IUserRepository extends BaseRepository<IUser> {
   //create(address:Partial<IAddress>):Promise<IAddress>
 
   addAddress(addressData: Partial<IAddress>): Promise<IAddress | null>;
+}
+
+export interface ISuperAdminRepository extends BaseRepository<ISuperAdmin> {
+  findByEmail(email: string): Promise<ISuperAdmin | null>;
 }

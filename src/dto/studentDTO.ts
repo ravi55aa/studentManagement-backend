@@ -100,15 +100,10 @@ export class AttendanceDto {
 
   static markAttendance(req: Request, res: Response): Partial<IAttendance> {
     const { batchId } = req.params;
+    const {date}=req.query as {date:string};
 
-    const now = new Date();
-    const today = new Date(
-      Date.UTC(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate()
-      )
-    );
+    const [year, month, day] = date.split("-").map(Number);
+    const today = new Date(Date.UTC(year!, month! - 1, day));
 
     const decoded = SchoolAcademicYearDto.getTenantId(req, res);
 
@@ -139,7 +134,7 @@ export class AttendanceDto {
           reason,
           body,
           attachment,
-          date: new Date(), // will normalize in service
+          date: new Date(), 
         },
       ],
     };

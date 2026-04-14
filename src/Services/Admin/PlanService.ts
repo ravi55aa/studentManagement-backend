@@ -27,7 +27,6 @@ export class PlanService implements IPlanService {
         //  calculate finalAmount (safety)
         if (data.amount && data.discount) {
             const discountAmount = (data.amount * data.discount) / 100;
-            data.discountAmount = discountAmount;
             data.finalAmount = data.amount - discountAmount;
         }
 
@@ -63,8 +62,8 @@ export class PlanService implements IPlanService {
     }
 
     // UPDATE PLAN
-    async updatePlan(id: string, data: Partial<IPlan>): Promise<serviceReturnType> {
-        const existing = await this._planRepo.findById(id);
+    async updatePlan(planId: string, data: Partial<IPlan>): Promise<serviceReturnType> {
+        const existing = await this._planRepo.findById(planId);
 
         if (!existing) {
         return ApiResponse.failure(SubscriptionPlanMessage.PlanNotFound);
@@ -73,11 +72,10 @@ export class PlanService implements IPlanService {
         // recalculate if needed
         if (data.amount && data.discount !== undefined) {
         const discountAmount = (data.amount * data.discount) / 100;
-        data.discountAmount = discountAmount;
         data.finalAmount = data.amount - discountAmount;
         }
 
-        const updated = await this._planRepo.update(id, data);
+        const updated = await this._planRepo.update(planId, data);
 
         if (!updated) {
         return ApiResponse.failure(SubscriptionPlanMessage.PlanUpdateFailed);

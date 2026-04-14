@@ -11,7 +11,7 @@ import { IAddress } from '@Models/addressModel';
 import { AddressFormatter, UserValidator } from '@Constants/userValidator';
 import { handleJwtTokensGenerator, IJwtPayload } from '@Utils/jwt';
 import { ApiResponse } from '@Constants/apiResponse';
-import { IUserRepository } from '@Interfaces/repository/IAdminRepository';
+import { ISuperAdminRepository, IUserRepository } from '@Interfaces/repository/IAdminRepository';
 import { AuthMessage, UserMessage } from '@Constants/resposeMessages';
 import { IStudentRepository } from '@Interfaces/repository/IStudentRepository';
 
@@ -75,6 +75,7 @@ export class UserAuthServiceV2 implements IAuthService {
     Admin: null,
     School: null,
     Student: null,
+    SuperAdmin: null,
   };
 
   constructor(
@@ -84,18 +85,20 @@ export class UserAuthServiceV2 implements IAuthService {
     @inject(TYPES.UserRepository)
     private _adminRepo: IUserRepository,
 
+    @inject(TYPES.SuperAdminRepository)
+    private _superAdminRepo: ISuperAdminRepository,
+
     @inject(TYPES.StudentRepository)
     private _studentRepo: IStudentRepository,
   ) {
     this._repositoryMap.Teacher = this._teacherRepo;
     this._repositoryMap.Admin = this._adminRepo;
     this._repositoryMap.Student = this._studentRepo;
+    this._repositoryMap.SuperAdmin = this._superAdminRepo;
   }
 
   async login(payload: AuthPayloadType, req: Request, res: Response): Promise<serviceReturnType> {
     const { email, password, userType } = payload;
-
-    logger.info('login request made by the  user');
 
     if (!email || !password || !userType) {
       return ApiResponse.badRequest(AuthMessage.InvalidCredentials);
@@ -107,7 +110,7 @@ export class UserAuthServiceV2 implements IAuthService {
       return ApiResponse.badRequest(AuthMessage.InvalidUser);
     }
 
-    let user: any = null;
+    let user:any = null;
 
     // Teacher login
     if (userType === 'Teacher') {
@@ -121,7 +124,7 @@ export class UserAuthServiceV2 implements IAuthService {
         return ApiResponse.failure(AuthMessage.not_Found);
       }
 
-      const isValid = await bcrypt.compare(password, user.password);
+      const isValid = await bcrypt.compare(password, user.password  );
 
       if (!isValid) {
         return ApiResponse.badRequest(AuthMessage.InvalidCredentials);

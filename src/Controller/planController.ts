@@ -40,23 +40,26 @@ export default class PlanController {
         const { status, resBody } = await this._planService.getAllPlans(query);
 
         res.status(status).json(resBody);
+
         } catch (error) {
-        next(error);
+
+            next(error);
+            
         }
     }
 
     // GET PLAN BY ID
     public async getPlanById(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-        const { id } = req.params;
+        const { planId } = req.params;
 
-        if (!id) {
+        if (!planId) {
             const { status, resBody } = ApiResponse.notFound(SubscriptionPlanMessage.InvalidPlanId);
             res.status(status).json(resBody);
             return;
         }
 
-        const { status, resBody } = await this._planService.getPlanById(id);
+        const { status, resBody } = await this._planService.getPlanById(planId);
 
         res.status(status).json(resBody);
         } catch (error) {
@@ -67,10 +70,10 @@ export default class PlanController {
     // UPDATE PLAN
     public async updatePlan(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-        const { id } = req.params;
+        const { planId } = req.params;
         const body = req.body;
 
-        if (!id) {
+        if (!planId) {
             const { status, resBody } = ApiResponse.notFound(SubscriptionPlanMessage.InvalidPlanId);
             res.status(status).json(resBody);
             return;
@@ -82,7 +85,7 @@ export default class PlanController {
             return;
         }
 
-        const { status, resBody } = await this._planService.updatePlan(id, body);
+        const { status, resBody } = await this._planService.updatePlan(planId, body);
 
         res.status(status).json(resBody);
         } catch (error) {
@@ -93,15 +96,15 @@ export default class PlanController {
     // DELETE PLAN
     public async deletePlan(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-        const { id } = req.params;
+        const { planId } = req.params;
 
-        if (!id) {
+        if (!planId) {
             const { status, resBody } = ApiResponse.notFound(SubscriptionPlanMessage.InvalidPlanId);
             res.status(status).json(resBody);
             return;
         }
 
-        const { status, resBody } = await this._planService.deletePlan(id);
+        const { status, resBody } = await this._planService.deletePlan(planId);
 
         res.status(status).json(resBody);
         } catch (error) {
@@ -112,10 +115,10 @@ export default class PlanController {
     // TOGGLE ACTIVE
     public async toggleActive(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-        const { id } = req.params;
+        const { planId } = req.params;
         const { isActive } = req.body;
 
-        if (!id) {
+        if (!planId) {
             const { status, resBody } = ApiResponse.notFound(SubscriptionPlanMessage.InvalidPlanId);
             res.status(status).json(resBody);
             return;
@@ -127,7 +130,7 @@ export default class PlanController {
             return;
         }
 
-        const { status, resBody } = await this._planService.toggleActive(id, isActive);
+        const { status, resBody } = await this._planService.toggleActive(planId, isActive);
 
         res.status(status).json(resBody);
         } catch (error) {
@@ -138,10 +141,10 @@ export default class PlanController {
     // TOGGLE POPULAR
     public async togglePopular(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-        const { id } = req.params;
+        const { planId } = req.params;
         const { isPopular } = req.body;
 
-        if (!id) {
+        if (!planId) {
             const { status, resBody } = ApiResponse.notFound(SubscriptionPlanMessage.InvalidPlanId);
             res.status(status).json(resBody);
             return;
@@ -153,7 +156,7 @@ export default class PlanController {
             return;
         }
 
-        const { status, resBody } = await this._planService.togglePopular(id, isPopular);
+        const { status, resBody } = await this._planService.togglePopular(planId, isPopular);
 
         res.status(status).json(resBody);
         } catch (error) {

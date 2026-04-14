@@ -52,6 +52,8 @@ export const TYPES = {
   StudentRepository: Symbol.for('StudentRepository'),
   StudentService: Symbol.for('StudentService'),
 
+  SuperAdminRepository: Symbol.for('SuperAdminRepository'),
+
   StudentHomeworkRepository: Symbol.for('StudentHomeworkRepository'),
   StudentHomeworkService: Symbol.for('StudentHomeworkService'),
 

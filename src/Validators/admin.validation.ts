@@ -19,11 +19,6 @@ export const planSchema = z.object({
         .max(100, 'Discount cannot exceed 100%')
         .optional(),
 
-    discountAmount: z
-        .number()
-        .min(0, 'Discount amount cannot be negative')
-        .optional(),
-
     finalAmount: z
         .number()
         .min(0, 'Final amount must be >= 0'),

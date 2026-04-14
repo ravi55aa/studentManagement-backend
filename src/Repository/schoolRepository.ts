@@ -33,6 +33,19 @@ export class SchoolRepository extends BaseRepository<ISchool> implements ISchool
     }
   }
 
+  public async getAllSchool(): Promise<ISchool[] | null> {
+    try {
+
+      return await this.model.find({isDelete:false}).lean<ISchool[]>();
+
+    } catch (error) {
+
+      logger.error('Error finding school by ID:', error);
+      
+      return null;
+    }
+  }
+
   public async createSchool(schoolData: ISchool): Promise<ISchool | null> {
     try {
       const school= await this.model.create(schoolData);

@@ -11,7 +11,8 @@ export interface ISchool extends Document {
   profile?: string | undefined;
   phone?: string | undefined;
   isDelete?:boolean,
-  status?:schoolStatus
+  status?:schoolStatus,
+  subdomain?:string,
 }
 
 const schoolMeta = new mongoose.Schema<ISchool>(
@@ -64,6 +65,11 @@ const schoolMeta = new mongoose.Schema<ISchool>(
       type:String,
       enum:['verify','verified','block'],
       default:'verify'
+    },
+    subdomain:{
+      type:String,
+      default:'schoolName',
+      unique:true
     }
   },
   { timestamps: true },

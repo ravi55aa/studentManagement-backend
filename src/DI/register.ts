@@ -16,7 +16,7 @@ import { PlanRepository } from '@Repository/Admin/PlanRepository';
 import { AddressService } from '@Services/addressService';
 import { DocumentRepository } from '@Repository/documentRepository';
 import { DocumentService } from '@Services/documentService';
-import { UserRepository } from '@Repository/userRepository';
+import { SuperAdminRepository, UserRepository } from '@Repository/userRepository';
 import { TeacherService } from '@Services/teacherService';
 import { TeacherRepository } from '@Repository/teacherRepo';
 import { NotificationRepo } from '@Repository/notificationRepo';
@@ -130,6 +130,8 @@ container.registerSingleton(TYPES.StudentAttendanceRepository, StudentAttendance
 //subscription plan
 container.registerSingleton(TYPES.PlanService, PlanService);
 container.registerSingleton(TYPES.PlanRepository, PlanRepository);
+
+container.registerSingleton(TYPES.SuperAdminRepository, SuperAdminRepository);
 
 
 /* ================= OTHER ================= */

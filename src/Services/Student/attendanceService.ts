@@ -32,14 +32,17 @@ export class StudentAttendanceService implements IStudentAttendanceService {
         });
 
         if (existing.length > 0) {
-        const list = existing[0];
-        const updated = await this._attendanceRepo.updateAttendance(list!._id, {
-            students: dto.students!,
-        });
 
-        if (!updated) {
-            return ApiResponse.failure(AttendanceMessage.AttendanceAlreadyMarked);
-        }
+            const list = existing[0];
+
+            const updated = await this._attendanceRepo.updateAttendance(list!._id, {
+                students: dto.students!,
+            });
+
+            if (!updated) {
+
+                return ApiResponse.failure(AttendanceMessage.AttendanceAlreadyMarked);
+            }
         }
 
         const doc = await this._attendanceRepo.markAttendance(dto);
@@ -60,6 +63,7 @@ export class StudentAttendanceService implements IStudentAttendanceService {
 
     // List Attendance
     async listAttendance(query: FilterQuery<Partial<IAttendance>>): Promise<serviceReturnType> {
+
         const docs = await this._attendanceRepo.getAttendance(query);
 
         if (!docs || docs.length === 0) {
@@ -195,7 +199,10 @@ export class StudentAttendanceService implements IStudentAttendanceService {
         // });
 
         // Normalize date
-        const date = new Date(leave!.date!);
+        const date = new Date(
+            new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+            );
+
         date.setHours(0, 0, 0, 0);
 
         const updated = await this._attendanceRepo.applyLeave(
@@ -214,14 +221,32 @@ export class StudentAttendanceService implements IStudentAttendanceService {
     }
 
     async getStudentLeaveHistory(req: Request): Promise<serviceReturnType> {
-        const { studentId } = req.query; //batchId->if Necessary
+        const { studentId } = req.params; //batchId->if Necessary
+        let { date } = req.query as {date:string}
+
+        if(!date){
+            date = '2026-4-11';//some random value
+        } 
+
+        const start = new Date(`${date}T00:00:00.000+05:30`);
+        const end = new Date(`${date}T23:59:59.999+05:30`);
 
         if ( !studentId) {
             return ApiResponse.failure(CommonMessage.IdNotFound);
         }
 
         const data = await this._attendanceRepo.getLeaves(
-            {studentId}
+            {
+                studentId,
+                leaveHistory:{
+                    $elemMatch:{
+                        date:{
+                            $gte:start,
+                            $lte:end
+                        }
+                    }
+                }
+            }
         );
 
         if (!data) {

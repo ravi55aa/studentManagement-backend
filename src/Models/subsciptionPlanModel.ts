@@ -6,7 +6,6 @@ export interface IPlan extends Document {
 
     amount: number;
     discount?: number; // percentage
-    discountAmount?: number;
 
     finalAmount: number;
 
@@ -30,7 +29,6 @@ const planSchema = new Schema<IPlan>(
 
         amount: { type: Number, required: true },
         discount: { type: Number, default: 0 },
-        discountAmount: { type: Number, default: 0 },
         finalAmount: { type: Number, required: true },
 
         duration: { type: Number, required: true },

@@ -1,10 +1,12 @@
 import mongoose, { Schema, Types, Document } from 'mongoose';
 
+type leaveApproveStatus= "pending" | "approved" | "rejected";
 interface ILeaveHistory {
   reason: string;
   body: string;
   attachment?: string;
   date: Date;
+  status?:leaveApproveStatus;
 }
 
 export interface IStudentLeave extends Document {
@@ -12,6 +14,7 @@ export interface IStudentLeave extends Document {
   studentId: Types.ObjectId;
   leaveHistory: ILeaveHistory[];
 }
+
 
 const LeaveHistorySchema = new Schema<ILeaveHistory>(
   {
@@ -27,6 +30,11 @@ const LeaveHistorySchema = new Schema<ILeaveHistory>(
     },
     attachment: {
       type: String, // store file URL or path
+    },
+    status:{
+      type:String,
+      enum:["pending" , "approved" , "rejected"],
+      default:'pending'
     },
     date: {
       type: Date,

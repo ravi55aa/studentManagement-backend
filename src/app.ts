@@ -5,8 +5,9 @@ const app = express();
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { stripeController } from '@DI/resolve';
+import { handleSubdomainResolver } from '@Middlewares/roleBaseAuth.middleware';
+import handleErrorsMiddleware from '@Middlewares/error.middleware';
 
-import handleErrorsMiddleware from './Middlewares/error.middleware';
 import { sessionConfig, connectDB } from './Config/index';
 import {
   oauthRouter,
@@ -27,16 +28,28 @@ import logger from './Utils/logger';
 
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: (origin, callback) => { 
+
+      if (!origin) return callback(null, true); 
+      
+      if (origin.includes("localhost:5173")) { 
+          return callback(null, true); 
+        } 
+        
+        return callback(new Error("Not allowed by CORS")); 
+      },
+
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
     credentials: true,
   }),
 );
+
 app.use(cookieParser());
 app.use(sessionConfig());
 app.use(express.urlencoded({ extended: true }));
 app.post('/stripe/webhook',express.raw({type:'application/json'}),(req:Request,res:Response)=>stripeController.callWebHook(req,res));
 app.use(express.json());
+app.use(handleSubdomainResolver)
 
 connectDB();
 
@@ -52,7 +65,7 @@ app.use('/notification', notificationRouter);
 app.use('/stripe', stripeRouter);
 app.use('/fee', feesRouter);
 app.use('/chat', chatRouter);
-app.use('/adminRouter', adminRouter);
+app.use('/admin', adminRouter);
 
 app.use((req, res) => {
   logger.error(' Route not found:', req.method, req.originalUrl);

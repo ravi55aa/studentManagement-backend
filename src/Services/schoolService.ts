@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { injectable, inject } from 'tsyringe';
 import bcrypt from 'bcrypt';
+import logger from '@Utils/logger';
 
 import { TYPES } from '../DI/types';
 import { ISchoolService } from '../Interfaces/services/ISchoolService';
@@ -16,7 +17,7 @@ import { AddressDTO } from '../dto/addressDTO';
 import { ApiResponse } from '../Constants/apiResponse';
 import { adminModel } from '../Models';
 import { ISchoolRepository } from '../Interfaces/repository/ISchoolRepository';
-import { AdminMessage, AuthMessage, CommonMessage, SchoolMessage } from '../Constants/resposeMessages';
+import { AdminMessage, AuthMessage, CommonMessage, SchoolMessage, ServerMessage } from '../Constants/resposeMessages';
 
 @injectable()
 export class SchoolService implements ISchoolService {
@@ -116,13 +117,35 @@ export class SchoolService implements ISchoolService {
     return ApiResponse.success(school, SchoolMessage.SchoolListed);
   }
 
+  async getallSchool(): Promise<serviceReturnType> {
+    try{
+      const school = await this._schoolRepository.getAllSchool();
+
+      if (!school || !school?.length ) {
+        return ApiResponse.failure(SchoolMessage.NotFound);
+      }
+
+      return ApiResponse.success(school, SchoolMessage.FetchAll);
+    } catch (error) {
+          logger.error(SchoolMessage.NotFound, {
+            layer: 'service',
+            module: 'school',
+            error,
+          });
+    
+          return ApiResponse.failure(ServerMessage.ServerError);
+      }
+  }
+
   async updateSchoolMeta(req: Request, res: Response): Promise<serviceReturnType> {
     const { id, dtoData } = SchoolDTO.updateSchool(req, res);
 
     const updatedSchool = await this._schoolRepository.updateSchool(id, dtoData);
 
     if (!updatedSchool) {
+
       return ApiResponse.failure(SchoolMessage.NotUpdated);
+      
     }
 
     return ApiResponse.success(updatedSchool, SchoolMessage.Updated);
@@ -147,6 +170,8 @@ export class SchoolService implements ISchoolService {
 
     return ApiResponse.success(allData, SchoolMessage.FetchAll);
   }
+
+
 
   public async deleteSchool(req: Request): Promise<serviceReturnType> {
     const schoolId = req.params.id;
