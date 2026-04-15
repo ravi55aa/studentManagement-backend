@@ -126,6 +126,17 @@ export default class StudentAttendanceController {
         }
     }
 
+    async updateAppliedLeaveStatus(req: Request, res: Response, next: NextFunction) {
+        try {
+        const { status, resBody }: serviceReturnType =
+            await this._attendanceService.updateAppliedLeaveStatus(req);
+
+        res.status(status).json(resBody);
+        } catch (err) {
+        next(err);
+        }
+    }
+
     async getLeaveList(req: Request, res: Response, next: NextFunction) {
         try {
         const { status, resBody }: serviceReturnType =

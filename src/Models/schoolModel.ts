@@ -63,7 +63,7 @@ const schoolMeta = new mongoose.Schema<ISchool>(
     },
     status:{
       type:String,
-      enum:['verify','verified','block'],
+      enum:['verify','verified','blocked'],
       default:'verify'
     },
     subdomain:{

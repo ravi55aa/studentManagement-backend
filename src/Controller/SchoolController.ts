@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'tsyringe';
-
-import { StatusCodes } from '../Constants/statusCodes';
-import { handleSchoolRB } from '../Utils/responseBody';
-import { ISchoolService } from '../Interfaces/services/ISchoolService';
-import { TYPES } from '../DI/types';
+import { ApiResponse } from '@Constants/apiResponse';
+import { CommonMessage } from '@Constants/resposeMessages';
+import { StatusCodes } from '@Constants/statusCodes';
+import { handleSchoolRB } from '@Utils/responseBody';
+import { ISchoolService } from '@Interfaces/services/ISchoolService';
+import { TYPES } from '@DI/types';
 
 @injectable()
 export default class SchoolController {
@@ -59,6 +60,26 @@ export default class SchoolController {
   public async getSchoolData_MDA(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { status, resBody } = await this._schoolService.getSchoolAllData(req, res);
+
+      res.status(status).json(resBody);
+
+    } catch (err) {
+      
+      next(err);
+    }
+  }
+
+  public async getASchoolForView(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const {schoolId}=req.params;
+      
+      if(!schoolId){
+        const {status, resBody}=ApiResponse.badRequest(CommonMessage.IdNotFound);
+        res.status(status).json(resBody);
+        return;
+      }
+
+      const { status, resBody } = await this._schoolService.getASchoolFromAdminCredentials(schoolId);
 
       res.status(status).json(resBody);
 

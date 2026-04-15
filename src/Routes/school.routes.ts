@@ -29,7 +29,9 @@ router.post(
 );
 
 
-router.get('/getall', authMiddleware, uploadCloud.single('profile'), (req, res, next) =>
+router.get('/getall', 
+  authMiddleware, 
+  uploadCloud.single('profile'), (req, res, next) =>
   schoolController.getallSchool(req, res, next),
 );
 
@@ -47,6 +49,13 @@ router.get(
   '/data/fetch',
   authMiddleware,
   (req, res, next) => schoolController.getSchoolData_MDA(req, res, next),
+  //MDA = META+DOCUMENTS+ADDRESS
+);
+
+router.get(
+  '/get/:schoolId',
+  authMiddleware,
+  (req, res, next) => schoolController.getASchoolForView(req, res, next),
   //MDA = META+DOCUMENTS+ADDRESS
 );
 

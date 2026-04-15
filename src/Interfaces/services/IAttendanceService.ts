@@ -31,5 +31,7 @@ export interface IStudentAttendanceService {
   //----Apply leave----
   setApplyLeave(req: Request,res:Response): Promise<serviceReturnType>;
 
+  updateAppliedLeaveStatus(req:Request):Promise<serviceReturnType>;
+
   getStudentLeaveHistory(req: Request): Promise<serviceReturnType>;
 }

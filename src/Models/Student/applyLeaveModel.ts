@@ -1,6 +1,6 @@
 import mongoose, { Schema, Types, Document } from 'mongoose';
 
-type leaveApproveStatus= "pending" | "approved" | "rejected";
+export type leaveApproveStatus= "pending" | "approved" | "rejected";
 interface ILeaveHistory {
   reason: string;
   body: string;

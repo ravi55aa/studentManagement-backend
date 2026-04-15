@@ -42,6 +42,9 @@ export enum SchoolMessage {
   NotUpdated = 'School Not updated',
   NotDeleted = 'School not deleted',
 
+  notVerified = 'School verification under process',
+  IsBlocked = 'School is Blocked',
+
   SchoolListed = 'School Listed Successfully',
   Updated = 'School updated',
   FetchAll = 'Listed All School',

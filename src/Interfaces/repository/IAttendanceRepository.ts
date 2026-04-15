@@ -2,7 +2,7 @@
 
 import { FilterQuery, Types } from 'mongoose';
 import { IAttendance } from '@Models/Student/attendanceModel';
-import { IStudentLeave } from '@Models/Student/applyLeaveModel';
+import { IStudentLeave, leaveApproveStatus } from '@Models/Student/applyLeaveModel';
 
 export interface IStudentAttendanceRepository {
   markAttendance(data: Partial<IAttendance>): Promise<IAttendance | null>;
@@ -34,5 +34,15 @@ export interface IStudentAttendanceRepository {
     update: FilterQuery<Partial<IStudentLeave>>,
   ): Promise<void>;
 
+  updateAppliedLeaveStatusFromTeacher(
+      filter: FilterQuery<Partial<IStudentLeave>>,
+      update: FilterQuery<Partial<IStudentLeave>>,
+    ): Promise<void|null>
+
   getLeaves(filter: FilterQuery<Partial<IStudentLeave>>): Promise<IStudentLeave | null>;
+
+  updateStudentLeave(
+      filter: FilterQuery<Partial<IStudentLeave>>,
+      date: Date,
+      status:leaveApproveStatus):Promise<IStudentLeave | null> 
 }

@@ -89,16 +89,16 @@ export class PlanService implements IPlanService {
         const existing = await this._planRepo.findById(id);
 
         if (!existing) {
-        return ApiResponse.failure(SubscriptionPlanMessage.PlanNotFound);
+            return ApiResponse.failure(SubscriptionPlanMessage.PlanNotFound);
         }
 
         const deleted = await this._planRepo.delete(id);
 
         if (!deleted) {
-        return ApiResponse.failure(SubscriptionPlanMessage.PlanDeleteFailed);
+            return ApiResponse.failure(SubscriptionPlanMessage.PlanDeleteFailed);
         }
 
-        return ApiResponse.success(null, SubscriptionPlanMessage.PlanDeleted);
+        return ApiResponse.success({ deleted: true }, SubscriptionPlanMessage.PlanDeleted);
     }
 
     // TOGGLE ACTIVE

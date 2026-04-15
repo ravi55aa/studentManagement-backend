@@ -98,6 +98,7 @@ export class UserAuthServiceV2 implements IAuthService {
   }
 
   async login(payload: AuthPayloadType, req: Request, res: Response): Promise<serviceReturnType> {
+
     const { email, password, userType } = payload;
 
     if (!email || !password || !userType) {
@@ -147,7 +148,7 @@ export class UserAuthServiceV2 implements IAuthService {
     const tokenPayload: IJwtPayload = {
       userId: user._id,
       role: userType,
-      tenantId: tenantId,
+      tenantId: tenantId || user._id,
     };
 
     handleJwtTokensGenerator(tokenPayload, req, res);

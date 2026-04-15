@@ -28,16 +28,22 @@ import logger from './Utils/logger';
 
 app.use(
   cors({
-    origin: (origin, callback) => { 
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
 
-      if (!origin) return callback(null, true); 
+      const isLocalhost =
+        origin === 'http://localhost:5173';
+    
       
-      if (origin.includes("localhost:5173")) { 
-          return callback(null, true); 
-        } 
-        
-        return callback(new Error("Not allowed by CORS")); 
-      },
+      const isSubdomain =
+      /^http:\/\/([a-z0-9-]+)\.localhost:5173$/.test(origin);
+      
+      if (isLocalhost || isSubdomain) {
+        return callback(null, true);
+      }
+
+      return callback(new Error(`CORS blocked: ${origin}`));
+    },
 
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
     credentials: true,

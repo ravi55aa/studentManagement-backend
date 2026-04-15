@@ -10,7 +10,7 @@ export const handleSubdomainResolver = async (req:Request,res:Response,next:Next
 
   const subdomain = host.split(".")[0];
 
-  if (subdomain === "localhost") {
+  if (subdomain === "localhost" || subdomain === "admin") {
     return next();
   }
 

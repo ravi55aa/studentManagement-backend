@@ -31,7 +31,11 @@ router
 
 
 
-/***** Homework *****/
+/***** 
+ * 
+ * Homework 
+ * 
+ * *****/
 router.post(
   '/homework/submit/:homeworkId',
   authMiddleware,
@@ -54,7 +58,11 @@ router.get('/homework/get/:homeworkId', authMiddleware, (req, res, next) =>
   studentHomeworkController.getSubmission(req, res, next),
 );
 
-/******* Attendance *******/
+/******* 
+ * 
+ * Attendance 
+ * 
+ * *******/
 router.post('/attendance/update/:batchId', authMiddleware, (req, res, next) =>
   studentAttendanceController.markAttendance(req, res, next),
 );
@@ -71,22 +79,29 @@ router.get('/attendance/batch', authMiddleware, (req, res, next) =>
   studentAttendanceController.getAAttendanceOfABatch(req, res, next),
 );
 
-// router.get('/attendance/get/:batchId', studentAttendanceController.updateAttendance);
-// router.get('/attendance/:id', studentAttendanceController.getAttendanceById);
-// router.put('/attendance/:id', studentAttendanceController.updateAttendance);
-// router.delete('/attendance/:id', studentAttendanceController.deleteAttendance);
-// router.get('/attendance/view/:id', studentAttendanceController.viewAttendance);
 
-/******* Attendance-Apply Leave *******/
+/******* 
+ * 
+ * Attendance Apply-Leave 
+ * 
+ * *******/
 router.post('/applyLeave/:studentId', authMiddleware, (req, res, next) =>
   studentAttendanceController.applyLeave(req, res, next),
+);
+
+router.patch('/appliedLeave/updateStatus/:studentId/:batchId', authMiddleware, (req, res, next) =>
+  studentAttendanceController.updateAppliedLeaveStatus(req, res, next),
 );
 
 router.get('/leaveHistory/:studentId', authMiddleware, (req, res, next) =>
   studentAttendanceController.getLeaveList(req, res, next),
 );
 
-/***STUDENT FEE */
+/******
+ * 
+ *  STUDENT FEE 
+ * 
+ * ******/
 router.get('/fee/details/:studentId', authMiddleware, (req, res, next) =>
   stripeController.getStudentFeeDetails(req, res, next),
 );

@@ -1,1 +1,1 @@
-export type JwtROle = 'Admin' | 'School' | 'Teacher' | 'Student';
+export type JwtROle = 'SuperAdmin' | 'Admin' | 'School' | 'Teacher' | 'Student';

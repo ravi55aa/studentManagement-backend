@@ -93,7 +93,7 @@ export class SchoolService implements ISchoolService {
   async getSchool(req: Request, res: Response): Promise<serviceReturnType> {
     const { password, schoolName, userId } = SchoolDTO.getSchool(req, res);
 
-    const school = await this._schoolRepository.findOne({ schoolName, userId,isDelete:false });
+    const school = await this._schoolRepository.findOne({ schoolName, userId,isDelete:false});
 
     if (school) {
       const hashedPassword = await bcrypt.compare(password, school.password!);
@@ -101,9 +101,14 @@ export class SchoolService implements ISchoolService {
         return ApiResponse.failure(AuthMessage.InvalidCurrentPassword);
       }
     }
-    if (!school) {
+
+    if (!school) {  //process school
       return ApiResponse.failure(SchoolMessage.NotFound);
-    }
+    } else if(school.status=='verify'){
+      return ApiResponse.badRequest(SchoolMessage.notVerified);
+    } else if(school.status=='blocked'){
+      return ApiResponse.badRequest(SchoolMessage.IsBlocked);
+    } 
 
     //JWT ****
     const payload: IJwtPayload = {
@@ -160,6 +165,28 @@ export class SchoolService implements ISchoolService {
     const schoolAddressDoc = await this._addressRepo.findOne(addrQuery);
 
     const docsQuery = { userId: tenantId, role: 'School' };
+    const schoolFilesDoc = await this._docRepo.findOne(docsQuery);
+
+    const allData = {
+      meta: schoolDoc,
+      address: schoolAddressDoc,
+      documents: schoolFilesDoc,
+    };
+
+    return ApiResponse.success(allData, SchoolMessage.FetchAll);
+  }
+  
+  public async getASchoolFromAdminCredentials(schoolId:string):Promise<serviceReturnType>{
+    const schoolDoc: Partial<ISchool | null> = await this._schoolRepository.findOne({_id:schoolId,isDelete:false});
+    
+    if(!schoolDoc){
+      return ApiResponse.notFound(SchoolMessage.NotFound);
+    }
+    
+    const addrQuery = { userId: schoolId };
+    const schoolAddressDoc = await this._addressRepo.findOne(addrQuery);
+
+    const docsQuery = { userId: schoolId, role: 'School' };
     const schoolFilesDoc = await this._docRepo.findOne(docsQuery);
 
     const allData = {

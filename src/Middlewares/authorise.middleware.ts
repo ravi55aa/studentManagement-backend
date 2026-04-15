@@ -70,9 +70,10 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
     /* ===========Set New Access Token Cookie============*/
     res.cookie('token', newAccessToken, {
+      //domain:'.localhost',
       httpOnly: true,
       secure: false,
-      sameSite: 'strict',
+      sameSite: 'lax',
       maxAge: 2 * 60 * 1000, // 2 minutes (consider moving to env)
     });
 

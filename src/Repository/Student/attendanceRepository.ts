@@ -6,8 +6,8 @@ import { BaseRepository } from '@Repository/BaseRepository';
 import logger from '@Utils/logger';
 import { IStudentAttendanceRepository } from '@Interfaces/repository/IAttendanceRepository';
 import studentAttendanceModel, { IAttendance } from '@Models/Student/attendanceModel';
-import { IStudentLeave, studentLeaveModel } from '@Models/Student/applyLeaveModel';
-import { LeaveMessage } from '@Constants/resposeMessages';
+import { IStudentLeave, leaveApproveStatus, studentLeaveModel } from '@Models/Student/applyLeaveModel';
+import { AttendanceMessage, LeaveMessage } from '@Constants/resposeMessages';
 
 @injectable()
 export class StudentAttendanceRepository
@@ -120,6 +120,18 @@ export class StudentAttendanceRepository
     }
   }
 
+  async updateAttendanceStatus(
+    id: string,
+    updateData: Partial<IAttendance>,
+  ): Promise<IAttendance | null> {
+    try {
+      return await this.updateById(id, updateData);
+    } catch (error) {
+      logger.error('Error while updating attendance:', error);
+      return null;
+    }
+  }
+
   // Soft Delete Attendance
   async deleteAttendance(id: string): Promise<boolean> {
     try {
@@ -152,11 +164,50 @@ export class StudentAttendanceRepository
     }
   }
 
+  async updateAppliedLeaveStatusFromTeacher(
+    filter: FilterQuery<Partial<IStudentLeave>>,
+    update: FilterQuery<Partial<IStudentLeave>>,
+  ): Promise<void|null> {
+    try {
+      return await this.model.findOneAndUpdate(filter, update, {
+        new: true
+      });
+
+    } catch (error) {
+      logger.error(AttendanceMessage.AttendanceNotUpdated, error);
+      return;
+    }
+  }
+
   async getLeaves(filter: FilterQuery<Partial<IStudentLeave>>): Promise<IStudentLeave | null> {
     try {
       return await studentLeaveModel.findOne(filter).lean<IStudentLeave>();
     } catch (error) {
       logger.error(LeaveMessage.LeaveNotFound, error);
+      return null;
+    }
+  }
+
+    async updateStudentLeave(
+    filter: FilterQuery<Partial<IStudentLeave>>,
+    date: Date,
+    status:leaveApproveStatus
+  ): Promise<IStudentLeave | null> {
+    try {
+      return await studentLeaveModel.findOneAndUpdate(
+        {
+          ...filter,
+          "leaveHistory.date": date, 
+        },
+        {
+          $set: {
+            "leaveHistory.$.status": status,
+          },
+        },
+        { new: true }
+      ).lean<IStudentLeave>();
+    } catch (error) {
+      logger.error("Leave update failed", error);
       return null;
     }
   }

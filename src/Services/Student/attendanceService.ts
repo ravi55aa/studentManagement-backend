@@ -8,8 +8,8 @@ import { AttendanceDto } from '@dto/studentDTO';
 import { TYPES } from '@DI/types';
 import { IStudentAttendanceRepository } from '@Interfaces/repository/IAttendanceRepository';
 import { IStudentAttendanceService } from '@Interfaces/services/IAttendanceService';
-import { IStudentLeave } from '@Models/Student/applyLeaveModel';
-import { AttendanceMessage, CommonMessage, LeaveMessage } from '@Constants/resposeMessages';
+import { IStudentLeave, leaveApproveStatus } from '@Models/Student/applyLeaveModel';
+import { AttendanceMessage, CommonMessage, LeaveMessage, ServerMessage } from '@Constants/resposeMessages';
 import logger from '@Utils/logger';
 import { leaveDocValidationSchema } from '@Validators/student.validation';
 import { handleValidationOF } from '@Middlewares/validateUser.middleware';
@@ -218,6 +218,45 @@ export class StudentAttendanceService implements IStudentAttendanceService {
         );
 
         return ApiResponse.success(updated, LeaveMessage.LeaveApplied);
+    }
+
+    async updateAppliedLeaveStatus(req:Request):Promise<serviceReturnType>{
+        
+        try {
+            const {batchId,studentId} = req.params;
+            const {date,approveStatus} = req.query as {date:string,approveStatus:unknown};
+
+            if(!batchId || !studentId)  {
+                logger.error(CommonMessage.IdNotFound,batchId,studentId,{layer:'service',module:'studentAttendance'});
+                return ApiResponse.failure(CommonMessage.IdNotFound);
+            } 
+
+            const updatedDate=new Date(date);
+            updatedDate.setHours(0,0,0,0);
+
+            if(!date || !approveStatus){
+                logger.error('Credential missing date:%s approveState:%j',updatedDate,approveStatus,batchId,studentId,{layer:'service',module:'studentAttendance'});
+                return ApiResponse.failure(LeaveMessage.LeaveCredentialsNotFound);
+            }
+
+            //Formate: filter and query
+            const filter={batchId, date, "student.studentId":studentId};
+            const leaveStatus=status=='approved'?'leave':'absent';
+            const update={$set: {"students.$.status": leaveStatus}};
+
+            //make a repository call;
+            const updated=await this._attendanceRepo.updateAppliedLeaveStatusFromTeacher(filter,update);
+
+            if(updated){
+                this._attendanceRepo.updateStudentLeave({'studentId':studentId},updatedDate,status as leaveApproveStatus);
+            }
+
+            return ApiResponse.success(null,LeaveMessage.LeaveUpdated);
+
+        } catch (error) {
+            logger.error(LeaveMessage.LeaveRejected, error);
+            return ApiResponse.internalServerError(ServerMessage.ServerError);
+        }
     }
 
     async getStudentLeaveHistory(req: Request): Promise<serviceReturnType> {
