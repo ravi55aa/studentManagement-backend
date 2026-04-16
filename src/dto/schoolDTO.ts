@@ -43,21 +43,20 @@ export class SchoolDTO {
     }
 
     const { adminName, schoolName, phone,status } = req.body;
-    let { profile } = req.body;
-
-    if (req.file) {
-      profile = req.file.path;
-    }
+    const profile = req.file?.path || null;
 
     handleTokenVerification(req, res);
 
     const dtoData: Partial<ISchool> = {};
 
+    if (profile) {
+      dtoData.profile = profile;
+    } 
+
     if (adminName !== undefined) dtoData.adminName = adminName;
 
     if (schoolName !== undefined) dtoData.schoolName = schoolName;
 
-    if (profile !== undefined) dtoData.profile = profile;
 
     if (phone !== undefined) dtoData.phone = phone;
 
@@ -190,9 +189,27 @@ export class SchoolSubjectsDto {
 
     if (!findYear) return (dtoData.academicYear = null);
 
+    const attachMents=this.extractAttachments(req);
+    dtoData.referenceBooks=attachMents.map((upload:IUploadedDoc)=>upload.url);
+    
     dtoData.academicYear = findYear._id;
 
     return dtoData;
+  }
+
+  static extractAttachments (req:Request) {
+    let attachMents: IUploadedDoc[] = [];
+    
+    if (Array.isArray(req.files)) {
+      attachMents = req?.files?.map((ele) => {
+        return {
+          fileName: ele.originalname || 'attachment',
+          url: ele.path,
+        };
+      });
+    }
+
+    return attachMents;
   }
 
   static async updateSubject(req: Request, res: Response) {
@@ -211,11 +228,14 @@ export class SchoolSubjectsDto {
       maxMarks,
       passMarks,
       credits,
-      referenceBooks,
       description,
+      docsOfSubject
     } = req.body;
 
     const decoded = handleTokenVerification(req, res);
+
+    const attachMents=this.extractAttachments(req);
+    const references=attachMents.map((upload:IUploadedDoc)=>upload.url);
 
     const updateSubjectDto: IAcademicSubject = {
       ...(code && { code: code.slice(0, 4) == 'SUB-' ? code : 'SUB-' + code }),
@@ -237,8 +257,8 @@ export class SchoolSubjectsDto {
       ...(passMarks !== undefined && { passMarks }),
       ...(credits !== undefined && { credits }),
 
-      ...(Array.isArray(referenceBooks) && { referenceBooks }),
       ...(description && { description }),
+      ...(req.files && { referenceBooks:[...docsOfSubject,...references] }),
 
       adminId: decoded.userId,
       tenantId: decoded.tenantId,
@@ -252,6 +272,13 @@ export class SchoolSubjectsDto {
     //   batchesToFollowArray.push(isBatch._id);
     // }
     // updateSubjectDto.batchesToFollow = batchesToFollowArray;
+    const findYear = await academicYearModel
+      .findOne({ code: updateSubjectDto.academicYear })
+      .lean<IAcademicYear>();
+
+    if (!findYear) return (updateSubjectDto.academicYear = decoded.tenantId );
+
+    updateSubjectDto.academicYear = findYear._id;
 
     return updateSubjectDto;
   }
@@ -278,6 +305,8 @@ export class SchoolCoursesDto {
       center,
       eligibilityCriteria,
     } = req.body;
+
+    console.log('@schoolCoursesDto req.files',req.files);
 
     let { subjects } = req.body;
 

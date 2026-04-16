@@ -73,7 +73,7 @@ export interface IAcademicSubject extends Document {
 
   tenantId: ObjectId;
   adminId: ObjectId;
-  academicYear: ObjectId;
+  academicYear: Types.ObjectId;
 
   description: string;
   department?: string;
@@ -143,7 +143,7 @@ const AcademicSubjectsSchema = new Schema<IAcademicSubject>(
     },
 
     academicYear: {
-      type: Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'AcademicYear',
       required: true,
     },

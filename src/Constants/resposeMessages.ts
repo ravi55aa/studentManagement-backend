@@ -78,6 +78,7 @@ export enum AcademicSubjectMessage {
   SubjectUpdateFailed = 'Failed to update subject',
   SubjectDeleteFailed = 'Failed to delete subject',
   NoSubjectsFound = 'No academic subjects found',
+  SubjectNotUpdated = 'Academic subject not updated successfully',
 
   // Success
   SubjectCreated = 'Academic subject created successfully',

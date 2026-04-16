@@ -290,12 +290,12 @@ export class SchoolAcademicSubjectSer implements ISchoolAcademicSubjectSer {
       const updated = await this._repo.updateSubject({ _id: id }, dto);
 
       if (!updated) {
-        return ApiResponse.notFound(AcademicSubjectMessage.SubjectNotFound);
+        return ApiResponse.notFound(AcademicSubjectMessage.SubjectNotUpdated);
       }
 
       return ApiResponse.success(updated, AcademicSubjectMessage.SubjectUpdated);
     } catch (error) {
-      logger.error('UpdateAcademicSubject failed', {
+      logger.error(AcademicSubjectMessage.SubjectNotUpdated, {
         layer: 'service',
         module: 'academicSubject',
         error,

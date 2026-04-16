@@ -19,7 +19,7 @@ router.post(
 // GET ALL PLANS (Admin/User)
 router.get(
     '/plans',
-    authMiddleware,
+    //authMiddleware,
     (req,res,next)=>planController.getAllPlans(req,res,next)
 );
 

@@ -3,7 +3,7 @@ import { ISchoolRepository } from '@Interfaces/repository/ISchoolRepository';
 import { IStudentRepository } from '@Interfaces/repository/IStudentRepository';
 import { ITeacherRepo } from '@Interfaces/repository/ITeacherRepo';
 
-export type UserRole = 'School' | 'Admin' | 'Teacher' | 'Student';
+export type UserRole = 'SuperAdmin' | 'School' | 'Admin' | 'Teacher' | 'Student';
 
 export type UserType = 'SuperAdmin' |'Teacher' | 'Admin' | 'School' | 'Student';
 
