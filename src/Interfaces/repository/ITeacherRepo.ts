@@ -1,13 +1,15 @@
 import { FilterQuery } from 'mongoose';
+import { ITeacher, ITeacherBio } from '@Models/teacherModel';
+import { BaseRepository } from '@Repository/BaseRepository';
 
-import { ITeacher, ITeacherBio } from '../../Models/teacherModel';
-import { BaseRepository } from '../../Repository/BaseRepository';
 import { IGetAllTeachers } from '../Other/getAllTeachers';
+import { TPaginationQuery, TPaginationResult } from '../../types/pagination';
 
 export interface ITeacherRepo extends BaseRepository<ITeacherBio> {
   createProfessional(data: Partial<ITeacher>): Promise<ITeacher | null>;
 
-  getAllTeachers(): Promise<IGetAllTeachers | null>;
+  getAllTeachers(paginationQuery:TPaginationQuery):
+    Promise<TPaginationResult<IGetAllTeachers>|null>
 
   // getTeacherById(teacherId: string): Promise<ITeacher | null>;
 
@@ -27,7 +29,7 @@ export interface ITeacherRepo extends BaseRepository<ITeacherBio> {
 
   updateProfessionalByTeacherId(teacherId: string, data: Partial<ITeacher>): Promise<ITeacher | null>;
 
-  getUnassignedTeachers(query: FilterQuery<Partial<ITeacher>>): Promise<ITeacherBio[]>;
+  getUnassignedTeachers(query: FilterQuery<Partial<ITeacher>>,paginationQuery:TPaginationQuery): Promise<TPaginationResult<ITeacherBio>|null>;
 
   findOneProfessional(query: FilterQuery<Partial<ITeacher>>): Promise<ITeacher | null>;
 

@@ -1,12 +1,13 @@
 import { FilterQuery, Types } from 'mongoose';
 import { injectable } from 'tsyringe';
+import { teacherModel } from '@Models/index';
+import { ITeacher, ITeacherBio, teacherBioModel } from '@Models/teacherModel';
+import { ITeacherRepo } from '@Interfaces/repository/ITeacherRepo';
+import logger from '@Utils/logger';
+import { IGetAllTeachers } from '@Interfaces/Other/getAllTeachers';
+import { batchModel } from '@Models/batchModel';
 
-import { teacherModel } from '../Models';
-import { ITeacher, ITeacherBio, teacherBioModel } from '../Models/teacherModel';
-import { ITeacherRepo } from '../Interfaces/repository/ITeacherRepo';
-import logger from '../Utils/logger';
-import { IGetAllTeachers } from '../Interfaces/Other/getAllTeachers';
-import { batchModel } from '../Models/batchModel';
+import { TPaginationQuery, TPaginationResult } from '../types/pagination';
 
 import { BaseRepository } from './BaseRepository';
 
@@ -168,7 +169,13 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
   }
 
   /* ==============GET UNASSIGNED TEACHERS================= */
-  async getUnassignedTeachers(query: FilterQuery<Partial<ITeacher>>): Promise<ITeacherBio[]> {
+  async getUnassignedTeachers(query: FilterQuery<Partial<ITeacher>>,paginationQuery:TPaginationQuery): Promise<TPaginationResult<ITeacherBio>|null> {
+
+    const page=Number(paginationQuery.page) || 1;
+    const limit=Number(paginationQuery.limit) || 10;
+
+    const skip=(page - 1) * limit;
+
     try {
       let assignedIds = null;
       if (query) {
@@ -177,27 +184,55 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
           .distinct('batchCounselor');
       }
 
-      return await this.model.find({ _id: { $nin: assignedIds } }).lean<ITeacherBio[]>();
+      const [data,total] = await Promise.all([
+
+        this.model.find({ _id: { $nin: assignedIds } }).skip(skip).limit(limit).lean<ITeacherBio[]>(),
+        
+        this.model.find({ _id: { $nin: assignedIds } }).countDocuments()
+
+      ]);
+
+      return { data, total ,page,totalPages:Math.ceil(total/limit) };
+
     } catch (error) {
+
       logger.error('Error fetching unassigned teachers:', error);
-      return [];
+      return null;
     }
   }
 
   /* ==============GET ALL TEACHERS (COMBINED)================= */
-  async getAllTeachers(): Promise<IGetAllTeachers | null> {
-    try {
-      const bio = await this.model.find({}, { tenantId: 0 }).lean<ITeacherBio[]>();
+  async getAllTeachers(paginationQuery:TPaginationQuery):
+    Promise<TPaginationResult<IGetAllTeachers> | null> {
 
-      const professional = await teacherModel.find({}, { _id: 0 }).lean<ITeacher[]>();
+    const page=Number(paginationQuery.page) || 1;
+    const limit=Number(paginationQuery.limit) || 10;
+
+    const skip=(page - 1) * limit;
+
+    try {
+
+      const [bio,professional,total] = await Promise.all([
+        
+        this.model.find({}, { tenantId: 0 }).skip(skip).limit(limit).lean<ITeacherBio[]>(), //bio
+
+        teacherModel.find({}, { _id: 0 }).skip(skip).limit(limit).lean<ITeacher[]>(), //professional
+      
+
+        this.model.find({}, { tenantId: 0 }).countDocuments() //total
+      ]);
+
+      const data:IGetAllTeachers[] = 
+      [{teacherBio:bio,teachersSchoolData:professional}];
 
       return {
-        teacherBio: bio,
-        teachersSchoolData: professional,
+        data,
+        total,page,totalPages:Math.ceil(total/limit) 
       };
     } catch (error) {
       logger.error('Error fetching teachers:', error);
       return null;
     }
   }
+
 }

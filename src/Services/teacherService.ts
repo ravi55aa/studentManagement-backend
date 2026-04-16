@@ -15,6 +15,7 @@ import { ITeacherRepo } from '../Interfaces/repository/ITeacherRepo';
 // import { getIO } from '../Config/socket.config';
 // import { otp } from 'Utils/generateOtp';
 
+
 @injectable()
 export class TeacherService implements ITeacherService {
   constructor(
@@ -99,15 +100,18 @@ export class TeacherService implements ITeacherService {
   /* ===================GET/LIST All Teachers====================== */
   public async getAllTeachers(): Promise<serviceReturnType> {
     try {
-      const result = await this._teacherRepo.getAllTeachers();
 
-      if (!result || !result.teacherBio || result.teacherBio.length === 0) {
+      const tempQuery={page:0,limit:8}; // later replace with actual query;
+
+      const result = await this._teacherRepo.getAllTeachers(tempQuery);
+
+      if (!result) {
         return ApiResponse.notFound(TeacherMessage.NoTeachersFound);
       }
 
       return ApiResponse.success(result, TeacherMessage.TeachersListed);
     } catch (error) {
-      logger.error('GetAllTeachers failed', {
+      logger.error(TeacherMessage.NoTeachersFound, {
         layer: 'service',
         module: 'teacher',
         error,
@@ -260,17 +264,20 @@ export class TeacherService implements ITeacherService {
   // }
 
 
-
   public async getUnassignedTeachers(
     query: FilterQuery<Partial<ITeacher>>,
   ): Promise<serviceReturnType> {
+    
     if (query.center == 'School') {
       query.center = null;
     }
 
-    const teachers = await this._teacherRepo.getUnassignedTeachers(query);
+    const tempQuery={page:0,limit:10}; // later replace with actual query;
 
-    if (!teachers.length) {
+    const teachers
+    = await this._teacherRepo.getUnassignedTeachers(query,tempQuery);
+
+    if (!teachers) {
       return ApiResponse.notFound(TeacherMessage.NoUnassignedTeachersFound);
     }
 
@@ -300,13 +307,16 @@ export class TeacherService implements ITeacherService {
 
     if (filters.batchId) query.classTeacherOf = filters.batchId;
 
-    return teacherModel
+    const data = teacherModel
       .find(query)
       .populate('classTeacherOf')
       .populate('assignedSubjects')
       .populate('academicYearId')
       .populate('centerId')
       .lean<ITeacher[]>();
+
+      return data;
+
   }
 
   /* ----------FETCH SINGLE TEACHER------------- */
