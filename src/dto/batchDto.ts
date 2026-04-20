@@ -44,11 +44,18 @@ export class BatchDto {
 
   static handleGetAllBatchesDto(req: Request, res: Response): FilterQuery<Partial<IBatches>> {
     const decodedToken = handleTokenVerification(req, res);
-    const query = req.query;
+
+    const {center} = req.query;
+    
+    if(center){
+      return {
+        tenantId: decodedToken?.tenantId,
+        center
+      }
+    }
 
     return {
       tenantId: decodedToken?.tenantId,
-      ...query,
     };
   }
 }

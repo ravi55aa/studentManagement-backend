@@ -29,6 +29,7 @@ import {
 } from '../Constants/resposeMessages';
 import logger from '../Utils/logger';
 import { ApiResponse } from '../Constants/apiResponse';
+import { TPaginationQuery } from '../types/pagination';
 
 // Page level dependencies
 export interface IFullCourses {
@@ -74,11 +75,12 @@ export class SchoolYear implements ISchoolAcademicYear {
   }
 
   /* =================LIST ALL YEARS==================== */
-  async listAllAcademicYears(): Promise<serviceReturnType> {
+  async listAllAcademicYears(query:TPaginationQuery): Promise<serviceReturnType> {
     try {
-      const years = await this._yearRepo.getAllAcademicYear();
 
-      if (!years || years.length === 0) {
+      const years = await this._yearRepo.getAll(query);
+
+      if (!years || years.data.length === 0) {
         return ApiResponse.notFound(AcademicYearMessage.NoYearsFound);
       }
 

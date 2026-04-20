@@ -11,6 +11,9 @@ import {
 import { ApiResponse } from '../Constants/apiResponse';
 import { CourseMessage } from '../Constants/resposeMessages';
 import { TYPES } from '../DI/types';
+import { TPaginationQuery } from '../types/pagination';
+
+
 /******** SCHOOL YEAR********/
 @injectable()
 export class SchoolAcademicController {
@@ -45,7 +48,9 @@ export class SchoolAcademicController {
 
   async listAllAcademicYear(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, resBody } = await this._academicService.listAllAcademicYears();
+
+      const query = req.query as unknown as TPaginationQuery;
+      const { status, resBody } = await this._academicService.listAllAcademicYears(query);
 
       res.status(status).json(resBody);
     } catch (err) {

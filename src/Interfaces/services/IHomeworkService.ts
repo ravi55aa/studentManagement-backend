@@ -3,6 +3,8 @@ import { serviceReturnType } from '@Constants/interfaces';
 import { FilterQuery } from 'mongoose';
 import { IHomework } from '@Interfaces/model/Teacher/IHomework';
 
+import { TPaginationQuery } from '../../types/pagination';
+
 export interface IHomeworkService {
   createHomework(req: Request, res: Response): Promise<serviceReturnType>;
 
@@ -14,5 +16,5 @@ export interface IHomeworkService {
 
   viewHomework(req: Request): Promise<serviceReturnType>;
 
-  listAllHomework(query: FilterQuery<Partial<IHomework>>): Promise<serviceReturnType>;
+  listAllHomework(paginationQuery:TPaginationQuery,query: FilterQuery<Partial<IHomework>>): Promise<serviceReturnType>;
 }

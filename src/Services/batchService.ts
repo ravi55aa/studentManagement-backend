@@ -10,6 +10,7 @@ import { ApiResponse } from '../Constants/apiResponse';
 import { BatchMessage, ServerMessage } from '../Constants/resposeMessages';
 import logger from '../Utils/logger';
 import { IBatchRepository } from '../Interfaces/repository/IBatchRepository';
+import { TPaginationQuery } from '../types/pagination';
 
 @injectable()
 export class BatchService implements IBatchService {
@@ -65,8 +66,10 @@ export class BatchService implements IBatchService {
   async getAllBatches(req: Request, res: Response): Promise<serviceReturnType> {
     try {
       const query = BatchDto.handleGetAllBatchesDto(req, res);
+      
+      const {limit,page}=req.query as unknown as TPaginationQuery;
 
-      const docs = await this._batchRepo.getAllBatches(query);
+      const docs = await this._batchRepo.getAllBatches({limit,page},query);
 
       return ApiResponse.success(docs, BatchMessage.BatchListed);
     } catch (error) {

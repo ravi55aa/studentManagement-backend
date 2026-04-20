@@ -10,6 +10,8 @@ import { IHomeworkRepository } from '@Interfaces/repository/IHomeworkRepository'
 import { HomeWorkDto } from '@dto/homeworkDto';
 import { FilterQuery } from 'mongoose';
 
+import { TPaginationQuery } from '../../types/pagination';
+
 
 @injectable()
 export class HomeworkService implements IHomeworkService {
@@ -38,10 +40,11 @@ export class HomeworkService implements IHomeworkService {
     return ApiResponse.success(doc, HomeworkMessage.HomeworkFetched);
   }
 
-  async listAllHomework(query: FilterQuery<Partial<IHomework>>): Promise<serviceReturnType> {
-    const docs = await this._homeworkRepo.getAllHomework(query);
+  async listAllHomework(paginationQuery: TPaginationQuery, query: FilterQuery<Partial<IHomework>>): Promise<serviceReturnType> {
 
-    if (!docs || docs.length === 0) {
+    const docs = await this._homeworkRepo.getAllHomework(paginationQuery,query);
+
+    if (!docs || docs.data.length === 0) {
       return ApiResponse.failure(HomeworkMessage.HomeworkNotFound);
     }
 

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 
 import { serviceReturnType } from '../../Constants/interfaces';
+import { TPaginationQuery } from '../../types/pagination';
 
 export interface ISchoolAcademicYear {
   addNewSchoolYear(req: Request, res: Response): Promise<serviceReturnType>;
@@ -9,7 +10,7 @@ export interface ISchoolAcademicYear {
 
   updateAcademicYear(req: Request, res: Response): Promise<serviceReturnType>;
 
-  listAllAcademicYears(): Promise<serviceReturnType>;
+  listAllAcademicYears(query:TPaginationQuery): Promise<serviceReturnType>
 
   deleteAcademicYear(req: Request): Promise<serviceReturnType>;
 }

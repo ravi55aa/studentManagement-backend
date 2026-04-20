@@ -4,6 +4,7 @@ import { inject, injectable } from 'tsyringe';
 import { TYPES } from '../DI/types';
 import { serviceReturnType } from '../Constants/interfaces';
 import { IHomeworkService } from '../Interfaces/services/IHomeworkService';
+import { TPaginationQuery } from '../types/pagination';
 
 @injectable()
 export default class HomeworkController {
@@ -27,9 +28,9 @@ export default class HomeworkController {
 
   async getAllHomework(req: Request, res: Response, next: NextFunction) {
     try {
-      const query = req.query;
+      const {page,limit,...filter} = req.query as unknown as any;
       const { status, resBody }: serviceReturnType =
-        await this._homeworkService.listAllHomework(query);
+        await this._homeworkService.listAllHomework({page,limit} as TPaginationQuery,filter);
 
       res.status(status).json(resBody);
     } catch (err: unknown) {

@@ -4,6 +4,7 @@ import { injectable } from 'tsyringe';
 import feeModel, { IFee } from '../Models/feesModel';
 import { IFeeRepository } from '../Interfaces/repository/IFessRepository';
 import logger from '../Utils/logger';
+import { TPaginationQuery, TPaginationResult } from '../types/pagination';
 
 import { BaseRepository } from './BaseRepository';
 
@@ -24,11 +25,29 @@ export class FeeRepository extends BaseRepository<IFee> implements IFeeRepositor
     }
   }
 
-  public async findMany(query: FilterQuery<Partial<IFee>>): Promise<IFee[]> {
-    return await feeModel
-      .find({ ...query, isDeleted: false })
-      .sort({ createdAt: -1 })
-      .lean<IFee[]>();
+  public async getAllFee(paginationQuery:TPaginationQuery,query: FilterQuery<Partial<IFee>>): Promise<TPaginationResult<IFee>|null> {
+    try{
+        const page=Number(paginationQuery.page)||1;
+        const limit=Number(paginationQuery.limit) || 10;
+    
+        const skip=(page - 1) * limit;
+    
+        const [data,total] = await Promise.all([
+  
+          feeModel
+            .find({ ...query, isDeleted: false }).skip(skip).limit(limit)
+            .sort({ createdAt: -1 })
+            .lean<IFee[]>(),     
+            
+            this.model.find({ }).countDocuments()
+        ]);
+      
+        return { data, total ,page,totalPages:Math.ceil(total/limit) };
+
+      } catch (error) {
+        logger.error('Error fetching batches:', error);
+        return null;
+      }
   }
 
   public async updateById(id: string, data: Partial<IFee>): Promise<IFee | null> {

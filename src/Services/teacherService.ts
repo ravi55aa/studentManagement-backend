@@ -12,6 +12,7 @@ import { ApiResponse } from '../Constants/apiResponse';
 import logger from '../Utils/logger';
 import { ServerMessage, TeacherMessage } from '../Constants/resposeMessages';
 import { ITeacherRepo } from '../Interfaces/repository/ITeacherRepo';
+import { TPaginationQuery } from '../types/pagination';
 // import { getIO } from '../Config/socket.config';
 // import { otp } from 'Utils/generateOtp';
 
@@ -98,12 +99,10 @@ export class TeacherService implements ITeacherService {
   }
 
   /* ===================GET/LIST All Teachers====================== */
-  public async getAllTeachers(): Promise<serviceReturnType> {
+  public async getAllTeachers(query:TPaginationQuery): Promise<serviceReturnType> {
     try {
 
-      const tempQuery={page:0,limit:8}; // later replace with actual query;
-
-      const result = await this._teacherRepo.getAllTeachers(tempQuery);
+      const result = await this._teacherRepo.getAllTeachers(query);
 
       if (!result) {
         return ApiResponse.notFound(TeacherMessage.NoTeachersFound);
@@ -265,17 +264,15 @@ export class TeacherService implements ITeacherService {
 
 
   public async getUnassignedTeachers(
-    query: FilterQuery<Partial<ITeacher>>,
+    query: FilterQuery<Partial<ITeacher>>,paginationQuery:TPaginationQuery
   ): Promise<serviceReturnType> {
     
     if (query.center == 'School') {
       query.center = null;
     }
 
-    const tempQuery={page:0,limit:10}; // later replace with actual query;
-
     const teachers
-    = await this._teacherRepo.getUnassignedTeachers(query,tempQuery);
+    = await this._teacherRepo.getUnassignedTeachers(query,paginationQuery);
 
     if (!teachers) {
       return ApiResponse.notFound(TeacherMessage.NoUnassignedTeachersFound);

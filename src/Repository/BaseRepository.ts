@@ -1,7 +1,8 @@
 import { Document, FilterQuery, Model, Types } from 'mongoose';
+import logger from '@Utils/logger';
+import { IBaseRepository } from '@Interfaces/repository/IBaseRepository';
 
-import logger from '../Utils/logger';
-import { IBaseRepository } from '../Interfaces/repository/IBaseRepository';
+import { TPaginationQuery, TPaginationResult } from '../types/pagination';
 
 export class BaseRepository<T extends Document> implements IBaseRepository<T> {
   protected model: Model<T>;
@@ -45,6 +46,33 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
     } catch (error) {
       logger.error('Error in findMany:', error);
       return [];
+    }
+  }
+
+  async getAll(paginationQuery:TPaginationQuery,query:Record<string,string|number|boolean>={}):
+    Promise<TPaginationResult<T> | null> {
+
+    const page=Number(paginationQuery.page) || 1;
+    const limit=Number(paginationQuery.limit) || 10;
+
+    const skip=(page - 1) * limit;
+
+    try {
+
+      const [data,total] = await Promise.all([
+
+        this.model.find(query).skip(skip).limit(limit).lean<T[]>(), 
+
+        this.model.find(query).countDocuments() //total
+      ]);
+
+      return {
+        data,
+        total,page,totalPages:Math.ceil(total/limit) 
+      };
+    } catch (error) {
+      logger.error(`Error fetching all data:`, error);
+      return null;
     }
   }
 

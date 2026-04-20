@@ -9,6 +9,7 @@ import { FeeDto } from '../dto/feesDto';
 import { ApiResponse } from '../Constants/apiResponse';
 import { serviceReturnType } from '../Constants/interfaces';
 import { IFee } from '../Models/feesModel';
+import { TPaginationQuery } from '../types/pagination';
 
 @injectable()
 export class FeeService implements IFeeService {
@@ -44,10 +45,12 @@ export class FeeService implements IFeeService {
     return ApiResponse.success(updated,FeesMessage.FeesUpdated);
   }
 
-  public async getAllFees(): Promise<serviceReturnType> {
-    const fees = await this._feeRepo.findMany({});
+  public async getAllFees(req:Request): Promise<serviceReturnType> {
+    const {page,limit,...filters}=req.query as unknown as any;
 
-    if (!fees || fees.length<=0) {
+    const fees = await this._feeRepo.getAllFee({page,limit},filters||{});
+
+    if (!fees || fees.data.length<=0) {
       return ApiResponse.notFound(FeesMessage.FeesNotFound);
     }
 

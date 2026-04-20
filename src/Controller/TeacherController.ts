@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'tsyringe';
+import { TYPES } from '@DI/types';
+import { ITeacherService } from '@Interfaces/services/ITeacherService';
+import { ApiResponse } from '@Constants/apiResponse';
+import { TeacherMessage } from '@Constants/resposeMessages';
 
-import { TYPES } from '../DI/types';
-import { ITeacherService } from '../Interfaces/services/ITeacherService';
-import { ApiResponse } from '../Constants/apiResponse';
-import { TeacherMessage } from '../Constants/resposeMessages';
+import { TPaginationQuery } from '../types/pagination';
 
 @injectable()
 export default class TeacherController {
@@ -70,7 +71,10 @@ export default class TeacherController {
 
   public async getAllTeachers(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { status, resBody } = await this._teacherService.getAllTeachers();
+
+      const query=req.query as unknown as TPaginationQuery;
+
+      const { status, resBody } = await this._teacherService.getAllTeachers(query);
 
       res.status(status).json(resBody);
     } catch (error) {
@@ -85,9 +89,10 @@ export default class TeacherController {
   ): Promise<void> {
     try {
       const { center } = req.query;
-      const { status, resBody } = await this._teacherService.getUnassignedTeachers({
-        center: center,
-      });
+      const {limit,page}=req.query as unknown as TPaginationQuery;
+
+      const { status, resBody } = await this._teacherService.getUnassignedTeachers(
+        {center: center}, {limit,page});
 
       res.status(status).json(resBody);
     } catch (error) {

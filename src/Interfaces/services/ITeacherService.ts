@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import { FilterQuery } from 'mongoose';
 import { ITeacher } from 'Models/teacherModel';
+import { serviceReturnType } from '@Constants/interfaces';
 
-import { serviceReturnType } from '../../Constants/interfaces';
+import { TPaginationQuery } from '../../types/pagination';
 
 export interface ITeacherService {
   createTeacher(req: Request, res: Response): Promise<serviceReturnType>;
@@ -13,11 +14,12 @@ export interface ITeacherService {
   
   updateTeacher(req: Request, res: Response): Promise<serviceReturnType>;
 
-  getAllTeachers(): Promise<serviceReturnType>;
+  getAllTeachers(query:TPaginationQuery): Promise<serviceReturnType>;
 
   getTeacherById(teacherId: string): Promise<serviceReturnType>;
 
-  getUnassignedTeachers(query: FilterQuery<Partial<ITeacher>>): Promise<serviceReturnType>;
+  getUnassignedTeachers(query: FilterQuery<Partial<ITeacher>>,
+    paginationQuery:TPaginationQuery): Promise<serviceReturnType>;
 
   assignClassToTeacher(req: Request): Promise<serviceReturnType>;
 

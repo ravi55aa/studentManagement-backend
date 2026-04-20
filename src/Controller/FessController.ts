@@ -45,7 +45,7 @@ export default class FeeController {
   /* --------------GET ALL FEES--------------- */
   public async getAllFees(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { status, resBody } = await this._feeService.getAllFees();
+      const { status, resBody } = await this._feeService.getAllFees(req);
 
       res.status(status).json(resBody);
     } catch (error) {
