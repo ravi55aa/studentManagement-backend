@@ -1,6 +1,7 @@
 import { ApiResponse } from "@Constants/apiResponse";
 import { serviceReturnType } from "@Constants/interfaces";
 import { BatchMessage, ChatMessage, CommonMessage, ServerMessage } from "@Constants/resposeMessages";
+import { StatusCodes } from "@Constants/statusCodes";
 import { TYPES } from "@DI/types";
 import { IRealtimeService } from "@Interfaces/Other/IRealTimeSevice";
 import { IBatchRepository } from "@Interfaces/repository/IBatchRepository";
@@ -200,6 +201,21 @@ export class ChatRoomService implements IChatRoomService {
         return ApiResponse.internalServerError(ServerMessage.ServerError);
         }
     }
+
+    async addParticipant(chatRoomId: string, userId: string): Promise<serviceReturnType> {
+        try {
+            if (!chatRoomId || !userId) {
+                return ApiResponse.badRequest(CommonMessage.IdNotFound);
+            }
+
+            await this._chatRoomRepository.addParticipant(chatRoomId,userId);
+            
+            return ApiResponse.success(null, ChatMessage.JoinedRoom);
+        } catch (error) {
+            logger.error("Error adding participant:", error);
+            return ApiResponse.internalServerError(ServerMessage.ServerError);
+        }
+    }
 }
 
 
@@ -233,7 +249,7 @@ export class ChatMessageService implements IMessageService {
             return ApiResponse.badRequest(CommonMessage.IdNotFound);
         }
 
-        if (!message.trim()) {
+        if (message && !message?.trim()) {
             return ApiResponse.badRequest(ChatMessage.EmptyMessage);
         }
 
@@ -246,10 +262,17 @@ export class ChatMessageService implements IMessageService {
         }
 
         //  Permission check
+
         const canSend = this._accessService.canSend(sender,chat);
 
-        if (!canSend) {
-            return ApiResponse.forbidden(ChatMessage.UnauthorizedToSend);
+        // If user is not participant, add them to participants (for batch chats)
+
+        if(!canSend){
+            const addParticipant = await this._chatRoomService.addParticipant(chatRoomId, sender.id);
+
+            if(!addParticipant.status as unknown as number  === StatusCodes.BAD_REQUEST){
+                return ApiResponse.internalServerError(ServerMessage.ServerError);
+            }
         }
 
         //  Save message

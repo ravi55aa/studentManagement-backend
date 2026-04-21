@@ -32,6 +32,11 @@ export interface IChatRoomService {
         chatRoomId: string,
         message: string
     ): Promise<serviceReturnType>;
+
+    addParticipant(
+        chatRoomId: string,
+        userId: string
+    ): Promise<serviceReturnType>;
 }
 
 
