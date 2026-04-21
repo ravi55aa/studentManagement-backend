@@ -55,13 +55,14 @@ export class AddressService implements IAddressService {
     }
   }
 
-  async getAddressById(id: string): Promise<serviceReturnType> {
+  async getAddressById(userId: string): Promise<serviceReturnType> {
     try {
-      if (!id) {
+
+      if (!userId) {
         return ApiResponse.notFound(AddressMessage.AddressIdNotFound);
       }
 
-      const address = await this._addressRepository.findOne({ userId: id });
+      const address = await this._addressRepository.findOne({ userId: userId });
 
       return ApiResponse.success(address, AddressMessage.AddressFetched);
     } catch (error) {
@@ -72,6 +73,7 @@ export class AddressService implements IAddressService {
 
   async createAddress(address: Partial<IAddress>): Promise<serviceReturnType> {
     try {
+
       const created = await this._addressRepository.create(address);
 
       if (!created) {

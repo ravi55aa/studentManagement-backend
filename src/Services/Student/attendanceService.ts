@@ -224,32 +224,64 @@ export class StudentAttendanceService implements IStudentAttendanceService {
         
         try {
             const {batchId,studentId} = req.params;
-            const {date,approveStatus} = req.query as {date:string,approveStatus:unknown};
+            const {date,status} = req.query as {date:string,status:unknown};
 
             if(!batchId || !studentId)  {
-                logger.error(CommonMessage.IdNotFound,batchId,studentId,{layer:'service',module:'studentAttendance'});
+                logger.error(
+                    CommonMessage.IdNotFound,batchId,studentId,
+                    {layer:'service',module:'studentAttendance'}
+                );
+
                 return ApiResponse.failure(CommonMessage.IdNotFound);
             } 
 
-            const updatedDate=new Date(date);
-            updatedDate.setHours(0,0,0,0);
+            const d=new Date(date);
+            d.setHours(0,0,0,0);
+            
+            const dd = d.toISOString().replace("Z", "+00:00");
 
-            if(!date || !approveStatus){
-                logger.error('Credential missing date:%s approveState:%j',updatedDate,approveStatus,batchId,studentId,{layer:'service',module:'studentAttendance'});
+            const updatedDate = new Date(dd);
+            updatedDate.setUTCHours(0,0,0,0);
+
+            //dateQuery
+            const start = updatedDate;
+            start.setUTCDate(start.getUTCDate() + 1);
+
+            const nextDay = new Date(start);
+            nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+
+
+            if(!date || !status){
+                logger.error(
+                    'Credential missing date:%s status:%j',
+                    updatedDate,status,batchId,studentId,
+                    {layer:'service',module:'studentAttendance'}
+                );
+
                 return ApiResponse.failure(LeaveMessage.LeaveCredentialsNotFound);
             }
 
             //Formate: filter and query
-            const filter={batchId, date, "student.studentId":studentId};
+            const filter = { 
+                batchId, 
+                date:{
+                    $gte: start,
+                    $lt: nextDay }, 
+                "students.studentId":studentId
+            };
+
             const leaveStatus=status=='approved'?'leave':'absent';
-            const update={$set: {"students.$.status": leaveStatus}};
+
+            const update={$set: {'students.$.status': leaveStatus}};
 
             //make a repository call;
             const updated=await this._attendanceRepo.updateAppliedLeaveStatusFromTeacher(filter,update);
 
-            if(updated){
-                this._attendanceRepo.updateStudentLeave({'studentId':studentId},updatedDate,status as leaveApproveStatus);
+            if(!updated){
+                return ApiResponse.failure(AttendanceMessage.AttendanceNotUpdated);
             }
+
+            await this._attendanceRepo.updateStudentLeave({'studentId':studentId},dd as string,status as leaveApproveStatus);
 
             return ApiResponse.success(null,LeaveMessage.LeaveUpdated);
 

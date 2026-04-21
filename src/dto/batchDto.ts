@@ -56,6 +56,7 @@ export class BatchDto {
 
     return {
       tenantId: decodedToken?.tenantId,
+      center
     };
   }
 }

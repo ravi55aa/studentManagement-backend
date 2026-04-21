@@ -43,6 +43,6 @@ export interface IStudentAttendanceRepository {
 
   updateStudentLeave(
       filter: FilterQuery<Partial<IStudentLeave>>,
-      date: Date,
+      date: Date|string,
       status:leaveApproveStatus):Promise<IStudentLeave | null> 
 }
