@@ -8,7 +8,7 @@ export interface INotificationRepo {
 
   findByUser(userId: string): Promise<INotification[] | []>;
 
-  getUserNotifications(userId:string):Promise<IUserNotification[] | []>; 
-  
-  setUserNotificationIsRead(userNotificationId:string):Promise<IUserNotification | null>; 
+  getUserNotifications(userId: string): Promise<IUserNotification[] | []>;
+
+  setUserNotificationIsRead(userNotificationId: string): Promise<IUserNotification | null>;
 }

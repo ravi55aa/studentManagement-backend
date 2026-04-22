@@ -1,5 +1,4 @@
 export const TYPES = {
-  
   AddressRepository: Symbol.for('AddressRepository'),
   AddressService: Symbol.for('AddressService'),
 

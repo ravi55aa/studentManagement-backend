@@ -96,10 +96,11 @@ export const handleJwtTokensGenerator = (
 ): void => {
   const { token, refreshToken } = jwtTokensGeneratorForAll(payload);
 
-  res.cookie('token', token, { 
-    httpOnly: true, 
-    maxAge: 24 * 60 * 60 * 1000, 
-    path: '/' });
+  res.cookie('token', token, {
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000,
+    path: '/',
+  });
 
   req.session.refreshToken = refreshToken;
 };

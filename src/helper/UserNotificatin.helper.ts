@@ -6,7 +6,6 @@ import { INotification } from '../Models/notificaitonModel';
 import { userNotificationModel } from '../Models/notificationUser.Model';
 
 export class UserNotificationService implements IUserNotification {
-  
   async distribute(
     notification: INotification,
     recipients: {

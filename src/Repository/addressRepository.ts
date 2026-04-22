@@ -29,7 +29,7 @@ export class AddressRepository extends BaseRepository<IAddress> implements IAddr
           query,
           { $set: data },
           {
-            upsert:true,
+            upsert: true,
             runValidators: true,
           },
         )

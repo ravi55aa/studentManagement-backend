@@ -14,13 +14,13 @@ export class HomeWorkDto {
       fileName: f.filename,
     }));
 
-      let existingDocs: IUploadedDoc[] = [];
+    let existingDocs: IUploadedDoc[] = [];
 
-      if (req.body.existingAttachments) {
-        existingDocs = Array.isArray(req.body.existingAttachments)
-          ? req.body.existingAttachments.map((d:string) => JSON.parse(d))
-          : [JSON.parse(req.body.existingAttachments)];
-      }
+    if (req.body.existingAttachments) {
+      existingDocs = Array.isArray(req.body.existingAttachments)
+        ? req.body.existingAttachments.map((d: string) => JSON.parse(d))
+        : [JSON.parse(req.body.existingAttachments)];
+    }
 
     const decodedToken = handleTokenVerification(req, res);
 
@@ -30,7 +30,7 @@ export class HomeWorkDto {
       subjectId,
       status,
       dueDate,
-      attachments: [...docs,...existingDocs],
+      attachments: [...docs, ...existingDocs],
       teacherId: decodedToken.userId!,
       batchId: batchId,
     };

@@ -1,5 +1,5 @@
 import { container } from 'tsyringe';
-import { UserAuthServiceV2,UserAuthService } from '@Services/userAuthService';
+import { UserAuthServiceV2, UserAuthService } from '@Services/userAuthService';
 import { StudentRepository } from '@Repository/Student/studentRepostiroy';
 import { StudentService } from '@Services/Student/StudentService';
 import { StudentHomeworkRepository } from '@Repository/Student/homeworkStudentRepository';
@@ -50,7 +50,7 @@ import { TYPES } from './types';
 container.registerSingleton(TYPES.AddressRepository, AddressRepository);
 container.registerSingleton(TYPES.AddressService, AddressService);
 
-container.registerSingleton(TYPES.StripeRepository,StudentFeeRepository );
+container.registerSingleton(TYPES.StripeRepository, StudentFeeRepository);
 container.registerSingleton(TYPES.StripeService, StripeService);
 
 container.registerSingleton(TYPES.DocumentRepository, DocumentRepository);
@@ -125,14 +125,12 @@ container.registerSingleton(TYPES.StudentAttendanceService, StudentAttendanceSer
 
 container.registerSingleton(TYPES.StudentAttendanceRepository, StudentAttendanceRepository);
 
-
 /* ================= ADMIN ================= */
 //subscription plan
 container.registerSingleton(TYPES.PlanService, PlanService);
 container.registerSingleton(TYPES.PlanRepository, PlanRepository);
 
 container.registerSingleton(TYPES.SuperAdminRepository, SuperAdminRepository);
-
 
 /* ================= OTHER ================= */
 /* CHAT */

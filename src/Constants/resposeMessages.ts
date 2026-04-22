@@ -270,7 +270,7 @@ export enum TrainerRequestMessage {
 }
 
 /**
- *  STRIPE MESSAGES 
+ *  STRIPE MESSAGES
  */
 export enum StripeMessage {
   // Error
@@ -287,7 +287,6 @@ export enum StripeMessage {
   PaymentStatusUpdated = 'Payment status updated successfully',
   WebhookReceived = 'Webhook received successfully',
 }
-
 
 /**
  * Chat response messages
@@ -423,9 +422,9 @@ export enum StudentMessage {
 
   StudentStatusUpdated = 'Student status updated successfully',
 
-    // ======================
-    // Success Messages
-    // ======================
+  // ======================
+  // Success Messages
+  // ======================
 
   StudentFeeCreated = 'Student fee created successfully',
   StudentFeeFetched = 'Student fee Fetched successfully',
@@ -553,13 +552,13 @@ export enum NotificationMessage {
   NotificationNotFound = 'Notification not found',
   NotificationNotFetched = 'Notification not fetched',
   NotificationCantRead = "Notification Couldn't read",
-  
+
   // Success messages
   NotificationFetched = 'Notification fetched successfully',
   NotificationCreated = 'Notification created successfully',
   NotificationUpdated = 'Notification updated successfully',
   NotificationDeleted = 'Notification deleted successfully',
-  NotificationIsRead = "Notification read successfully",
+  NotificationIsRead = 'Notification read successfully',
   NotificationSent = 'Notification sent successfully',
 }
 
@@ -614,36 +613,35 @@ export const LeaveMessage = {
   LeaveRejected: 'Leave rejected successfully',
 };
 
-
 //*CHAT MESSAGES
 export enum ChatMessage {
   //  Error Messages
-  ChatRoomNotFound = "Chat room not found",
-  MessageNotFound = "Message not found",
-  CannotSendMessage = "Unable to send message",
-  CannotFetchMessages = "Unable to fetch messages",
-  InvalidChatType = "Invalid chat type",
-  UserNotInChat = "User is not part of this chat",
-  UnauthorizedToSend = "You are not allowed to send messages in this chat",
-  EmptyMessage = "Message cannot be empty",
-  InvalidChatRoom = "Invalid chat room",
-  ChatAlreadyExists = "Chat already exists",
-  FailedToJoinRoom = "Failed to join chat room",
+  ChatRoomNotFound = 'Chat room not found',
+  MessageNotFound = 'Message not found',
+  CannotSendMessage = 'Unable to send message',
+  CannotFetchMessages = 'Unable to fetch messages',
+  InvalidChatType = 'Invalid chat type',
+  UserNotInChat = 'User is not part of this chat',
+  UnauthorizedToSend = 'You are not allowed to send messages in this chat',
+  EmptyMessage = 'Message cannot be empty',
+  InvalidChatRoom = 'Invalid chat room',
+  ChatAlreadyExists = 'Chat already exists',
+  FailedToJoinRoom = 'Failed to join chat room',
 
   //  Success Messages
-  MessageSent = "Message sent successfully",
-  MessagesFetched = "Messages fetched successfully",
-  ChatCreated = "Chat room created successfully",
-  ChatFetched = "Chat room fetched successfully",
-  JoinedRoom = "Joined chat room successfully",
-  LeftRoom = "Left chat room successfully",
-  MessageDeleted = "Message deleted successfully",
-  MessageUpdated = "Message updated successfully",
+  MessageSent = 'Message sent successfully',
+  MessagesFetched = 'Messages fetched successfully',
+  ChatCreated = 'Chat room created successfully',
+  ChatFetched = 'Chat room fetched successfully',
+  JoinedRoom = 'Joined chat room successfully',
+  LeftRoom = 'Left chat room successfully',
+  MessageDeleted = 'Message deleted successfully',
+  MessageUpdated = 'Message updated successfully',
 
   // ROLE BASED MESSAGES
-  BroadcastOnlyAdmin = "Only admin or teacher can send broadcast messages",
-  DirectChatCreated = "Direct chat created",
-  BatchChatFetched = "Batch chat fetched",
-  BatchRoomCantCreate = "Batch room cant create, invalid credentials",
-  CenterChatFetched = "Center chat fetched"
+  BroadcastOnlyAdmin = 'Only admin or teacher can send broadcast messages',
+  DirectChatCreated = 'Direct chat created',
+  BatchChatFetched = 'Batch chat fetched',
+  BatchRoomCantCreate = 'Batch room cant create, invalid credentials',
+  CenterChatFetched = 'Center chat fetched',
 }

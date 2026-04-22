@@ -28,9 +28,11 @@ export default class HomeworkController {
 
   async getAllHomework(req: Request, res: Response, next: NextFunction) {
     try {
-      const {page,limit,...filter} = req.query as unknown as any;
-      const { status, resBody }: serviceReturnType =
-        await this._homeworkService.listAllHomework({page,limit} as TPaginationQuery,filter);
+      const { page, limit, ...filter } = req.query as unknown as any;
+      const { status, resBody }: serviceReturnType = await this._homeworkService.listAllHomework(
+        { page, limit } as TPaginationQuery,
+        filter,
+      );
 
       res.status(status).json(resBody);
     } catch (err: unknown) {
@@ -74,9 +76,10 @@ export default class HomeworkController {
 
   async deleteHomework(req: Request, res: Response, next: NextFunction) {
     try {
-      const {id}=req.params; //homework_id
-      const { status, resBody }: serviceReturnType =
-        await this._homeworkService.deleteHomework(id!);
+      const { id } = req.params; //homework_id
+      const { status, resBody }: serviceReturnType = await this._homeworkService.deleteHomework(
+        id!,
+      );
 
       res.status(status).json(resBody);
     } catch (err: unknown) {

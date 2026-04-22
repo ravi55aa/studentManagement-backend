@@ -16,5 +16,8 @@ export interface IHomeworkService {
 
   viewHomework(req: Request): Promise<serviceReturnType>;
 
-  listAllHomework(paginationQuery:TPaginationQuery,query: FilterQuery<Partial<IHomework>>): Promise<serviceReturnType>;
+  listAllHomework(
+    paginationQuery: TPaginationQuery,
+    query: FilterQuery<Partial<IHomework>>,
+  ): Promise<serviceReturnType>;
 }

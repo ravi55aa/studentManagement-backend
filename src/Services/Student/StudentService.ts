@@ -35,7 +35,7 @@ export class StudentService implements IStudentService {
         return ApiResponse.notFound(StudentMessage.StudentIdNotFound);
       }
 
-      const student:IStudent|null = await this._studentRepository.findById(id);
+      const student: IStudent | null = await this._studentRepository.findById(id);
 
       if (!student) {
         return ApiResponse.notFound(StudentMessage.StudentNotFound);
@@ -108,25 +108,23 @@ export class StudentService implements IStudentService {
       return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
-  
-  async updateStudent(req: Request): Promise<serviceReturnType> {
-      try {
 
+  async updateStudent(req: Request): Promise<serviceReturnType> {
+    try {
       const dto = StudentDTO.updateStudent(req);
-      const {studentId}=req.params;
+      const { studentId } = req.params;
 
       const updated = await this._studentRepository.updateStudent(studentId!, dto);
 
       if (!updated) {
-          return ApiResponse.notFound(StudentMessage.StudentNotUpdated);
+        return ApiResponse.notFound(StudentMessage.StudentNotUpdated);
       }
 
       return ApiResponse.success(updated, StudentMessage.StudentUpdated);
-
-      } catch (error) {
+    } catch (error) {
       logger.error(StudentMessage.StudentUpdateFailed, error);
       return ApiResponse.internalServerError(ServerMessage.ServerError);
-      }
+    }
   }
 
   // Delete Student (Soft Delete)

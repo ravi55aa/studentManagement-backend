@@ -27,7 +27,7 @@ export class StudentHomeworkRepository
   // Find submission by id
   async findSubmissionById(id: string): Promise<IHomeworkSubmission | null> {
     try {
-      return await super.findOne({homeworkId:id});
+      return await super.findOne({ homeworkId: id });
     } catch (error) {
       logger.error('Error while finding submission by id:', error);
       return null;

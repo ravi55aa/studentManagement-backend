@@ -14,7 +14,7 @@ export interface ISchoolService {
 
   getSchoolAllData(req: Request, res: Response): Promise<serviceReturnType>;
 
-  getASchoolFromAdminCredentials(schoolId:string):Promise<serviceReturnType>
+  getASchoolFromAdminCredentials(schoolId: string): Promise<serviceReturnType>;
 
   updateSchoolMeta(req: Request, res: Response): Promise<serviceReturnType>;
 

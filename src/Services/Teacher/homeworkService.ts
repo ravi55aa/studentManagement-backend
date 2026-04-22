@@ -12,7 +12,6 @@ import { FilterQuery } from 'mongoose';
 
 import { TPaginationQuery } from '../../types/pagination';
 
-
 @injectable()
 export class HomeworkService implements IHomeworkService {
   constructor(
@@ -40,9 +39,11 @@ export class HomeworkService implements IHomeworkService {
     return ApiResponse.success(doc, HomeworkMessage.HomeworkFetched);
   }
 
-  async listAllHomework(paginationQuery: TPaginationQuery, query: FilterQuery<Partial<IHomework>>): Promise<serviceReturnType> {
-
-    const docs = await this._homeworkRepo.getAllHomework(paginationQuery,query);
+  async listAllHomework(
+    paginationQuery: TPaginationQuery,
+    query: FilterQuery<Partial<IHomework>>,
+  ): Promise<serviceReturnType> {
+    const docs = await this._homeworkRepo.getAllHomework(paginationQuery, query);
 
     if (!docs || docs.data.length === 0) {
       return ApiResponse.failure(HomeworkMessage.HomeworkNotFound);
@@ -54,7 +55,7 @@ export class HomeworkService implements IHomeworkService {
   async updateHomework(req: Request, res: Response): Promise<serviceReturnType> {
     const { homeworkId } = req.params;
 
-    if(!homeworkId){
+    if (!homeworkId) {
       return ApiResponse.notFound(CommonMessage.IdNotFound);
     }
 
@@ -70,7 +71,6 @@ export class HomeworkService implements IHomeworkService {
   }
 
   async deleteHomework(id: string): Promise<serviceReturnType> {
-
     const deleted = await this._homeworkRepo.deleteHomework(id!);
 
     if (!deleted) {
@@ -91,5 +91,4 @@ export class HomeworkService implements IHomeworkService {
 
     return ApiResponse.success(doc, HomeworkMessage.HomeworkFetched);
   }
-
 }

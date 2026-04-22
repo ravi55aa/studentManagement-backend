@@ -122,7 +122,6 @@ export default coursesModel;
 
 /******************** COURSES_META {BOOKS,References,teachers,etc...} *********************/
 
-
 enum SubjectType {
   ACADEMIC = 'ACADEMIC',
   CUSTOM = 'CUSTOM',

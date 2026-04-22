@@ -7,7 +7,7 @@ export class AddressDTO {
   static handleAddress(req: Request, res: Response): Partial<IAddress> {
     const { street, city, state, zip, country } = req.body;
 
-    const { tenantId,role,adminId } = SchoolAcademicYearDto.getTenantId(req, res);
+    const { tenantId, role, adminId } = SchoolAcademicYearDto.getTenantId(req, res);
 
     return {
       city,
@@ -17,14 +17,14 @@ export class AddressDTO {
       zip,
       tenantId: tenantId,
       userId: adminId,
-      userType: role
+      userType: role,
     };
   }
 
   static updateAddress(req: Request, res: Response): Partial<IAddress> {
     const { street, city, state, zip, country } = req.body;
 
-    const {role,tenantId} = SchoolAcademicYearDto.getTenantId(req, res);
+    const { role, tenantId } = SchoolAcademicYearDto.getTenantId(req, res);
 
     const { id } = req.params;
 
@@ -37,7 +37,7 @@ export class AddressDTO {
 
       userId: id,
       tenantId: tenantId,
-      userType:role
+      userType: role,
     };
 
     return updateYearDto;

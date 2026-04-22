@@ -49,22 +49,23 @@ export default class StudentsController {
   }
 
   async editStudent(req: Request, res: Response, next: NextFunction) {
-      try {
-        const {studentId}=req.params;
+    try {
+      const { studentId } = req.params;
 
-        if(!studentId){
-          const {status,resBody}=ApiResponse.badRequest(StudentMessage.StudentIdNotFound);
-          return res.status(status).json(resBody);
-        }
+      if (!studentId) {
+        const { status, resBody } = ApiResponse.badRequest(StudentMessage.StudentIdNotFound);
+        return res.status(status).json(resBody);
+      }
 
-      const { status, resBody }: serviceReturnType =
-          await this._studentService.updateStudent(req, res);
+      const { status, resBody }: serviceReturnType = await this._studentService.updateStudent(
+        req,
+        res,
+      );
 
       res.status(status).json(resBody);
-
-      } catch (err) {
+    } catch (err) {
       next(err);
-      }
+    }
   }
 
   async deleteStudent(req: Request, res: Response, next: NextFunction) {

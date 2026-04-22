@@ -1,5 +1,4 @@
-
-export { default as  StudentsController } from 'Controller/StudentController';
+export { default as StudentsController } from 'Controller/StudentController';
 export { default as StudentHomeworkController } from 'Controller/HomeworkStudentController';
 export { default as StudentAttendanceController } from 'Controller/AttendanceController';
 export { default as StripeController } from 'Controller/StripeController';

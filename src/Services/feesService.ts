@@ -42,19 +42,19 @@ export class FeeService implements IFeeService {
       return ApiResponse.notFound(FeesMessage.FeesNotFound);
     }
 
-    return ApiResponse.success(updated,FeesMessage.FeesUpdated);
+    return ApiResponse.success(updated, FeesMessage.FeesUpdated);
   }
 
-  public async getAllFees(req:Request): Promise<serviceReturnType> {
-    const {page,limit,...filters}=req.query as unknown as any;
+  public async getAllFees(req: Request): Promise<serviceReturnType> {
+    const { page, limit, ...filters } = req.query as unknown as any;
 
-    const fees = await this._feeRepo.getAllFee({page,limit},filters||{});
+    const fees = await this._feeRepo.getAllFee({ page, limit }, filters || {});
 
-    if (!fees || fees.data.length<=0) {
+    if (!fees || fees.data.length <= 0) {
       return ApiResponse.notFound(FeesMessage.FeesNotFound);
     }
 
-    return ApiResponse.success(fees,FeesMessage.FeesListed);
+    return ApiResponse.success(fees, FeesMessage.FeesListed);
   }
 
   public async getFeeById(id: string): Promise<serviceReturnType> {
@@ -64,7 +64,7 @@ export class FeeService implements IFeeService {
       return ApiResponse.notFound(FeesMessage.FeesNotFound);
     }
 
-    return ApiResponse.success(fee,FeesMessage.FeesListed);
+    return ApiResponse.success(fee, FeesMessage.FeesListed);
   }
 
   public async deleteFee(id: string): Promise<serviceReturnType> {
@@ -74,6 +74,6 @@ export class FeeService implements IFeeService {
       return ApiResponse.notFound(FeesMessage.FeesNotFound);
     }
 
-    return ApiResponse.success(null,FeesMessage.FeesDeleted);
+    return ApiResponse.success(null, FeesMessage.FeesDeleted);
   }
 }

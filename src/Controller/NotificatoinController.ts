@@ -6,7 +6,6 @@ import { StatusCodes } from '@Constants/statusCodes';
 import { INotificationService } from '@Interfaces/services/INotificatoin';
 import { TYPES } from '@DI/types';
 
-
 @injectable()
 export default class NotificationController {
   constructor(
@@ -41,10 +40,10 @@ export default class NotificationController {
 
   async getAllUserNotification(req: Request, res: Response, next: NextFunction) {
     try {
-      const {userId}=req.params;
-    
-      if(!userId || userId==null){
-        const {status,resBody}=ApiResponse.notFound(CommonMessage.IdNotFound);
+      const { userId } = req.params;
+
+      if (!userId || userId == null) {
+        const { status, resBody } = ApiResponse.notFound(CommonMessage.IdNotFound);
         return res.status(status).json(resBody);
       }
 
@@ -58,19 +57,19 @@ export default class NotificationController {
 
   async readNotification(req: Request, res: Response, next: NextFunction) {
     try {
-      const {userNotificationId}=req.params;
-    
-      if(!userNotificationId){
-        const {status,resBody}=ApiResponse.notFound(CommonMessage.IdNotFound);
+      const { userNotificationId } = req.params;
+
+      if (!userNotificationId) {
+        const { status, resBody } = ApiResponse.notFound(CommonMessage.IdNotFound);
         return res.status(status).json(resBody);
       }
 
-      const { status, resBody } = await this._notificationService.setUserNotificationIsRead(userNotificationId);
+      const { status, resBody } =
+        await this._notificationService.setUserNotificationIsRead(userNotificationId);
 
       res.status(status).json(resBody);
     } catch (err) {
       next(err);
     }
   }
-
 }

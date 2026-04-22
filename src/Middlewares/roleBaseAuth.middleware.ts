@@ -3,31 +3,26 @@ import { StatusCodes } from '@Constants/statusCodes';
 import schoolModel from '@Models/schoolModel';
 import { SchoolMessage } from '@Constants/resposeMessages';
 
+export const handleSubdomainResolver = async (req: Request, res: Response, next: NextFunction) => {
+  const host = req.hostname;
 
-export const handleSubdomainResolver = async (req:Request,res:Response,next:NextFunction) =>{
+  const subdomain = host.split('.')[0];
 
-  const host = req.hostname; 
-
-  const subdomain = host.split(".")[0];
-
-  if (subdomain === "localhost" || subdomain === "admin") {
+  if (subdomain === 'localhost' || subdomain === 'admin') {
     return next();
   }
 
   const school = await schoolModel.findOne({ subdomain });
 
   if (!school) {
-    return res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ message: SchoolMessage.NotFound });
+    return res.status(StatusCodes.NOT_FOUND).json({ message: SchoolMessage.NotFound });
   }
 
   next();
-}
+};
 
 export const authorizeRoles = (...roles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    
     const user = req?.user;
 
     if (!user) {

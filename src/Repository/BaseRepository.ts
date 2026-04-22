@@ -49,26 +49,27 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
     }
   }
 
-  async getAll(paginationQuery:TPaginationQuery,query:Record<string,string|number|boolean>={}):
-    Promise<TPaginationResult<T> | null> {
+  async getAll(
+    paginationQuery: TPaginationQuery,
+    query: Record<string, string | number | boolean> = {},
+  ): Promise<TPaginationResult<T> | null> {
+    const page = Number(paginationQuery.page) || 1;
+    const limit = Number(paginationQuery.limit) || 10;
 
-    const page=Number(paginationQuery.page) || 1;
-    const limit=Number(paginationQuery.limit) || 10;
-
-    const skip=(page - 1) * limit;
+    const skip = (page - 1) * limit;
 
     try {
+      const [data, total] = await Promise.all([
+        this.model.find(query).skip(skip).limit(limit).lean<T[]>(),
 
-      const [data,total] = await Promise.all([
-
-        this.model.find(query).skip(skip).limit(limit).lean<T[]>(), 
-
-        this.model.find(query).countDocuments() //total
+        this.model.find(query).countDocuments(), //total
       ]);
 
       return {
         data,
-        total,page,totalPages:Math.ceil(total/limit) 
+        total,
+        page,
+        totalPages: Math.ceil(total / limit),
       };
     } catch (error) {
       logger.error(`Error fetching all data:`, error);

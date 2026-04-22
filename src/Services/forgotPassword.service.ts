@@ -99,8 +99,8 @@ export class ForgotPasswordService implements IForgotPasswordService {
       const data: Partial<ISchool> = { password: hashedPassword };
       updated = await this._repository.updatePassword<ISchool>(role, id, data);
     }
-    
-    if(role=='Student'){
+
+    if (role == 'Student') {
       const data: Partial<IStudent> = { password: hashedPassword };
       updated = await this._repository.updatePassword<IStudent>(role, id, data);
     }

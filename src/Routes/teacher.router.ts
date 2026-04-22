@@ -25,10 +25,8 @@ router.patch(
   (req, res, next) => teacherController.updateTeacherBio(req, res, next),
 );
 
-router.patch(
-  '/professional/update/:teacherId',
-  authMiddleware,
-  (req, res, next) => teacherController.updateTeacherProfessional(req, res, next),
+router.patch('/professional/update/:teacherId', authMiddleware, (req, res, next) =>
+  teacherController.updateTeacherProfessional(req, res, next),
 );
 
 router.post('/create/:id', authMiddleware, (req, res, next) =>
@@ -66,27 +64,27 @@ router.get('/homework/getall', authMiddleware, (req, res, next) =>
   homeworkController.getAllHomework(req, res, next),
 );
 
-router.post('/homework/add', authMiddleware, uploadCloud.array('docs',10),
-  (req, res, next) =>
-  homeworkController.createHomework(req, res, next)
+router.post('/homework/add', authMiddleware, uploadCloud.array('docs', 10), (req, res, next) =>
+  homeworkController.createHomework(req, res, next),
 );
 
-router.patch('/homework/edit/:homeworkId', authMiddleware, uploadCloud.array('docs',10),
-(req, res, next) =>
-  homeworkController.updateHomework(req, res, next)
+router.patch(
+  '/homework/edit/:homeworkId',
+  authMiddleware,
+  uploadCloud.array('docs', 10),
+  (req, res, next) => homeworkController.updateHomework(req, res, next),
 );
 
 router.delete('/homework/delete/:id', authMiddleware, (req, res, next) =>
-  homeworkController.deleteHomework(req, res, next)
+  homeworkController.deleteHomework(req, res, next),
 );
-
 
 router
   .route('/:id')
   .get(authMiddleware, (req, res, next) => teacherController.getTeacherById(req, res, next));
-  // .patch(authMiddleware, (req, res, next) => teacherController.createTeacher(req, res, next))
-  // .delete(authMiddleware, (req, res, next) => teacherController.createTeacher(req, res, next))
-  // .post(authMiddleware, (req, res, next) => teacherController.createTeacher(req, res, next));
+// .patch(authMiddleware, (req, res, next) => teacherController.createTeacher(req, res, next))
+// .delete(authMiddleware, (req, res, next) => teacherController.createTeacher(req, res, next))
+// .post(authMiddleware, (req, res, next) => teacherController.createTeacher(req, res, next));
 
 //teacher she is evaluating the homework submitted by the students;
 //when she click on the homework, she can see each students homework history,

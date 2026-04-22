@@ -64,30 +64,24 @@ export class ForgotPasswordRepository implements IForgotPasswordRepository {
 
   async updatePassword<T>(role: UserRole, id: string, data: Partial<T>): Promise<T | null> {
     try {
-      if(role=='School'){
-          return await schoolModel.findByIdAndUpdate(
-          id ,
-          data ,
-          { new: true, runValidators: true },
-        ).lean<T>();
+      if (role == 'School') {
+        return await schoolModel
+          .findByIdAndUpdate(id, data, { new: true, runValidators: true })
+          .lean<T>();
       }
 
-      if(role=='Student'){
-          return await studentModel.findByIdAndUpdate(
-          id ,
-          data ,
-          { new: true, runValidators: true },
-        ).lean<T>();
+      if (role == 'Student') {
+        return await studentModel
+          .findByIdAndUpdate(id, data, { new: true, runValidators: true })
+          .lean<T>();
       }
 
       return null;
-
     } catch (error) {
       logger.error('Error updating password:', error);
       return null;
     }
   }
-
 
   async findAndUpdateAdmin(id: string, newPassword: string): Promise<IUser | null> {
     try {

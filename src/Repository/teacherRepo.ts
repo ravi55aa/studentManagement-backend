@@ -67,12 +67,15 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
     }
   }
 
-  public async updateProfessionalByTeacherId(teacherId: string, data: Partial<ITeacher>): Promise<ITeacher | null> {
+  public async updateProfessionalByTeacherId(
+    teacherId: string,
+    data: Partial<ITeacher>,
+  ): Promise<ITeacher | null> {
     try {
       if (!Types.ObjectId.isValid(teacherId)) return null;
 
       return await teacherModel
-        .findOneAndUpdate({teacherId:teacherId}, { $set: data }, { new: true })
+        .findOneAndUpdate({ teacherId: teacherId }, { $set: data }, { new: true })
         .lean<ITeacher>();
     } catch (error) {
       logger.error('Error updating teacher bio:', error);
@@ -169,12 +172,14 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
   }
 
   /* ==============GET UNASSIGNED TEACHERS================= */
-  async getUnassignedTeachers(query: FilterQuery<Partial<ITeacher>>,paginationQuery:TPaginationQuery): Promise<TPaginationResult<ITeacherBio>|null> {
+  async getUnassignedTeachers(
+    query: FilterQuery<Partial<ITeacher>>,
+    paginationQuery: TPaginationQuery,
+  ): Promise<TPaginationResult<ITeacherBio> | null> {
+    const page = Number(paginationQuery.page) || 1;
+    const limit = Number(paginationQuery.limit) || 10;
 
-    const page=Number(paginationQuery.page) || 1;
-    const limit=Number(paginationQuery.limit) || 10;
-
-    const skip=(page - 1) * limit;
+    const skip = (page - 1) * limit;
 
     try {
       let assignedIds = null;
@@ -184,55 +189,52 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
           .distinct('batchCounselor');
       }
 
-      const [data,total] = await Promise.all([
+      const [data, total] = await Promise.all([
+        this.model
+          .find({ _id: { $nin: assignedIds } })
+          .skip(skip)
+          .limit(limit)
+          .lean<ITeacherBio[]>(),
 
-        this.model.find({ _id: { $nin: assignedIds } }).skip(skip).limit(limit).lean<ITeacherBio[]>(),
-        
-        this.model.find({ _id: { $nin: assignedIds } }).countDocuments()
-
+        this.model.find({ _id: { $nin: assignedIds } }).countDocuments(),
       ]);
 
-      return { data, total ,page,totalPages:Math.ceil(total/limit) };
-
+      return { data, total, page, totalPages: Math.ceil(total / limit) };
     } catch (error) {
-
       logger.error('Error fetching unassigned teachers:', error);
       return null;
     }
   }
 
   /* ==============GET ALL TEACHERS (COMBINED)================= */
-  async getAllTeachers(paginationQuery:TPaginationQuery):
-    Promise<TPaginationResult<IGetAllTeachers> | null> {
+  async getAllTeachers(
+    paginationQuery: TPaginationQuery,
+  ): Promise<TPaginationResult<IGetAllTeachers> | null> {
+    const page = Number(paginationQuery.page) || 1;
+    const limit = Number(paginationQuery.limit) || 10;
 
-    const page=Number(paginationQuery.page) || 1;
-    const limit=Number(paginationQuery.limit) || 10;
-
-    const skip=(page - 1) * limit;
+    const skip = (page - 1) * limit;
 
     try {
-
-      const [bio,professional,total] = await Promise.all([
-        
+      const [bio, professional, total] = await Promise.all([
         this.model.find({}, { tenantId: 0 }).skip(skip).limit(limit).lean<ITeacherBio[]>(), //bio
 
         teacherModel.find({}, { _id: 0 }).skip(skip).limit(limit).lean<ITeacher[]>(), //professional
-      
 
-        this.model.find({}, { tenantId: 0 }).countDocuments() //total
+        this.model.find({}, { tenantId: 0 }).countDocuments(), //total
       ]);
 
-      const data:IGetAllTeachers[] = 
-      [{teacherBio:bio,teachersSchoolData:professional}];
+      const data: IGetAllTeachers[] = [{ teacherBio: bio, teachersSchoolData: professional }];
 
       return {
         data,
-        total,page,totalPages:Math.ceil(total/limit) 
+        total,
+        page,
+        totalPages: Math.ceil(total / limit),
       };
     } catch (error) {
       logger.error('Error fetching teachers:', error);
       return null;
     }
   }
-
 }

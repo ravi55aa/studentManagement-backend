@@ -3,22 +3,18 @@ import { Server as HttpServer } from 'http';
 import { Server } from 'socket.io';
 import logger from '@Utils/logger';
 
-
 let io: Server;
 
 export const initSocket = (server: HttpServer) => {
   io = new Server(server, {
-      cors: {
-        origin: (origin, callback) => {
+    cors: {
+      origin: (origin, callback) => {
         if (!origin) return callback(null, true);
 
-        const isLocalhost =
-          origin === 'http://localhost:5173';
-      
-        
-        const isSubdomain =
-        /^http:\/\/([a-z0-9-]+)\.localhost:5173$/.test(origin);
-        
+        const isLocalhost = origin === 'http://localhost:5173';
+
+        const isSubdomain = /^http:\/\/([a-z0-9-]+)\.localhost:5173$/.test(origin);
+
         if (isLocalhost || isSubdomain) {
           return callback(null, true);
         }
@@ -28,7 +24,7 @@ export const initSocket = (server: HttpServer) => {
       methods: ['GET', 'POST'],
       credentials: true,
     },
-  });  
+  });
 
   io.on('connection', (socket) => {
     logger.info('User connected:', socket.id);
@@ -44,9 +40,9 @@ export const initSocket = (server: HttpServer) => {
     // Join unique room
     socket.join(`${role}-${userId}`);
 
-    socket.on("joinRoom", (roomId: string) => {
+    socket.on('joinRoom', (roomId: string) => {
       socket.join(roomId);
-      logger.info('join chat room',roomId);
+      logger.info('join chat room', roomId);
     });
 
     logger.warn(`\n User joined room: ${role}-${userId} \n`);

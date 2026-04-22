@@ -9,7 +9,7 @@ import { IDocument, IUploadedDoc } from '../Models/documentModel';
 
 export class SchoolDTO {
   static createSchool(reqBody: Partial<ISchool>): Partial<ISchool> {
-    const { adminName, schoolName, email, password, profile, phone,subdomain } = reqBody;
+    const { adminName, schoolName, email, password, profile, phone, subdomain } = reqBody;
 
     return {
       adminName,
@@ -18,7 +18,7 @@ export class SchoolDTO {
       password,
       profile,
       phone,
-      subdomain:subdomain!
+      subdomain: subdomain!,
     };
   }
 
@@ -42,7 +42,7 @@ export class SchoolDTO {
       throw new Error('School Id is not found');
     }
 
-    const { adminName, schoolName, phone,status } = req.body;
+    const { adminName, schoolName, phone, status } = req.body;
     const profile = req.file?.path || null;
 
     handleTokenVerification(req, res);
@@ -51,17 +51,16 @@ export class SchoolDTO {
 
     if (profile) {
       dtoData.profile = profile;
-    } 
+    }
 
     if (adminName !== undefined) dtoData.adminName = adminName;
 
     if (schoolName !== undefined) dtoData.schoolName = schoolName;
 
-
     if (phone !== undefined) dtoData.phone = phone;
 
-    if(status !== undefined)dtoData.status=status;
-    
+    if (status !== undefined) dtoData.status = status;
+
     return { id, dtoData };
   }
 }
@@ -189,17 +188,17 @@ export class SchoolSubjectsDto {
 
     if (!findYear) return (dtoData.academicYear = null);
 
-    const attachMents=this.extractAttachments(req);
-    dtoData.referenceBooks=attachMents.map((upload:IUploadedDoc)=>upload.url);
-    
+    const attachMents = this.extractAttachments(req);
+    dtoData.referenceBooks = attachMents.map((upload: IUploadedDoc) => upload.url);
+
     dtoData.academicYear = findYear._id;
 
     return dtoData;
   }
 
-  static extractAttachments (req:Request) {
+  static extractAttachments(req: Request) {
     let attachMents: IUploadedDoc[] = [];
-    
+
     if (Array.isArray(req.files)) {
       attachMents = req?.files?.map((ele) => {
         return {
@@ -229,13 +228,13 @@ export class SchoolSubjectsDto {
       passMarks,
       credits,
       description,
-      docsOfSubject
+      docsOfSubject,
     } = req.body;
 
     const decoded = handleTokenVerification(req, res);
 
-    const attachMents=this.extractAttachments(req);
-    const references=attachMents.map((upload:IUploadedDoc)=>upload.url);
+    const attachMents = this.extractAttachments(req);
+    const references = attachMents.map((upload: IUploadedDoc) => upload.url);
 
     const updateSubjectDto: IAcademicSubject = {
       ...(code && { code: code.slice(0, 4) == 'SUB-' ? code : 'SUB-' + code }),
@@ -258,7 +257,7 @@ export class SchoolSubjectsDto {
       ...(credits !== undefined && { credits }),
 
       ...(description && { description }),
-      ...(req.files && { referenceBooks:[...docsOfSubject,...references] }),
+      ...(req.files && { referenceBooks: [...docsOfSubject, ...references] }),
 
       adminId: decoded.userId,
       tenantId: decoded.tenantId,
@@ -276,7 +275,7 @@ export class SchoolSubjectsDto {
       .findOne({ code: updateSubjectDto.academicYear })
       .lean<IAcademicYear>();
 
-    if (!findYear) return (updateSubjectDto.academicYear = decoded.tenantId );
+    if (!findYear) return (updateSubjectDto.academicYear = decoded.tenantId);
 
     updateSubjectDto.academicYear = findYear._id;
 
@@ -306,7 +305,7 @@ export class SchoolCoursesDto {
       eligibilityCriteria,
     } = req.body;
 
-    console.log('@schoolCoursesDto req.files',req.files);
+    console.log('@schoolCoursesDto req.files', req.files);
 
     let { subjects } = req.body;
 
@@ -452,9 +451,8 @@ export class SchoolCoursesDto {
  */
 export class DocumentsDto {
   static handleDtoOfDoc(req: Request, res: Response): Partial<IDocument> {
-    
     const files = req?.files as Express.Multer.File[];
-    
+
     const docs = files?.map((f) => ({
       url: f.path,
       fileName: f.filename,
@@ -491,7 +489,7 @@ export class DocumentsDto {
     const { userId } = req.params;
 
     const { docs } = this.handleDtoOfDoc(req, res);
-    
+
     if (!docs || docs?.length <= 0) {
       throw new Error('Nothing in the docs');
     }
@@ -537,7 +535,7 @@ export class DocumentsDto {
 
     //handleTokenVerification(req,res);
 
-    const filterQuery: FilterQuery<Partial<IDocument>> = {userId };
+    const filterQuery: FilterQuery<Partial<IDocument>> = { userId };
 
     const pullQuery: FilterQuery<Partial<IDocument>> = { docs: { fileName: file_Name } };
 

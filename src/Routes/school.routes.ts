@@ -28,18 +28,11 @@ router.post(
   (req, res, next) => schoolController.createSchool(req, res, next),
 );
 
-
-router.get('/getall', 
-  authMiddleware, 
-  uploadCloud.single('profile'), 
-  (req, res, next) =>
+router.get('/getall', authMiddleware, uploadCloud.single('profile'), (req, res, next) =>
   schoolController.getallSchool(req, res, next),
 );
 
-router.patch('/update/meta/:id', 
-  authMiddleware, 
-  uploadCloud.single('profile'), 
-  (req, res, next) =>
+router.patch('/update/meta/:id', authMiddleware, uploadCloud.single('profile'), (req, res, next) =>
   schoolController.updateSchoolMeta(req, res, next),
 );
 
@@ -178,7 +171,8 @@ router.post(
   uploadCloud.array('docs', 10),
   authMiddleware,
   (req, res, next) => {
-    schoolAcaSubController.editASchoolAcademicSubject(req, res, next)}
+    schoolAcaSubController.editASchoolAcademicSubject(req, res, next);
+  },
 );
 
 router.delete('/academic/subjects/:id', authMiddleware, (req, res, next) =>
@@ -186,10 +180,8 @@ router.delete('/academic/subjects/:id', authMiddleware, (req, res, next) =>
 );
 
 /**************  ACADEMIC COURSE   **************/
-router.post('/academic/courses/add', 
-  uploadCloud.array('docs', 10), 
-  (req, res, next) => 
-    schoolAcaCourseController.addNewSchoolCourse(req, res, next)
+router.post('/academic/courses/add', uploadCloud.array('docs', 10), (req, res, next) =>
+  schoolAcaCourseController.addNewSchoolCourse(req, res, next),
 );
 
 router.get('/academic/courses', authMiddleware, (req, res, next) =>

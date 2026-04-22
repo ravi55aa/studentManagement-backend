@@ -1,6 +1,6 @@
 /// <reference  path='./types/express/index.d.ts'/>
 
-import express,{Request,Response} from 'express';
+import express, { Request, Response } from 'express';
 const app = express();
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -31,13 +31,10 @@ app.use(
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
 
-      const isLocalhost =
-        origin === 'http://localhost:5173';
-    
-      
-      const isSubdomain =
-      /^http:\/\/([a-z0-9-]+)\.localhost:5173$/.test(origin);
-      
+      const isLocalhost = origin === 'http://localhost:5173';
+
+      const isSubdomain = /^http:\/\/([a-z0-9-]+)\.localhost:5173$/.test(origin);
+
       if (isLocalhost || isSubdomain) {
         return callback(null, true);
       }
@@ -53,9 +50,13 @@ app.use(
 app.use(cookieParser());
 app.use(sessionConfig());
 app.use(express.urlencoded({ extended: true }));
-app.post('/stripe/webhook',express.raw({type:'application/json'}),(req:Request,res:Response)=>stripeController.callWebHook(req,res));
+app.post(
+  '/stripe/webhook',
+  express.raw({ type: 'application/json' }),
+  (req: Request, res: Response) => stripeController.callWebHook(req, res),
+);
 app.use(express.json());
-app.use(handleSubdomainResolver)
+app.use(handleSubdomainResolver);
 
 connectDB();
 

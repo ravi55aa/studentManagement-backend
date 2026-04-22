@@ -24,9 +24,11 @@ export interface IStudentAttendanceRepository {
     month: number | unknown,
   ): Promise<Record<number, string>>;
 
-  getAttendanceOfBatchByBatchId( batchId: string,
-      start: Date|string,
-      end: Date): Promise<IAttendance | null> 
+  getAttendanceOfBatchByBatchId(
+    batchId: string,
+    start: Date | string,
+    end: Date,
+  ): Promise<IAttendance | null>;
 
   //APPLY-LEAVE
   applyLeave(
@@ -35,14 +37,15 @@ export interface IStudentAttendanceRepository {
   ): Promise<void>;
 
   updateAppliedLeaveStatusFromTeacher(
-      filter: FilterQuery<Partial<IStudentLeave>>,
-      update: FilterQuery<Partial<IStudentLeave>>,
-    ): Promise<void|null>
+    filter: FilterQuery<Partial<IStudentLeave>>,
+    update: FilterQuery<Partial<IStudentLeave>>,
+  ): Promise<void | null>;
 
   getLeaves(filter: FilterQuery<Partial<IStudentLeave>>): Promise<IStudentLeave | null>;
 
   updateStudentLeave(
-      filter: FilterQuery<Partial<IStudentLeave>>,
-      date: Date|string,
-      status:leaveApproveStatus):Promise<IStudentLeave | null> 
+    filter: FilterQuery<Partial<IStudentLeave>>,
+    date: Date | string,
+    status: leaveApproveStatus,
+  ): Promise<IStudentLeave | null>;
 }

@@ -8,8 +8,9 @@ import { TPaginationQuery, TPaginationResult } from '../../types/pagination';
 export interface ITeacherRepo extends BaseRepository<ITeacherBio> {
   createProfessional(data: Partial<ITeacher>): Promise<ITeacher | null>;
 
-  getAllTeachers(paginationQuery:TPaginationQuery):
-    Promise<TPaginationResult<IGetAllTeachers>|null>
+  getAllTeachers(
+    paginationQuery: TPaginationQuery,
+  ): Promise<TPaginationResult<IGetAllTeachers> | null>;
 
   // getTeacherById(teacherId: string): Promise<ITeacher | null>;
 
@@ -27,9 +28,15 @@ export interface ITeacherRepo extends BaseRepository<ITeacherBio> {
 
   updateBioById(teacherId: string, data: Partial<ITeacherBio>): Promise<ITeacherBio | null>;
 
-  updateProfessionalByTeacherId(teacherId: string, data: Partial<ITeacher>): Promise<ITeacher | null>;
+  updateProfessionalByTeacherId(
+    teacherId: string,
+    data: Partial<ITeacher>,
+  ): Promise<ITeacher | null>;
 
-  getUnassignedTeachers(query: FilterQuery<Partial<ITeacher>>,paginationQuery:TPaginationQuery): Promise<TPaginationResult<ITeacherBio>|null>;
+  getUnassignedTeachers(
+    query: FilterQuery<Partial<ITeacher>>,
+    paginationQuery: TPaginationQuery,
+  ): Promise<TPaginationResult<ITeacherBio> | null>;
 
   findOneProfessional(query: FilterQuery<Partial<ITeacher>>): Promise<ITeacher | null>;
 

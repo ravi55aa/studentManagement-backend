@@ -83,23 +83,11 @@ export const homeworkSubmissionSchema = z.object({
   links: z.array(z.string().url('Invalid URL')).optional(),
 });
 
-
 //Leave document
-export const leaveDocValidationSchema = z.object(
-  {
-    reason: z
-      .string()
-      .trim()
-      .min(5, "Reason is required"),
+export const leaveDocValidationSchema = z.object({
+  reason: z.string().trim().min(5, 'Reason is required'),
 
-    body: z
-      .string()
-      .trim()
-      .min(10, "Body is required"),
+  body: z.string().trim().min(10, 'Body is required'),
 
-    attachment: z
-      .string()
-      .url("Attachment must be a valid URL")
-      .optional(), // since it's not required
-  }
-);
+  attachment: z.string().url('Attachment must be a valid URL').optional(), // since it's not required
+});

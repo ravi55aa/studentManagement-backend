@@ -87,7 +87,7 @@ export class StudentHomeworkService implements IStudentHomeworkService {
     return ApiResponse.success(doc, HomeworkMessage.HomeworkFetched);
   }
 
-    // Update Submission (Resubmit)
+  // Update Submission (Resubmit)
   async updateSubmission(req: Request): Promise<serviceReturnType> {
     const { id } = req.params;
 
@@ -103,14 +103,14 @@ export class StudentHomeworkService implements IStudentHomeworkService {
   }
 
   public async updateAllSubmission(req: Request): Promise<serviceReturnType> {
-      const { homeworkId } = req.params;
+    const { homeworkId } = req.params;
 
-      const doc = await this._homeworkRepo.findSubmissionById(homeworkId!);
+    const doc = await this._homeworkRepo.findSubmissionById(homeworkId!);
 
-      if (!doc) {
-        return ApiResponse.failure(HomeworkMessage.HomeworkNotFound);
-      }
+    if (!doc) {
+      return ApiResponse.failure(HomeworkMessage.HomeworkNotFound);
+    }
 
-      return ApiResponse.success(doc, HomeworkMessage.HomeworkFetched);
+    return ApiResponse.success(doc, HomeworkMessage.HomeworkFetched);
   }
 }

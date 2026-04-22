@@ -1,166 +1,160 @@
-
-
 //ROOM - one for each convocation
-import mongoose, { Schema, model, Types,Document } from "mongoose";
+import mongoose, { Schema, model, Types, Document } from 'mongoose';
 
-import { IUploadedDoc } from "./documentModel";
+import { IUploadedDoc } from './documentModel';
 
-export type ChatRoomType = "direct" | "batch";
+export type ChatRoomType = 'direct' | 'batch';
 
 export interface IChatRoom extends Document {
-    type: ChatRoomType;
+  type: ChatRoomType;
 
-    name?: string; // batch / center name
+  name?: string; // batch / center name
 
-    participants: Types.ObjectId[]; // users in chat
+  participants: Types.ObjectId[]; // users in chat
 
-    //  Optional relations-Only for batchRoom | centerRoom
-    batchId?: Types.ObjectId;
-    centerId?: Types.ObjectId;
+  //  Optional relations-Only for batchRoom | centerRoom
+  batchId?: Types.ObjectId;
+  centerId?: Types.ObjectId;
 
-    //  Last message optimization
-    lastMessage?: string;
-    lastMessageAt?: Date;
+  //  Last message optimization
+  lastMessage?: string;
+  lastMessageAt?: Date;
 
-    createdBy?: Types.ObjectId;
+  createdBy?: Types.ObjectId;
 
-    createdAt: Date;
-    updatedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const chatRoomSchema = new Schema<IChatRoom>(
-    {
-        type: {
-        type: String,
-        enum: ["direct", "batch"],
-        required: true,
-        },
+  {
+    type: {
+      type: String,
+      enum: ['direct', 'batch'],
+      required: true,
+    },
 
-        name: {
-        type: String, // for batch / center
-        },
+    name: {
+      type: String, // for batch / center
+    },
 
-        participants: [
-        {
-            type: Types.ObjectId,
-            role:String,
-            refPath: "participants.role", // student / teacher / admin
-        },
-        ],
-
-        //  For batch chat
-        batchId: {
-        type: Types.ObjectId,
-        ref: "Batches",
-        },
-
-        //  For center broadcast
-        centerId: {
-        type: Types.ObjectId,
-        ref: "Center",
-        },
-
-        //  Last message optimization
-        lastMessage: {
-        type: String,
-        },
-
-        lastMessageAt: {
-        type: Date,
-        },
-
-        createdBy: {
+    participants: [
+      {
         type: Types.ObjectId,
         role: String,
-        refPath: "senderId.role",
-        },
+        refPath: 'participants.role', // student / teacher / admin
+      },
+    ],
+
+    //  For batch chat
+    batchId: {
+      type: Types.ObjectId,
+      ref: 'Batches',
     },
-    { timestamps: true }
+
+    //  For center broadcast
+    centerId: {
+      type: Types.ObjectId,
+      ref: 'Center',
+    },
+
+    //  Last message optimization
+    lastMessage: {
+      type: String,
+    },
+
+    lastMessageAt: {
+      type: Date,
+    },
+
+    createdBy: {
+      type: Types.ObjectId,
+      role: String,
+      refPath: 'senderId.role',
+    },
+  },
+  { timestamps: true },
 );
 
-export const chatRoomModel = model<IChatRoom>("ChatRoom", chatRoomSchema);
-
+export const chatRoomModel = model<IChatRoom>('ChatRoom', chatRoomSchema);
 
 /**
- * 
- * 
+ *
+ *
  */
 
 //MESSAGES-independent
 
 export interface IMessage extends Document {
+  chatRoomId: Types.ObjectId;
 
-    chatRoomId: Types.ObjectId;
+  role: string;
+  senderId: Types.ObjectId;
 
-    role: string;
-    senderId: Types.ObjectId;
+  message: string;
 
-    message: string;
+  attachments?: IUploadedDoc[];
 
-    attachments?: IUploadedDoc[];
+  readBy: Types.ObjectId[];
 
-    readBy: Types.ObjectId[];
+  isBroadcast?: boolean; // for center messages
 
-    isBroadcast?: boolean; // for center messages
-
-    createdAt: Date;
-    updatedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-
 export const uploadedDocSchema = new mongoose.Schema<IUploadedDoc>(
-    {
-        url: { type: String, required: true },
-        fileName: { type: String, required: true },
-    },
-    { _id: false },
+  {
+    url: { type: String, required: true },
+    fileName: { type: String, required: true },
+  },
+  { _id: false },
 );
 const messageSchema = new Schema<IMessage>(
-    {
-        chatRoomId: {
-        type: Schema.Types.ObjectId,
-        ref: "ChatRoom",
-        required: true,
-        },
-        role: {
-            type:String,
-            default:'Student'
-        },
-        senderId: {
-        type: Schema.Types.ObjectId,
-        refPath: "role",
-        required: true,
-        },
-
-        message: {
-        type: String,
-        required: true,
-        },
-
-        attachments: {
-            type:[uploadedDocSchema],
-            default: null,
-        },
-
-        //  read receipts
-        readBy: [
-        {
-            type: Types.ObjectId,
-            role: String,
-            refPath: "senderId.role",
-        },
-        ],
-
-        isBroadcast: {
-        type: Boolean,
-        default: false, // true for center messages
-        },
+  {
+    chatRoomId: {
+      type: Schema.Types.ObjectId,
+      ref: 'ChatRoom',
+      required: true,
     },
-    { timestamps: true }
+    role: {
+      type: String,
+      default: 'Student',
+    },
+    senderId: {
+      type: Schema.Types.ObjectId,
+      refPath: 'role',
+      required: true,
+    },
+
+    message: {
+      type: String,
+      required: true,
+    },
+
+    attachments: {
+      type: [uploadedDocSchema],
+      default: null,
+    },
+
+    //  read receipts
+    readBy: [
+      {
+        type: Types.ObjectId,
+        role: String,
+        refPath: 'senderId.role',
+      },
+    ],
+
+    isBroadcast: {
+      type: Boolean,
+      default: false, // true for center messages
+    },
+  },
+  { timestamps: true },
 );
 
-export const messageModel = model<IMessage>("Message", messageSchema);
-
+export const messageModel = model<IMessage>('Message', messageSchema);
 
 chatRoomSchema.index({ type: 1 });
 chatRoomSchema.index({ batchId: 1 });

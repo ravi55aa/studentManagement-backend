@@ -6,7 +6,11 @@ import { BaseRepository } from '@Repository/BaseRepository';
 import logger from '@Utils/logger';
 import { IStudentAttendanceRepository } from '@Interfaces/repository/IAttendanceRepository';
 import studentAttendanceModel, { IAttendance } from '@Models/Student/attendanceModel';
-import { IStudentLeave, leaveApproveStatus, studentLeaveModel } from '@Models/Student/applyLeaveModel';
+import {
+  IStudentLeave,
+  leaveApproveStatus,
+  studentLeaveModel,
+} from '@Models/Student/applyLeaveModel';
 import { AttendanceMessage, LeaveMessage } from '@Constants/resposeMessages';
 
 @injectable()
@@ -38,16 +42,18 @@ export class StudentAttendanceRepository
     }
   }
 
-  async getAttendanceOfBatchByBatchId( batchId: string,
-    start: Date|string,
-    end: Date): Promise<IAttendance | null> {
+  async getAttendanceOfBatchByBatchId(
+    batchId: string,
+    start: Date | string,
+    end: Date,
+  ): Promise<IAttendance | null> {
     try {
       return await this.model.findOne({
-          batchId: batchId,
-          date: {
-              $gte: start,
-              $lt: end,
-          },
+        batchId: batchId,
+        date: {
+          $gte: start,
+          $lt: end,
+        },
       });
     } catch (error) {
       logger.error('Error while finding attendance by id:', error);
@@ -79,7 +85,7 @@ export class StudentAttendanceRepository
     try {
       // Start & End of month
       const numericMonth = Number(month);
-      const startDate = new Date(year, numericMonth , 1);
+      const startDate = new Date(year, numericMonth, 1);
       const endDate = new Date(year, numericMonth + 1, 0);
 
       const attendanceDocs = await this.model.find({
@@ -167,12 +173,11 @@ export class StudentAttendanceRepository
   async updateAppliedLeaveStatusFromTeacher(
     filter: FilterQuery<Partial<IStudentLeave>>,
     update: FilterQuery<Partial<IStudentLeave>>,
-  ): Promise<void|null> {
+  ): Promise<void | null> {
     try {
       return await this.model.findOneAndUpdate(filter, update, {
-        new: true
+        new: true,
       });
-
     } catch (error) {
       logger.error(AttendanceMessage.AttendanceNotUpdated, error);
       return;
@@ -188,26 +193,28 @@ export class StudentAttendanceRepository
     }
   }
 
-    async updateStudentLeave(
+  async updateStudentLeave(
     filter: FilterQuery<Partial<IStudentLeave>>,
-    date: Date|string,
-    status:leaveApproveStatus
+    date: Date | string,
+    status: leaveApproveStatus,
   ): Promise<IStudentLeave | null> {
     try {
-      return await studentLeaveModel.findOneAndUpdate(
-        {
-          ...filter,
-          "leaveHistory.date": date, 
-        },
-        {
-          $set: {
-            "leaveHistory.$.status": status,
+      return await studentLeaveModel
+        .findOneAndUpdate(
+          {
+            ...filter,
+            'leaveHistory.date': date,
           },
-        },
-        { new: true }
-      ).lean<IStudentLeave>();
+          {
+            $set: {
+              'leaveHistory.$.status': status,
+            },
+          },
+          { new: true },
+        )
+        .lean<IStudentLeave>();
     } catch (error) {
-      logger.error("Leave update failed", error);
+      logger.error('Leave update failed', error);
       return null;
     }
   }

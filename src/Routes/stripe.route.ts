@@ -1,17 +1,16 @@
-import express, { Request,Response,NextFunction } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { stripeController } from '@DI/resolve';
 // import { env } from "process";
 // import schoolModel from "../Models/schoolModel";
 
 const router = express.Router();
 
-router.post('/create-payment-intent',
-  (req:Request,res:Response,next:NextFunction)=>stripeController.createPaymentIntent(req,res,next));
+router.post('/create-payment-intent', (req: Request, res: Response, next: NextFunction) =>
+  stripeController.createPaymentIntent(req, res, next),
+);
 
-router.post(
-  '/webhook',
-  express.raw({ type: 'application/json' }),
-  (req:Request,res:Response)=>stripeController.callWebHook(req,res)
+router.post('/webhook', express.raw({ type: 'application/json' }), (req: Request, res: Response) =>
+  stripeController.callWebHook(req, res),
 );
 
 //example Subscription code

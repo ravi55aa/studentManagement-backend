@@ -18,23 +18,22 @@ router.get('/getall', authMiddleware, (req, res, next) =>
   studentController.getAllStudents(req, res, next),
 );
 
-router.patch('/update/:studentId', authMiddleware, 
-  uploadCloud.single('profile'), (req, res, next) =>
-  studentController.editStudent(req, res, next),
+router.patch(
+  '/update/:studentId',
+  authMiddleware,
+  uploadCloud.single('profile'),
+  (req, res, next) => studentController.editStudent(req, res, next),
 );
 
 router
-.route('/bio/:id')
-  .get(authMiddleware,(req,res,next)=>
-    studentController.getAStudent(req,res,next))
+  .route('/bio/:id')
+  .get(authMiddleware, (req, res, next) => studentController.getAStudent(req, res, next))
   .delete(studentController.deleteStudent);
 
-
-
-/***** 
- * 
- * Homework 
- * 
+/*****
+ *
+ * Homework
+ *
  * *****/
 router.post(
   '/homework/submit/:homeworkId',
@@ -58,10 +57,10 @@ router.get('/homework/get/:homeworkId', authMiddleware, (req, res, next) =>
   studentHomeworkController.getSubmission(req, res, next),
 );
 
-/******* 
- * 
- * Attendance 
- * 
+/*******
+ *
+ * Attendance
+ *
  * *******/
 router.post('/attendance/update/:batchId', authMiddleware, (req, res, next) =>
   studentAttendanceController.markAttendance(req, res, next),
@@ -79,11 +78,10 @@ router.get('/attendance/batch', authMiddleware, (req, res, next) =>
   studentAttendanceController.getAAttendanceOfABatch(req, res, next),
 );
 
-
-/******* 
- * 
- * Attendance Apply-Leave 
- * 
+/*******
+ *
+ * Attendance Apply-Leave
+ *
  * *******/
 router.post('/applyLeave/:studentId', authMiddleware, (req, res, next) =>
   studentAttendanceController.applyLeave(req, res, next),
@@ -98,14 +96,13 @@ router.get('/leaveHistory/:studentId', authMiddleware, (req, res, next) =>
 );
 
 /******
- * 
- *  STUDENT FEE 
- * 
+ *
+ *  STUDENT FEE
+ *
  * ******/
 router.get('/fee/details/:studentId', authMiddleware, (req, res, next) =>
   stripeController.getStudentFeeDetails(req, res, next),
 );
-
 
 export default router;
 

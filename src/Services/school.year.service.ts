@@ -75,9 +75,8 @@ export class SchoolYear implements ISchoolAcademicYear {
   }
 
   /* =================LIST ALL YEARS==================== */
-  async listAllAcademicYears(query:TPaginationQuery): Promise<serviceReturnType> {
+  async listAllAcademicYears(query: TPaginationQuery): Promise<serviceReturnType> {
     try {
-
       const years = await this._yearRepo.getAll(query);
 
       if (!years || years.data.length === 0) {

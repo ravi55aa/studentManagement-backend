@@ -66,10 +66,10 @@ export class BatchService implements IBatchService {
   async getAllBatches(req: Request, res: Response): Promise<serviceReturnType> {
     try {
       const query = BatchDto.handleGetAllBatchesDto(req, res);
-      
-      const {limit,page}=req.query as unknown as TPaginationQuery;
 
-      const docs = await this._batchRepo.getAllBatches({limit,page},query);
+      const { limit, page } = req.query as unknown as TPaginationQuery;
+
+      const docs = await this._batchRepo.getAllBatches({ limit, page }, query);
 
       return ApiResponse.success(docs, BatchMessage.BatchListed);
     } catch (error) {

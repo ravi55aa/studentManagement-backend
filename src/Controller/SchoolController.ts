@@ -62,33 +62,29 @@ export default class SchoolController {
       const { status, resBody } = await this._schoolService.getSchoolAllData(req, res);
 
       res.status(status).json(resBody);
-
     } catch (err) {
-      
       next(err);
     }
   }
 
   public async getASchoolForView(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const {schoolId}=req.params;
-      
-      if(!schoolId){
-        const {status, resBody}=ApiResponse.badRequest(CommonMessage.IdNotFound);
+      const { schoolId } = req.params;
+
+      if (!schoolId) {
+        const { status, resBody } = ApiResponse.badRequest(CommonMessage.IdNotFound);
         res.status(status).json(resBody);
         return;
       }
 
-      const { status, resBody } = await this._schoolService.getASchoolFromAdminCredentials(schoolId);
+      const { status, resBody } =
+        await this._schoolService.getASchoolFromAdminCredentials(schoolId);
 
       res.status(status).json(resBody);
-
     } catch (err) {
-      
       next(err);
     }
   }
-
 
   public async getallSchool(req: Request, res: Response, next: NextFunction): Promise<void> {
     {
@@ -101,7 +97,6 @@ export default class SchoolController {
       }
     }
   }
-
 
   // public async updateSchool(req:Request,res:Response):Promise<void>{}
 

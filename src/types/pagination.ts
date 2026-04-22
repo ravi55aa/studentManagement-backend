@@ -1,11 +1,11 @@
 export type TPaginationQuery = {
-    page: number;
-    limit: number;
+  page: number;
+  limit: number;
 };
 
 export type TPaginationResult<T> = {
-    data: T[];
-    total: number;
-    page: number;
-    totalPages: number;
-} ;
+  data: T[];
+  total: number;
+  page: number;
+  totalPages: number;
+};

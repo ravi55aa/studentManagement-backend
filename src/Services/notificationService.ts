@@ -69,20 +69,19 @@ export class NotificationService implements INotificationService {
 
   private async _resolveRecipients(senderModel: string) {
     if (senderModel === 'Admin') {
-      
       const teachers = await teacherModel.find({}).select('_id').lean();
-      const teachersArray= teachers.map((t) => ({
+      const teachersArray = teachers.map((t) => ({
         userId: t._id,
         userModel: 'Teacher',
       }));
 
       const students = await studentModel.find({}).select('_id').lean();
-      const studentsArray= students.map((s) => ({
+      const studentsArray = students.map((s) => ({
         userId: s._id,
-        userModel: "Student",
+        userModel: 'Student',
       }));
 
-      return [...teachersArray,...studentsArray]; 
+      return [...teachersArray, ...studentsArray];
     }
 
     // if (senderModel === "Teacher") {
@@ -117,36 +116,36 @@ export class NotificationService implements INotificationService {
       return ApiResponse.success([], NotificationMessage.NotificationNotFetched);
     }
 
-    return ApiResponse.success(notifications,NotificationMessage.NotificationFetched);
+    return ApiResponse.success(notifications, NotificationMessage.NotificationFetched);
   }
 
   public async getUserNotifications(userId: string): Promise<serviceReturnType> {
-      try {
-        const userNotifications = await this._notificationRepo.getUserNotifications(userId);
+    try {
+      const userNotifications = await this._notificationRepo.getUserNotifications(userId);
 
-        if (!userNotifications || userNotifications.length<=0) {
-          return ApiResponse.failure(NotificationMessage.NotificationNotFetched);
-        }
+      if (!userNotifications || userNotifications.length <= 0) {
+        return ApiResponse.failure(NotificationMessage.NotificationNotFetched);
+      }
 
-        return ApiResponse.success(userNotifications, NotificationMessage.NotificationFetched);
+      return ApiResponse.success(userNotifications, NotificationMessage.NotificationFetched);
     } catch (error) {
-        logger.error('Error while fetching user notifications:', error);
-        return ApiResponse.internalServerError(ServerMessage.ServerError);
+      logger.error('Error while fetching user notifications:', error);
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 
   public async setUserNotificationIsRead(userNotificationId: string): Promise<serviceReturnType> {
-      try {
-        const isRead = await this._notificationRepo.setUserNotificationIsRead(userNotificationId);
+    try {
+      const isRead = await this._notificationRepo.setUserNotificationIsRead(userNotificationId);
 
-        if (!isRead ) {
-          return ApiResponse.failure(NotificationMessage.NotificationCantRead);
-        }
+      if (!isRead) {
+        return ApiResponse.failure(NotificationMessage.NotificationCantRead);
+      }
 
-        return ApiResponse.success(null, NotificationMessage.NotificationIsRead);
+      return ApiResponse.success(null, NotificationMessage.NotificationIsRead);
     } catch (error) {
-        logger.error('Error while fetching user notifications:', error);
-        return ApiResponse.internalServerError(ServerMessage.ServerError);
+      logger.error('Error while fetching user notifications:', error);
+      return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
 }

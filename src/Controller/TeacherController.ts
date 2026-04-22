@@ -51,7 +51,11 @@ export default class TeacherController {
     }
   }
 
-  public async updateTeacherProfessional(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public async updateTeacherProfessional(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const { teacherId } = req.params;
 
@@ -61,7 +65,7 @@ export default class TeacherController {
         return;
       }
 
-      const { status, resBody } = await this._teacherService.updateTeacher(req,res);
+      const { status, resBody } = await this._teacherService.updateTeacher(req, res);
 
       res.status(status).json(resBody);
     } catch (error) {
@@ -71,8 +75,7 @@ export default class TeacherController {
 
   public async getAllTeachers(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-
-      const query=req.query as unknown as TPaginationQuery;
+      const query = req.query as unknown as TPaginationQuery;
 
       const { status, resBody } = await this._teacherService.getAllTeachers(query);
 
@@ -89,10 +92,12 @@ export default class TeacherController {
   ): Promise<void> {
     try {
       const { center } = req.query;
-      const {limit,page}=req.query as unknown as TPaginationQuery;
+      const { limit, page } = req.query as unknown as TPaginationQuery;
 
       const { status, resBody } = await this._teacherService.getUnassignedTeachers(
-        {center: center}, {limit,page});
+        { center: center },
+        { limit, page },
+      );
 
       res.status(status).json(resBody);
     } catch (error) {

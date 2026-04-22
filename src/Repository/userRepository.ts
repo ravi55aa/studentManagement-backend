@@ -1,6 +1,6 @@
 import { injectable } from 'tsyringe';
 import { ISuperAdminRepository, IUserRepository } from '@Interfaces/repository/IAdminRepository';
-import { addressModel,adminModel } from '@Models/index'; 
+import { addressModel, adminModel } from '@Models/index';
 import { IAddress } from '@Models/addressModel';
 import { IUser } from '@Models/userModel';
 import logger from '@Utils/logger';
@@ -36,7 +36,10 @@ export class UserRepository extends BaseRepository<IUser> implements IUserReposi
 }
 
 @injectable()
-export class SuperAdminRepository extends BaseRepository<ISuperAdmin> implements ISuperAdminRepository {
+export class SuperAdminRepository
+  extends BaseRepository<ISuperAdmin>
+  implements ISuperAdminRepository
+{
   constructor() {
     super(superAdminModel);
   }

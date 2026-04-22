@@ -8,7 +8,6 @@ import { CommonMessage } from '@Constants/resposeMessages';
 import { SchoolAcademicYearDto } from './schoolDTO';
 
 export class StudentDTO {
-
   static createStudent(req: Request): Partial<IStudent> {
     const data: Partial<IStudent> = req.body;
 
@@ -97,12 +96,11 @@ export class StudentDTO {
 // Attendance Dto
 
 export class AttendanceDto {
-
   static markAttendance(req: Request, res: Response): Partial<IAttendance> {
     const { batchId } = req.params;
-    const {date}=req.query as {date:string};
+    const { date } = req.query as { date: string };
 
-    const [year, month, day] = date.split("-").map(Number);
+    const [year, month, day] = date.split('-').map(Number);
     const today = new Date(Date.UTC(year!, month! - 1, day));
 
     const decoded = SchoolAcademicYearDto.getTenantId(req, res);
@@ -122,7 +120,7 @@ export class AttendanceDto {
 
     const attachment = req.file?.path || '';
 
-    if ( !studentId || !reason || !body) {
+    if (!studentId || !reason || !body) {
       throw new Error(CommonMessage.IdNotFound);
     }
 
@@ -134,10 +132,9 @@ export class AttendanceDto {
           reason,
           body,
           attachment,
-          date: new Date(), 
+          date: new Date(),
         },
       ],
     };
   }
-
 }

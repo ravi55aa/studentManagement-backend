@@ -121,27 +121,26 @@ export class TeacherDTO {
     return dto;
   }
 
-  static async update(req:Request,res:Response): Promise<Partial<ITeacher>> {
-
+  static async update(req: Request, res: Response): Promise<Partial<ITeacher>> {
     const decoded = handleTokenVerification(req, res);
-    const data=req.body;
+    const data = req.body;
 
     const dto = {
-      ...(data.academicYearId && {academicYearId: data.academicYearId!}),
-      ...(data.employeeId &&{employeeId : data.employeeId!}),
-      ...(data.employmentStatus &&{employmentStatus : data.employmentStatus!}),
-      ...(data.assignedSubjects &&{assignedSubjects : data.assignedSubjects ?? []}),
-      ...(data.designation &&{designation : data.designation!}),
-      ...(data.department &&{department : data.department ?? []}),
-      ...(data.dateOfJoining &&{dateOfJoining : data.dateOfJoining!}),
-      ...(data.dateOfLeaving &&{dateOfLeaving : data?.dateOfLeaving ?? null}),
-      ...(data.modelType &&{modelType : data.modelType!}),
-      ...(data.center &&{center : data.modelType == 'School' ? decoded.tenantId : data.center!}),
+      ...(data.academicYearId && { academicYearId: data.academicYearId! }),
+      ...(data.employeeId && { employeeId: data.employeeId! }),
+      ...(data.employmentStatus && { employmentStatus: data.employmentStatus! }),
+      ...(data.assignedSubjects && { assignedSubjects: data.assignedSubjects ?? [] }),
+      ...(data.designation && { designation: data.designation! }),
+      ...(data.department && { department: data.department ?? [] }),
+      ...(data.dateOfJoining && { dateOfJoining: data.dateOfJoining! }),
+      ...(data.dateOfLeaving && { dateOfLeaving: data?.dateOfLeaving ?? null }),
+      ...(data.modelType && { modelType: data.modelType! }),
+      ...(data.center && { center: data.modelType == 'School' ? decoded.tenantId : data.center! }),
     };
-    
+
     const yearDoc = await academicYearModel.findOne({ code: data.academicYearId! });
 
-    if ( yearDoc?.id) {
+    if (yearDoc?.id) {
       dto.academicYearId = yearDoc._id;
     }
 
@@ -156,7 +155,7 @@ export class TeacherDTO {
 
     dto.assignedSubjects = subjectToFollowArray;
 
-    return dto
+    return dto;
   }
 
   static assignClass(req: Request): { teacherId: string; batchId: string } {

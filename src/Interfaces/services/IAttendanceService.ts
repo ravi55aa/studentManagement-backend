@@ -24,14 +24,14 @@ export interface IStudentAttendanceService {
 
   //view attendance of a student
   getAttendanceOfAStudent(req: Request): Promise<serviceReturnType>;
-  
+
   //view Batch Attendance by Date
-  getAttendanceOfBatch(req: Request): Promise<serviceReturnType>
+  getAttendanceOfBatch(req: Request): Promise<serviceReturnType>;
 
   //----Apply leave----
-  setApplyLeave(req: Request,res:Response): Promise<serviceReturnType>;
+  setApplyLeave(req: Request, res: Response): Promise<serviceReturnType>;
 
-  updateAppliedLeaveStatus(req:Request):Promise<serviceReturnType>;
+  updateAppliedLeaveStatus(req: Request): Promise<serviceReturnType>;
 
   getStudentLeaveHistory(req: Request): Promise<serviceReturnType>;
 }

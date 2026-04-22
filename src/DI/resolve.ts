@@ -4,7 +4,8 @@ import {
   SchoolAcademicSubjectController,
   SchoolAcademicCourseController,
 } from 'Controller/School.Acadmic.Controller';
-import { PlanController,
+import {
+  PlanController,
   AddressController,
   StudentsController,
   StudentHomeworkController,
@@ -21,8 +22,7 @@ import { PlanController,
   CentersController,
   BatchController,
   HomeworkController,
-  } from 'Controller';
-
+} from 'Controller';
 
 export const addressController = container.resolve(AddressController);
 

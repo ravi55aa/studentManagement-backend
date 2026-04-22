@@ -10,7 +10,7 @@ export interface ISchoolAcademicYear {
 
   updateAcademicYear(req: Request, res: Response): Promise<serviceReturnType>;
 
-  listAllAcademicYears(query:TPaginationQuery): Promise<serviceReturnType>
+  listAllAcademicYears(query: TPaginationQuery): Promise<serviceReturnType>;
 
   deleteAcademicYear(req: Request): Promise<serviceReturnType>;
 }

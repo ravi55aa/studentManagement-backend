@@ -16,7 +16,6 @@ import { TPaginationQuery } from '../types/pagination';
 // import { getIO } from '../Config/socket.config';
 // import { otp } from 'Utils/generateOtp';
 
-
 @injectable()
 export class TeacherService implements ITeacherService {
   constructor(
@@ -99,9 +98,8 @@ export class TeacherService implements ITeacherService {
   }
 
   /* ===================GET/LIST All Teachers====================== */
-  public async getAllTeachers(query:TPaginationQuery): Promise<serviceReturnType> {
+  public async getAllTeachers(query: TPaginationQuery): Promise<serviceReturnType> {
     try {
-
       const result = await this._teacherRepo.getAllTeachers(query);
 
       if (!result) {
@@ -179,36 +177,35 @@ export class TeacherService implements ITeacherService {
     }
   }
 
-  async updateTeacher( req: Request,res:Response): Promise<serviceReturnType> {
-      try {
+  async updateTeacher(req: Request, res: Response): Promise<serviceReturnType> {
+    try {
       //TeacherValidation.teacher(req, res);
 
-      const {teacherId}=req.params;
+      const { teacherId } = req.params;
 
-      const data=await TeacherDTO.update(req,res);
+      const data = await TeacherDTO.update(req, res);
 
       if (data.academicYearId) {
-      const exists = await this._teacherRepo.findOneProfessional({
-        _id: { $ne: teacherId },
-        academicYearId: data.academicYearId,
-        employmentStatus: 'active',
-        assignedSubjects:{$all:data.assignedSubjects}
-      });
+        const exists = await this._teacherRepo.findOneProfessional({
+          _id: { $ne: teacherId },
+          academicYearId: data.academicYearId,
+          employmentStatus: 'active',
+          assignedSubjects: { $all: data.assignedSubjects },
+        });
 
-      if (exists) {
-        return ApiResponse.failure(TeacherMessage.ClassTeacherAlreadyAssigned);
-        //'Another teacher is already class teacher for this batch'
-      }
+        if (exists) {
+          return ApiResponse.failure(TeacherMessage.ClassTeacherAlreadyAssigned);
+          //'Another teacher is already class teacher for this batch'
+        }
       }
 
-      const updated = await this._teacherRepo.updateProfessionalByTeacherId(teacherId!,data); 
+      const updated = await this._teacherRepo.updateProfessionalByTeacherId(teacherId!, data);
 
       if (!updated) {
         return ApiResponse.notFound(TeacherMessage.TeacherUpdateFailed);
       }
 
-      return ApiResponse.success(updated,TeacherMessage.TeacherUpdated);
-
+      return ApiResponse.success(updated, TeacherMessage.TeacherUpdated);
     } catch (error) {
       logger.error(TeacherMessage.TeacherUpdateFailed, {
         layer: 'service',
@@ -262,17 +259,15 @@ export class TeacherService implements ITeacherService {
   //   }
   // }
 
-
   public async getUnassignedTeachers(
-    query: FilterQuery<Partial<ITeacher>>,paginationQuery:TPaginationQuery
+    query: FilterQuery<Partial<ITeacher>>,
+    paginationQuery: TPaginationQuery,
   ): Promise<serviceReturnType> {
-    
     if (query.center == 'School') {
       query.center = null;
     }
 
-    const teachers
-    = await this._teacherRepo.getUnassignedTeachers(query,paginationQuery);
+    const teachers = await this._teacherRepo.getUnassignedTeachers(query, paginationQuery);
 
     if (!teachers) {
       return ApiResponse.notFound(TeacherMessage.NoUnassignedTeachersFound);
@@ -312,8 +307,7 @@ export class TeacherService implements ITeacherService {
       .populate('centerId')
       .lean<ITeacher[]>();
 
-      return data;
-
+    return data;
   }
 
   /* ----------FETCH SINGLE TEACHER------------- */

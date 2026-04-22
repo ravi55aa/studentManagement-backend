@@ -8,7 +8,10 @@ export interface IHomeworkRepository {
 
   findById(id: string): Promise<IHomework | null>;
 
-  getAllHomework(paginationQuery: TPaginationQuery, query: FilterQuery<Partial<IHomework>>): Promise<TPaginationResult<IHomework>|null>;
+  getAllHomework(
+    paginationQuery: TPaginationQuery,
+    query: FilterQuery<Partial<IHomework>>,
+  ): Promise<TPaginationResult<IHomework> | null>;
 
   updateHomework(id: string, data: Partial<IHomework>): Promise<IHomework | null>;
 

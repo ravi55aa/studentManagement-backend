@@ -1,6 +1,5 @@
 import mongoose, { Document } from 'mongoose';
-type schoolStatus='verify'|'verified'|'blocked';
-
+type schoolStatus = 'verify' | 'verified' | 'blocked';
 
 export interface ISchool extends Document {
   userId?: mongoose.Types.ObjectId;
@@ -10,9 +9,9 @@ export interface ISchool extends Document {
   password: string | undefined;
   profile?: string | undefined;
   phone?: string | undefined;
-  isDelete?:boolean,
-  status?:schoolStatus,
-  subdomain?:string,
+  isDelete?: boolean;
+  status?: schoolStatus;
+  subdomain?: string;
 }
 
 const schoolMeta = new mongoose.Schema<ISchool>(
@@ -57,20 +56,20 @@ const schoolMeta = new mongoose.Schema<ISchool>(
       match: [/^[6-9]\d{9}$/, 'Enter valid 10 digits number'],
     },
 
-    isDelete:{
-      type:Boolean,
-      default:false
+    isDelete: {
+      type: Boolean,
+      default: false,
     },
-    status:{
-      type:String,
-      enum:['verify','verified','blocked'],
-      default:'verify'
+    status: {
+      type: String,
+      enum: ['verify', 'verified', 'blocked'],
+      default: 'verify',
     },
-    subdomain:{
-      type:String,
-      default:'schoolName',
-      unique:true
-    }
+    subdomain: {
+      type: String,
+      default: 'schoolName',
+      unique: true,
+    },
   },
   { timestamps: true },
 );

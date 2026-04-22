@@ -11,15 +11,17 @@ export interface ITeacherService {
   createTeacherBio(req: Request, res: Response): Promise<serviceReturnType>;
 
   updateTeacherBio(teacherId: string, req: Request): Promise<serviceReturnType>;
-  
+
   updateTeacher(req: Request, res: Response): Promise<serviceReturnType>;
 
-  getAllTeachers(query:TPaginationQuery): Promise<serviceReturnType>;
+  getAllTeachers(query: TPaginationQuery): Promise<serviceReturnType>;
 
   getTeacherById(teacherId: string): Promise<serviceReturnType>;
 
-  getUnassignedTeachers(query: FilterQuery<Partial<ITeacher>>,
-    paginationQuery:TPaginationQuery): Promise<serviceReturnType>;
+  getUnassignedTeachers(
+    query: FilterQuery<Partial<ITeacher>>,
+    paginationQuery: TPaginationQuery,
+  ): Promise<serviceReturnType>;
 
   assignClassToTeacher(req: Request): Promise<serviceReturnType>;
 

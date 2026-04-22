@@ -77,20 +77,19 @@ export class DocumentService implements IDocumentService {
       const { dtoData, dtoQuery } = DocumentsDto.updateDocV2(req, res);
 
       //find the document first,
-      const isDocument=await this._documentRepository.findOne(dtoQuery);
+      const isDocument = await this._documentRepository.findOne(dtoQuery);
 
-      if(!isDocument || isDocument===null){
-        const data=DocumentsDto.handleDtoOfDoc(req,res);
-        
-        const newUpload=await this.uploadDocs(data);
+      if (!isDocument || isDocument === null) {
+        const data = DocumentsDto.handleDtoOfDoc(req, res);
 
-        return newUpload.status==StatusCodes.OK 
-        ?  newUpload 
-        :  ApiResponse.failure(DocumentMessage.DocumentUpdateFailed);
+        const newUpload = await this.uploadDocs(data);
+
+        return newUpload.status == StatusCodes.OK
+          ? newUpload
+          : ApiResponse.failure(DocumentMessage.DocumentUpdateFailed);
       }
 
       const updated = await this._documentRepository.updateNEWUploadDocuments(dtoQuery, dtoData);
-
 
       if (!updated) {
         return ApiResponse.failure(DocumentMessage.DocumentUpdateFailed);

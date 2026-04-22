@@ -42,7 +42,9 @@ export default class StudentHomeworkController {
     try {
       const { homeworkId } = req.params;
 
-      const { status, resBody }: serviceReturnType = await this._homeworkService.getSubmission(homeworkId!);
+      const { status, resBody }: serviceReturnType = await this._homeworkService.getSubmission(
+        homeworkId!,
+      );
 
       res.status(status).json(resBody);
     } catch (err: unknown) {
@@ -72,16 +74,15 @@ export default class StudentHomeworkController {
     }
   }
 
-
   async updateSubmissionsByTeacher(req: Request, res: Response, next: NextFunction) {
-      try {
+    try {
       const { status, resBody }: serviceReturnType =
-          await this._homeworkService.updateSubmission(req);
+        await this._homeworkService.updateSubmission(req);
 
       res.status(status).json(resBody);
-      } catch (err: unknown) {
+    } catch (err: unknown) {
       next(err);
-      }
+    }
   }
 
   async deleteSubmission(req: Request, res: Response, next: NextFunction) {

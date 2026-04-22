@@ -17,7 +17,13 @@ import { AddressDTO } from '../dto/addressDTO';
 import { ApiResponse } from '../Constants/apiResponse';
 import { adminModel } from '../Models';
 import { ISchoolRepository } from '../Interfaces/repository/ISchoolRepository';
-import { AdminMessage, AuthMessage, CommonMessage, SchoolMessage, ServerMessage } from '../Constants/resposeMessages';
+import {
+  AdminMessage,
+  AuthMessage,
+  CommonMessage,
+  SchoolMessage,
+  ServerMessage,
+} from '../Constants/resposeMessages';
 
 @injectable()
 export class SchoolService implements ISchoolService {
@@ -93,7 +99,7 @@ export class SchoolService implements ISchoolService {
   async getSchool(req: Request, res: Response): Promise<serviceReturnType> {
     const { password, schoolName, userId } = SchoolDTO.getSchool(req, res);
 
-    const school = await this._schoolRepository.findOne({ schoolName, userId,isDelete:false});
+    const school = await this._schoolRepository.findOne({ schoolName, userId, isDelete: false });
 
     if (school) {
       const hashedPassword = await bcrypt.compare(password, school.password!);
@@ -102,13 +108,14 @@ export class SchoolService implements ISchoolService {
       }
     }
 
-    if (!school) {  //process school
+    if (!school) {
+      //process school
       return ApiResponse.failure(SchoolMessage.NotFound);
-    } else if(school.status=='verify'){
+    } else if (school.status == 'verify') {
       return ApiResponse.badRequest(SchoolMessage.notVerified);
-    } else if(school.status=='blocked'){
+    } else if (school.status == 'blocked') {
       return ApiResponse.badRequest(SchoolMessage.IsBlocked);
-    } 
+    }
 
     //JWT ****
     const payload: IJwtPayload = {
@@ -123,23 +130,23 @@ export class SchoolService implements ISchoolService {
   }
 
   async getallSchool(): Promise<serviceReturnType> {
-    try{
+    try {
       const school = await this._schoolRepository.getAllSchool();
 
-      if (!school || !school?.length ) {
+      if (!school || !school?.length) {
         return ApiResponse.failure(SchoolMessage.NotFound);
       }
 
       return ApiResponse.success(school, SchoolMessage.FetchAll);
     } catch (error) {
-          logger.error(SchoolMessage.NotFound, {
-            layer: 'service',
-            module: 'school',
-            error,
-          });
-    
-          return ApiResponse.failure(ServerMessage.ServerError);
-      }
+      logger.error(SchoolMessage.NotFound, {
+        layer: 'service',
+        module: 'school',
+        error,
+      });
+
+      return ApiResponse.failure(ServerMessage.ServerError);
+    }
   }
 
   async updateSchoolMeta(req: Request, res: Response): Promise<serviceReturnType> {
@@ -148,9 +155,7 @@ export class SchoolService implements ISchoolService {
     const updatedSchool = await this._schoolRepository.updateSchool(id, dtoData);
 
     if (!updatedSchool) {
-
       return ApiResponse.failure(SchoolMessage.NotUpdated);
-      
     }
 
     return ApiResponse.success(updatedSchool, SchoolMessage.Updated);
@@ -159,7 +164,10 @@ export class SchoolService implements ISchoolService {
   public async getSchoolAllData(req: Request, res: Response): Promise<serviceReturnType> {
     const { tenantId } = SchoolAcademicYearDto.getTenantId(req, res);
 
-    const schoolDoc: Partial<ISchool | null> = await this._schoolRepository.findOne({_id:tenantId,isDelete:false});
+    const schoolDoc: Partial<ISchool | null> = await this._schoolRepository.findOne({
+      _id: tenantId,
+      isDelete: false,
+    });
 
     const addrQuery = { userId: tenantId };
     const schoolAddressDoc = await this._addressRepo.findOne(addrQuery);
@@ -175,14 +183,17 @@ export class SchoolService implements ISchoolService {
 
     return ApiResponse.success(allData, SchoolMessage.FetchAll);
   }
-  
-  public async getASchoolFromAdminCredentials(schoolId:string):Promise<serviceReturnType>{
-    const schoolDoc: Partial<ISchool | null> = await this._schoolRepository.findOne({_id:schoolId,isDelete:false});
-    
-    if(!schoolDoc){
+
+  public async getASchoolFromAdminCredentials(schoolId: string): Promise<serviceReturnType> {
+    const schoolDoc: Partial<ISchool | null> = await this._schoolRepository.findOne({
+      _id: schoolId,
+      isDelete: false,
+    });
+
+    if (!schoolDoc) {
       return ApiResponse.notFound(SchoolMessage.NotFound);
     }
-    
+
     const addrQuery = { userId: schoolId };
     const schoolAddressDoc = await this._addressRepo.findOne(addrQuery);
 
@@ -197,8 +208,6 @@ export class SchoolService implements ISchoolService {
 
     return ApiResponse.success(allData, SchoolMessage.FetchAll);
   }
-
-
 
   public async deleteSchool(req: Request): Promise<serviceReturnType> {
     const schoolId = req.params.id;

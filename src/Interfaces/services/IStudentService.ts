@@ -12,10 +12,7 @@ export interface IStudentService {
 
   createStudent(req: Request, res: Response): Promise<serviceReturnType>;
 
-  updateStudent(
-      req: Request,
-      res: Response
-  ): Promise<serviceReturnType>;
+  updateStudent(req: Request, res: Response): Promise<serviceReturnType>;
 
   deleteStudent(id: string): Promise<serviceReturnType>;
 }

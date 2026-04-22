@@ -5,13 +5,13 @@ import { ITeacherRepo } from '@Interfaces/repository/ITeacherRepo';
 
 export type UserRole = 'SuperAdmin' | 'School' | 'Admin' | 'Teacher' | 'Student';
 
-export type UserType = 'SuperAdmin' |'Teacher' | 'Admin' | 'School' | 'Student';
+export type UserType = 'SuperAdmin' | 'Teacher' | 'Admin' | 'School' | 'Student';
 
 export type AuthPayloadType = {
   email: string;
   password: string;
   userType: UserType;
-};  
+};
 
 export type IRepositoryMap = {
   Teacher: ITeacherRepo | null;

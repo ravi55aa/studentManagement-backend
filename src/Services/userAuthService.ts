@@ -17,7 +17,6 @@ import { IStudentRepository } from '@Interfaces/repository/IStudentRepository';
 
 import { AuthPayloadType, IRepositoryMap } from '../types/auth.types';
 
-
 @injectable()
 export class UserAuthService implements IUserAuthService {
   constructor(
@@ -99,7 +98,6 @@ export class UserAuthServiceV2 implements IAuthService {
   }
 
   async login(payload: AuthPayloadType, req: Request, res: Response): Promise<serviceReturnType> {
-
     const { email, password, userType } = payload;
 
     if (!email || !password || !userType) {
@@ -112,7 +110,7 @@ export class UserAuthServiceV2 implements IAuthService {
       return ApiResponse.badRequest(AuthMessage.InvalidUser);
     }
 
-    let user:any = null;
+    let user: any = null;
 
     // Teacher login
     if (userType === 'Teacher') {
@@ -126,7 +124,7 @@ export class UserAuthServiceV2 implements IAuthService {
         return ApiResponse.failure(AuthMessage.not_Found);
       }
 
-      const isValid = await bcrypt.compare(password, user.password  );
+      const isValid = await bcrypt.compare(password, user.password);
 
       if (!isValid) {
         return ApiResponse.badRequest(AuthMessage.InvalidCredentials);

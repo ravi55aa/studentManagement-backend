@@ -35,42 +35,38 @@ export class SchoolRepository extends BaseRepository<ISchool> implements ISchool
 
   public async getAllSchool(): Promise<ISchool[] | null> {
     try {
-
-      return await this.model.find({isDelete:false}).lean<ISchool[]>();
-
+      return await this.model.find({ isDelete: false }).lean<ISchool[]>();
     } catch (error) {
-
       logger.error('Error finding school by ID:', error);
-      
+
       return null;
     }
   }
 
   public async createSchool(schoolData: ISchool): Promise<ISchool | null> {
     try {
-      const school= await this.model.create(schoolData);
+      const school = await this.model.create(schoolData);
 
       //Later move the code into subscription layer
-      if(school){
+      if (school) {
         await subscriptionModel.create({
-          schoolId:school._id,
-          planId:"69d685b2d982514b7bae5f9d",
-          amount:"0",
-          discount:"0",
-          discountAmount:"0",
-          finalAmount:"0",
-          startDate:new Date().toISOString(),
-          endDate:'2027-04-08T17:13:26.465Z',
-          status:'active',
-          paymentStatus:"paid",
-          transactionId:"free",
-          paymentMethod:"free",
-          autoRenew:true
-        })
+          schoolId: school._id,
+          planId: '69d685b2d982514b7bae5f9d',
+          amount: '0',
+          discount: '0',
+          discountAmount: '0',
+          finalAmount: '0',
+          startDate: new Date().toISOString(),
+          endDate: '2027-04-08T17:13:26.465Z',
+          status: 'active',
+          paymentStatus: 'paid',
+          transactionId: 'free',
+          paymentMethod: 'free',
+          autoRenew: true,
+        });
       }
 
       return school;
-      
     } catch (error) {
       logger.error('Error creating school:', error);
       return null;
@@ -102,10 +98,10 @@ export class SchoolRepository extends BaseRepository<ISchool> implements ISchool
 
   public async deleteSchool(schoolId: string): Promise<boolean> {
     try {
-
-      const result = await this.model.findByIdAndUpdate(schoolId,
-        {$set:{isDelete:true}},
-        {new:true}
+      const result = await this.model.findByIdAndUpdate(
+        schoolId,
+        { $set: { isDelete: true } },
+        { new: true },
       );
 
       return !!result;

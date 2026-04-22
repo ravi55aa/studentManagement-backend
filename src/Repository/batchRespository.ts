@@ -8,8 +8,6 @@ import { TPaginationQuery, TPaginationResult } from '../types/pagination';
 
 import { BaseRepository } from './BaseRepository';
 
-
-
 @injectable()
 export class BatchRepository extends BaseRepository<IBatches> implements IBatchRepository {
   constructor() {
@@ -25,30 +23,27 @@ export class BatchRepository extends BaseRepository<IBatches> implements IBatchR
     }
   }
 
-  async getAllBatches(paginationQuery: TPaginationQuery, query: FilterQuery<Partial<IBatches>>): Promise<TPaginationResult<IBatches>|null> {
-      try {
+  async getAllBatches(
+    paginationQuery: TPaginationQuery,
+    query: FilterQuery<Partial<IBatches>>,
+  ): Promise<TPaginationResult<IBatches> | null> {
+    try {
+      const page = Number(paginationQuery.page) || 1;
+      const limit = Number(paginationQuery.limit) || 10;
 
-        const page=Number(paginationQuery.page)||1;
-        const limit=Number(paginationQuery.limit) || 10;
-    
-        //const skip=(page - 1) * limit;
-    
-        const [data,total] = await Promise.all([
-  
-          this.model
-            .find(query)
-            .populate('batchCounselor', '_id firstName')
-            .lean<IBatches[]>(),
-          
-          this.model.find({ }).countDocuments()
-        ]);
-      
-        return { data, total ,page,totalPages:Math.ceil(total/limit) };
+      //const skip=(page - 1) * limit;
 
-      } catch (error) {
-        logger.error('Error fetching batches:', error);
-        return null;
-      }
+      const [data, total] = await Promise.all([
+        this.model.find(query).populate('batchCounselor', '_id firstName').lean<IBatches[]>(),
+
+        this.model.find({}).countDocuments(),
+      ]);
+
+      return { data, total, page, totalPages: Math.ceil(total / limit) };
+    } catch (error) {
+      logger.error('Error fetching batches:', error);
+      return null;
+    }
   }
 
   async findByTeacherId(teacherId: string): Promise<IBatches | null> {

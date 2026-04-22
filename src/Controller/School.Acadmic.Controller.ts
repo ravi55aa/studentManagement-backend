@@ -13,7 +13,6 @@ import { CourseMessage } from '../Constants/resposeMessages';
 import { TYPES } from '../DI/types';
 import { TPaginationQuery } from '../types/pagination';
 
-
 /******** SCHOOL YEAR********/
 @injectable()
 export class SchoolAcademicController {
@@ -48,7 +47,6 @@ export class SchoolAcademicController {
 
   async listAllAcademicYear(req: Request, res: Response, next: NextFunction) {
     try {
-
       const query = req.query as unknown as TPaginationQuery;
       const { status, resBody } = await this._academicService.listAllAcademicYears(query);
 

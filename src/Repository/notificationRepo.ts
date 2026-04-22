@@ -39,29 +39,30 @@ export class NotificationRepo extends BaseRepository<INotification> implements I
       return [];
     }
   }
-  
+
   public async getUserNotifications(userId: string): Promise<IUserNotification[] | []> {
     try {
-      return await userNotificationModel.find(
-        {userId:userId},{ userModel: 0 })
-        .populate('notificationId'," message type title")
+      return await userNotificationModel
+        .find({ userId: userId }, { userModel: 0 })
+        .populate('notificationId', ' message type title')
         .sort({ createdAt: -1 })
         .lean<IUserNotification[]>();
     } catch (error) {
       logger.error('Error finding notifications by user:', error);
       return [];
-    } 
+    }
   }
 
-public async setUserNotificationIsRead(userNotificationId: string): Promise<IUserNotification | null> {
-      try {
-      return await userNotificationModel.findByIdAndUpdate(
-        userNotificationId,{ $set:{isRead:true} })
+  public async setUserNotificationIsRead(
+    userNotificationId: string,
+  ): Promise<IUserNotification | null> {
+    try {
+      return await userNotificationModel
+        .findByIdAndUpdate(userNotificationId, { $set: { isRead: true } })
         .lean<IUserNotification>();
-
     } catch (error) {
       logger.error('Error finding notifications by user:', error);
       return null;
-    } 
+    }
   }
 }
