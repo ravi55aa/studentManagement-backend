@@ -54,7 +54,7 @@ export default class BatchController {
 
   public async assignClassTeacher(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const { id } = req.params; //batchId
       const { teacherId } = req.body;
 
       const { status, resBody } = await this._batchService.assignClassTeacher(id!, teacherId);

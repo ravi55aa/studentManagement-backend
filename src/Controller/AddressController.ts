@@ -16,9 +16,9 @@ export default class AddressController {
 
   public async getAddressById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const { userId } = req.params;
 
-      const { status, resBody } = await this._addressService.getAddressById(id!);
+      const { status, resBody } = await this._addressService.getAddressById(userId!);
 
       res.status(status).json(resBody);
     } catch (err) {

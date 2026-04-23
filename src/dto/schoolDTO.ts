@@ -305,8 +305,6 @@ export class SchoolCoursesDto {
       eligibilityCriteria,
     } = req.body;
 
-    console.log('@schoolCoursesDto req.files', req.files);
-
     let { subjects } = req.body;
 
     const decoded = handleTokenVerification(req, res);

@@ -12,10 +12,10 @@ export const handleSubdomainResolver = async (req: Request, res: Response, next:
     return next();
   }
 
-  const school = await schoolModel.findOne({ subdomain });
+  const school = await schoolModel.findOne({ subdomain,status:'verified' });
 
   if (!school) {
-    return res.status(StatusCodes.NOT_FOUND).json({ message: SchoolMessage.NotFound });
+    return res.status(StatusCodes.NOT_FOUND).json({ message: SchoolMessage.notVerified });
   }
 
   next();

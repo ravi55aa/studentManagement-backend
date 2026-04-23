@@ -9,7 +9,7 @@ import { FeeDto } from '../dto/feesDto';
 import { ApiResponse } from '../Constants/apiResponse';
 import { serviceReturnType } from '../Constants/interfaces';
 import { IFee } from '../Models/feesModel';
-import { TPaginationQuery } from '../types/pagination';
+//import { TPaginationQuery } from '../types/pagination';
 
 @injectable()
 export class FeeService implements IFeeService {

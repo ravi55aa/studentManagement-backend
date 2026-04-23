@@ -38,7 +38,10 @@ router.patch('/update/meta/:id', authMiddleware, uploadCloud.single('profile'), 
 
 router
   .route('/register/addAddress')
-  .post(authMiddleware, validateData(schoolAddressValidateSchema), (req, res, next) =>
+  .post(
+    authMiddleware, 
+    validateData(schoolAddressValidateSchema), 
+    (req, res, next) =>
     schoolController.addAddress(req, res, next),
   );
 

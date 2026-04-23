@@ -5,15 +5,21 @@ import { serviceReturnType } from '@Constants/interfaces';
 import { ITeacherRepo } from '@Interfaces/repository/ITeacherRepo';
 import { TYPES } from '@DI/types';
 import logger from '@Utils/logger';
-import { IAuthService, IUserAuthService } from '@Interfaces/services/IAdminAuthService';
 import { IUser } from '@Models/userModel';
 import { IAddress } from '@Models/addressModel';
 import { AddressFormatter, UserValidator } from '@Constants/userValidator';
-import { handleJwtTokensGenerator, IJwtPayload } from '@Utils/jwt';
 import { ApiResponse } from '@Constants/apiResponse';
-import { ISuperAdminRepository, IUserRepository } from '@Interfaces/repository/IAdminRepository';
 import { AuthMessage, UserMessage } from '@Constants/resposeMessages';
 import { IStudentRepository } from '@Interfaces/repository/IStudentRepository';
+import { 
+  handleJwtTokensGenerator, 
+  IJwtPayload } from '@Utils/jwt';
+import { 
+  ISuperAdminRepository, 
+  IUserRepository } from '@Interfaces/repository/IAdminRepository';
+import { 
+  IAuthService, 
+  IUserAuthService } from '@Interfaces/services/IAdminAuthService';
 
 import { AuthPayloadType, IRepositoryMap } from '../types/auth.types';
 
@@ -28,6 +34,7 @@ export class UserAuthService implements IUserAuthService {
     await UserValidator.ensureUserIsTaken(this._userRepository, userData.email!);
 
     const createUser = await this._userRepository.create(userData);
+
     if (!createUser) {
       throw new Error(UserMessage.UserNotCreated);
     }

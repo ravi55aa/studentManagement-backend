@@ -10,6 +10,7 @@ import { ApiResponse } from '@Constants/apiResponse';
 import { AddressMessage, ServerMessage } from '@Constants/resposeMessages';
 import { IAddressRepository } from '@Interfaces/repository/IAddressRepository';
 import logger from '@Utils/logger';
+import { FailureError, NotFoundError } from '@Middlewares/narrowDownErrors';
 
 @injectable()
 export class AddressService implements IAddressService {
@@ -23,13 +24,14 @@ export class AddressService implements IAddressService {
       const address = await this._addressRepository.findById(id);
 
       if (!address) {
-        return ApiResponse.notFound(AddressMessage.AddressNotFound);
+        throw new NotFoundError(AddressMessage.AddressNotFound);
       }
 
       return ApiResponse.success(address, AddressMessage.AddressFetched);
     } catch (error) {
       logger.error(AddressMessage.AddressNotFound, error);
       return ApiResponse.internalServerError(ServerMessage.ServerError);
+      throw error;
     }
   }
 
@@ -57,8 +59,9 @@ export class AddressService implements IAddressService {
 
   async getAddressById(userId: string): Promise<serviceReturnType> {
     try {
+
       if (!userId) {
-        return ApiResponse.notFound(AddressMessage.AddressIdNotFound);
+        throw new NotFoundError(AddressMessage.AddressIdNotFound);
       }
 
       const address = await this._addressRepository.findOne({ userId: userId });
@@ -75,12 +78,15 @@ export class AddressService implements IAddressService {
       const created = await this._addressRepository.create(address);
 
       if (!created) {
-        return ApiResponse.internalServerError(AddressMessage.AddressCreateFailed);
+        throw new FailureError(AddressMessage.AddressCreateFailed);
       }
 
       return ApiResponse.success(created, AddressMessage.AddressCreated);
+
     } catch (error) {
+
       logger.error(AddressMessage.AddressNotFound, error);
+
       return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }
@@ -95,12 +101,15 @@ export class AddressService implements IAddressService {
       const updated = await this._addressRepository.updateAddress(query, dto);
 
       if (!updated) {
-        return ApiResponse.notFound(AddressMessage.AddressNotUpdated);
+        throw new FailureError(AddressMessage.AddressNotUpdated); 
       }
 
       return ApiResponse.success(updated, AddressMessage.AddressUpdated);
+
     } catch (error) {
+
       logger.error(AddressMessage.AddressNotFound, error);
+      
       return ApiResponse.internalServerError(ServerMessage.ServerError);
     }
   }

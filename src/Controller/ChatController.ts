@@ -24,7 +24,7 @@ export default class ChatController {
 
       res.status(status).json(resBody);
     } catch (err) {
-      next(err);
+      next(err); 
     }
   }
 

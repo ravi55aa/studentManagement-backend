@@ -25,10 +25,10 @@ export default class StudentAttendanceController {
     }
   }
 
-  // Get Single Attendance
+  //
   async getAttendanceById(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
+      const { id } = req.params; //studentId
 
       const { status, resBody }: serviceReturnType =
         await this._attendanceService.getAttendanceById(id!);

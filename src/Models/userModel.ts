@@ -36,7 +36,11 @@ const adminSchema = new Schema<IUser>(
       required: true,
     },
 
-    googleId: { type: String, trim: true, unique: true },
+    googleId: { 
+      type: String, 
+      trim: true, 
+      default:null 
+    },
 
     tenantId: {
       type: String,

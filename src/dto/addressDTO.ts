@@ -26,7 +26,7 @@ export class AddressDTO {
 
     const { role, tenantId } = SchoolAcademicYearDto.getTenantId(req, res);
 
-    const { id } = req.params;
+    const { userId } = req.params;
 
     const updateYearDto: Partial<IAddress> = {
       ...(street !== undefined && { street }),
@@ -35,7 +35,7 @@ export class AddressDTO {
       ...(zip !== undefined && { zip }),
       ...(country !== undefined && { country }),
 
-      userId: id,
+      userId: userId,
       tenantId: tenantId,
       userType: role,
     };
