@@ -15,11 +15,11 @@ import { batchModel } from '@Models/batchModel';
 import { IStudentRepository } from '@Interfaces/repository/IStudentRepository';
 import {
   StudentMessage,
-  ServerMessage,
   BatchMessage,
   CommonMessage,
 } from '@Constants/resposeMessages';
 import { generateAdmissionNo, generateRollNo } from '@Utils/student.utils';
+import { InternalServerError, NotFoundError } from '@Middlewares/narrowDownErrors';
 
 @injectable()
 export class StudentService implements IStudentService {
@@ -32,19 +32,19 @@ export class StudentService implements IStudentService {
   async getStudentById(id: string): Promise<serviceReturnType> {
     try {
       if (!id) {
-        return ApiResponse.notFound(StudentMessage.StudentIdNotFound);
+        throw new NotFoundError(StudentMessage.StudentIdNotFound);
       }
 
       const student: IStudent | null = await this._studentRepository.findById(id);
 
       if (!student) {
-        return ApiResponse.notFound(StudentMessage.StudentNotFound);
+        throw new NotFoundError(StudentMessage.StudentNotFound);
       }
 
       return ApiResponse.success(student, StudentMessage.StudentFetched);
     } catch (error) {
       logger.error(StudentMessage.StudentNotFound, error);
-      return ApiResponse.internalServerError(ServerMessage.ServerError);
+      throw new InternalServerError();
     }
   }
 
@@ -56,7 +56,7 @@ export class StudentService implements IStudentService {
       return ApiResponse.success(students, StudentMessage.StudentsListed);
     } catch (error) {
       logger.error(StudentMessage.StudentNotFound, error);
-      return ApiResponse.internalServerError(ServerMessage.ServerError);
+      throw new InternalServerError();
     }
   }
 
@@ -68,7 +68,7 @@ export class StudentService implements IStudentService {
       return ApiResponse.success(students, StudentMessage.StudentsListed);
     } catch (error) {
       logger.error(StudentMessage.StudentNotFound, error);
-      return ApiResponse.internalServerError(ServerMessage.ServerError);
+      throw new InternalServerError();
     }
   }
 
@@ -105,7 +105,7 @@ export class StudentService implements IStudentService {
       return ApiResponse.success(created, StudentMessage.StudentCreated);
     } catch (error) {
       logger.error(StudentMessage.StudentCreateFailed, error);
-      return ApiResponse.internalServerError(ServerMessage.ServerError);
+      throw new InternalServerError();
     }
   }
 
@@ -123,7 +123,7 @@ export class StudentService implements IStudentService {
       return ApiResponse.success(updated, StudentMessage.StudentUpdated);
     } catch (error) {
       logger.error(StudentMessage.StudentUpdateFailed, error);
-      return ApiResponse.internalServerError(ServerMessage.ServerError);
+      throw new InternalServerError();
     }
   }
 
@@ -143,7 +143,7 @@ export class StudentService implements IStudentService {
       return ApiResponse.success(null, StudentMessage.StudentDeleted);
     } catch (error) {
       logger.error(StudentMessage.StudentDeleteFailed, error);
-      return ApiResponse.internalServerError(ServerMessage.ServerError);
+      throw new InternalServerError();
     }
   }
 }

@@ -8,6 +8,8 @@ import { FeeDto } from '@dto/feesDto';
 import { ApiResponse } from '@Constants/apiResponse';
 import { serviceReturnType } from '@Constants/interfaces';
 import { IFee } from '@Models/feesModel';
+import { InternalServerError } from '@Middlewares/narrowDownErrors';
+import logger from '@Utils/logger';
 //import { TPaginationQuery } from '../types/pagination';
 
 import { TPaginationQuery } from '../types/pagination';
@@ -20,61 +22,89 @@ export class FeeService implements IFeeService {
   ) {}
 
   public async createFee(req: Request, res: Response): Promise<serviceReturnType> {
-    const dto: Partial<IFee> = FeeDto.createFeeDto(req, res);
 
-    // Check duplicate code
-    const existing = await this._feeRepo.findOne({ code: dto.code });
-
-    if (existing) {
-      return ApiResponse.badRequest(FeesMessage.FeesCodeExist);
+    try{
+      const dto: Partial<IFee> = FeeDto.createFeeDto(req, res);
+  
+      // Check duplicate code
+      const existing = await this._feeRepo.findOne({ code: dto.code });
+  
+      if (existing) {
+        return ApiResponse.badRequest(FeesMessage.FeesCodeExist);
+      }
+  
+      const newFee = await this._feeRepo.create(dto);
+  
+      return ApiResponse.created(newFee);
+      
+    } catch(error){
+      logger.error('Error creating fee:', error);
+      throw new InternalServerError();
     }
-
-    const newFee = await this._feeRepo.create(dto);
-
-    return ApiResponse.created(newFee);
   }
 
   public async updateFee(id: string, req: Request): Promise<serviceReturnType> {
-    const dto: Partial<IFee> = FeeDto.updateFeeDto(req);
-
-    const updated = await this._feeRepo.updateById(id, dto);
-
-    if (!updated) {
-      return ApiResponse.notFound(FeesMessage.FeesNotFound);
+    try{
+      const dto: Partial<IFee> = FeeDto.updateFeeDto(req);
+  
+      const updated = await this._feeRepo.updateById(id, dto);
+  
+      if (!updated) {
+        return ApiResponse.failure(FeesMessage.FeesNotFound);
+      }
+  
+      return ApiResponse.success(updated, FeesMessage.FeesUpdated);
+    } catch(error){
+      logger.error('Error updating fee:', error);
+      throw new InternalServerError();
     }
-
-    return ApiResponse.success(updated, FeesMessage.FeesUpdated);
   }
 
   public async getAllFees(req: Request): Promise<serviceReturnType> {
-    const { page, limit, ...filters } = req.query as unknown as TPaginationQuery & Record<string,string>;
+    try{
+      const { page, limit, ...filters } = req.query as unknown as TPaginationQuery & Record<string,string>;
+  
+      const fees = await this._feeRepo.getAllFee({ page, limit }, filters || {});
+  
+      if (!fees || fees.data.length <= 0) {
+        return ApiResponse.notFound(FeesMessage.FeesNotFound);
+      }
+  
+      return ApiResponse.success(fees, FeesMessage.FeesListed);
 
-    const fees = await this._feeRepo.getAllFee({ page, limit }, filters || {});
-
-    if (!fees || fees.data.length <= 0) {
-      return ApiResponse.notFound(FeesMessage.FeesNotFound);
+    } catch(error){
+      logger.error('Error fetching fees:', error);
+      throw new InternalServerError();
     }
-
-    return ApiResponse.success(fees, FeesMessage.FeesListed);
   }
 
   public async getFeeById(id: string): Promise<serviceReturnType> {
-    const fee = await this._feeRepo.findById(id);
+    try{
+      const fee = await this._feeRepo.findById(id);
 
     if (!fee) {
       return ApiResponse.notFound(FeesMessage.FeesNotFound);
     }
 
-    return ApiResponse.success(fee, FeesMessage.FeesListed);
+      return ApiResponse.success(fee, FeesMessage.FeesListed);
+    } catch(error){
+      logger.error('Error fetching fee:', error);
+      throw new InternalServerError();
+    }
   }
 
   public async deleteFee(id: string): Promise<serviceReturnType> {
-    const deleted = await this._feeRepo.deleteById(id);
+    try{
+        const deleted = await this._feeRepo.deleteById(id);
 
-    if (!deleted) {
-      return ApiResponse.notFound(FeesMessage.FeesNotFound);
+        if (!deleted) {
+          return ApiResponse.notFound(FeesMessage.FeesNotFound);
+        }
+
+      return ApiResponse.success(null, FeesMessage.FeesDeleted);
+    } catch(error){
+      logger.error('Error deleting fee:', error);
+      throw new InternalServerError();  
     }
-
-    return ApiResponse.success(null, FeesMessage.FeesDeleted);
   }
 }

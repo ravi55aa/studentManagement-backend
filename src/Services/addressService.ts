@@ -7,10 +7,10 @@ import { IAddress } from '@Models/addressModel';
 import { serviceReturnType } from '@Constants/interfaces';
 import { AddressDTO } from '@dto/addressDTO';
 import { ApiResponse } from '@Constants/apiResponse';
-import { AddressMessage, ServerMessage } from '@Constants/resposeMessages';
+import { AddressMessage } from '@Constants/resposeMessages';
 import { IAddressRepository } from '@Interfaces/repository/IAddressRepository';
 import logger from '@Utils/logger';
-import { FailureError, NotFoundError } from '@Middlewares/narrowDownErrors';
+import { FailureError, InternalServerError, NotFoundError } from '@Middlewares/narrowDownErrors';
 
 @injectable()
 export class AddressService implements IAddressService {
@@ -28,10 +28,10 @@ export class AddressService implements IAddressService {
       }
 
       return ApiResponse.success(address, AddressMessage.AddressFetched);
+
     } catch (error) {
       logger.error(AddressMessage.AddressNotFound, error);
-      return ApiResponse.internalServerError(ServerMessage.ServerError);
-      throw error;
+      throw new InternalServerError();
     }
   }
 
@@ -42,7 +42,7 @@ export class AddressService implements IAddressService {
       return ApiResponse.success(addresses, AddressMessage.AddressListed);
     } catch (error) {
       logger.error(AddressMessage.AddressNotFound, error);
-      return ApiResponse.internalServerError(ServerMessage.ServerError);
+      throw new InternalServerError();
     }
   }
 
@@ -53,7 +53,7 @@ export class AddressService implements IAddressService {
       return ApiResponse.success(addresses, AddressMessage.AddressListed);
     } catch (error) {
       logger.error(AddressMessage.AddressNotFound, error);
-      return ApiResponse.internalServerError(ServerMessage.ServerError);
+      throw new InternalServerError();
     }
   }
 
@@ -69,7 +69,7 @@ export class AddressService implements IAddressService {
       return ApiResponse.success(address, AddressMessage.AddressFetched);
     } catch (error) {
       logger.error(AddressMessage.AddressNotFound, error);
-      return ApiResponse.internalServerError(ServerMessage.ServerError);
+      throw new InternalServerError();
     }
   }
 
@@ -87,7 +87,7 @@ export class AddressService implements IAddressService {
 
       logger.error(AddressMessage.AddressNotFound, error);
 
-      return ApiResponse.internalServerError(ServerMessage.ServerError);
+      throw new InternalServerError();
     }
   }
 
@@ -110,7 +110,7 @@ export class AddressService implements IAddressService {
 
       logger.error(AddressMessage.AddressNotFound, error);
       
-      return ApiResponse.internalServerError(ServerMessage.ServerError);
+      throw new InternalServerError();
     }
   }
 }

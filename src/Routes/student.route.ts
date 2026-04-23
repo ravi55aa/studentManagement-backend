@@ -46,13 +46,19 @@ router.get('/homework/getall', authMiddleware, (req, res, next) =>
   studentHomeworkController.getallHomeworkSubmission(req, res, next),
 );
 
-router.put('/homework/update/:id', authMiddleware, (req, res, next) =>
+//studentHomeworkId
+router.put('/homework/update/:homeworkId', 
+  authMiddleware, 
+  uploadCloud.array('docs', 10),
+  (req, res, next) =>
   studentHomeworkController.updateSubmissionsByTeacher(req, res, next),
 );
 
-router.delete('/homework/delete/:id', authMiddleware, (req, res, next) =>
+//studentHomeworkId
+router.delete('/homework/delete/:homeworkId', authMiddleware, (req, res, next) =>
   studentHomeworkController.updateSubmissionsByTeacher(req, res, next),
 );
+//studentHomeworkId
 router.get('/homework/get/:homeworkId', authMiddleware, (req, res, next) =>
   studentHomeworkController.getSubmission(req, res, next),
 );

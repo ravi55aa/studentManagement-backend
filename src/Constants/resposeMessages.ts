@@ -314,6 +314,7 @@ export enum HomeworkMessage {
   HomeworkUngraded = 'Homework ungraded',
   HomeworkReSubmitted = 'Homework resubmitted',
   HomeworkNotUpdated = 'Homework not updated',
+  HomeworkNotCreated = 'Homework not created',
   HomeworkSubmissionNotFound = 'No Homework submission',
 
   HomeworkCreated = 'Homework created successfully',

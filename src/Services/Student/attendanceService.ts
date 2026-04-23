@@ -13,11 +13,11 @@ import {
   AttendanceMessage,
   CommonMessage,
   LeaveMessage,
-  ServerMessage,
 } from '@Constants/resposeMessages';
 import logger from '@Utils/logger';
 import { leaveDocValidationSchema } from '@Validators/student.validation';
 import { handleValidationOF } from '@Middlewares/validateUser.middleware';
+import { FailureError, InternalServerError, NotFoundError } from '@Middlewares/narrowDownErrors';
 
 @injectable()
 export class StudentAttendanceService implements IStudentAttendanceService {
@@ -28,66 +28,87 @@ export class StudentAttendanceService implements IStudentAttendanceService {
 
   // Mark Attendance
   async markAttendance(req: Request, res: Response): Promise<serviceReturnType> {
-    const dto: Partial<IAttendance> = AttendanceDto.markAttendance(req, res);
 
-    // Prevent duplicate attendance
-    const existing = await this._attendanceRepo.getAttendance({
-      batchId: dto.batchId,
-      date: dto.date,
-    });
+    try{
+      const dto: Partial<IAttendance> = AttendanceDto.markAttendance(req, res);
 
-    if (existing.length > 0) {
-      const list = existing[0];
-
-      const updated = await this._attendanceRepo.updateAttendance(list!._id, {
-        students: dto.students!,
+      // Prevent duplicate attendance
+      const existing = await this._attendanceRepo.getAttendance({
+        batchId: dto.batchId,
+        date: dto.date,
       });
 
-      if (!updated) {
-        return ApiResponse.failure(AttendanceMessage.AttendanceAlreadyMarked);
-      }
+      if (existing.length > 0) {
+        const list = existing[0];
+
+        const updated = await this._attendanceRepo.updateAttendance(list!._id, {
+          students: dto.students!,
+        });
+
+        if (!updated) {
+          throw new FailureError(AttendanceMessage.AttendanceAlreadyMarked);
+        }
+      } 
+      
+      const doc = await this._attendanceRepo.markAttendance(dto);
+      
+      return ApiResponse.success(doc, AttendanceMessage.AttendanceMarked);
+    } catch(error){
+      logger.error('Error marking attendance:', error);
+      throw new InternalServerError();
     }
-
-    const doc = await this._attendanceRepo.markAttendance(dto);
-
-    return ApiResponse.success(doc, AttendanceMessage.AttendanceMarked);
   }
 
   //  Get Single Attendance
   async getAttendanceById(id: string): Promise<serviceReturnType> {
-    const doc = await this._attendanceRepo.findAttendanceById(id);
-
-    if (!doc) {
-      return ApiResponse.failure(AttendanceMessage.AttendanceNotFound);
+    try{
+      const doc = await this._attendanceRepo.findAttendanceById(id);
+  
+      if (!doc) {
+        throw new FailureError(AttendanceMessage.AttendanceNotFound);
+      }
+  
+      return ApiResponse.success(doc, AttendanceMessage.AttendanceFetched);
+    } catch(error){
+      logger.error('Error fetching attendance:', error);
+      throw new InternalServerError();
     }
-
-    return ApiResponse.success(doc, AttendanceMessage.AttendanceFetched);
   }
 
   // List Attendance
   async listAttendance(query: FilterQuery<Partial<IAttendance>>): Promise<serviceReturnType> {
-    const docs = await this._attendanceRepo.getAttendance(query);
-
-    if (!docs || docs.length === 0) {
-      return ApiResponse.failure(AttendanceMessage.AttendanceNotUpdated);
+    try{
+      const docs = await this._attendanceRepo.getAttendance(query);
+  
+      if (!docs || docs.length === 0) {
+        throw new FailureError(AttendanceMessage.AttendanceNotUpdated);
+      }
+  
+      return ApiResponse.success(docs, AttendanceMessage.AttendanceListed);
+    } catch(error){
+      logger.error('Error listing attendance:', error);
+      throw new InternalServerError();
     }
-
-    return ApiResponse.success(docs, AttendanceMessage.AttendanceListed);
   }
 
   //  Update Attendance
   async updateAttendance(req: Request, res: Response): Promise<serviceReturnType> {
-    const { batchId } = req.params;
-
-    const dto: Partial<IAttendance> = AttendanceDto.markAttendance(req, res);
-
-    const updatedDoc = await this._attendanceRepo.updateAttendance(batchId!, dto);
-
-    if (!updatedDoc) {
-      return ApiResponse.failure(AttendanceMessage.AttendanceNotFound);
+    try{
+      const { batchId } = req.params;
+  
+      const dto: Partial<IAttendance> = AttendanceDto.markAttendance(req, res);
+  
+      const updatedDoc = await this._attendanceRepo.updateAttendance(batchId!, dto);
+  
+      if (!updatedDoc) {
+        throw new FailureError(AttendanceMessage.AttendanceNotFound);
+      }
+  
+      return ApiResponse.success(updatedDoc, AttendanceMessage.AttendanceUpdated);
+    } catch(error){
+      logger.error('Error updating attendance:', error);
+      throw new InternalServerError();
     }
-
-    return ApiResponse.success(updatedDoc, AttendanceMessage.AttendanceUpdated);
   }
 
   async getAttendanceOfBatch(req: Request): Promise<serviceReturnType> {
@@ -99,7 +120,7 @@ export class StudentAttendanceService implements IStudentAttendanceService {
 
       // Validation
       if (!batchId || !date) {
-        return ApiResponse.failure('StudentId and Date are required');
+        throw new NotFoundError('StudentId and Date are required');
       }
 
       // Create date range
@@ -115,104 +136,124 @@ export class StudentAttendanceService implements IStudentAttendanceService {
       );
 
       if (!attendance || attendance === null) {
-        return ApiResponse.failure(AttendanceMessage.AttendanceNotFound);
+        throw new FailureError(AttendanceMessage.AttendanceNotFound);
       }
 
       return ApiResponse.success(attendance, AttendanceMessage.AttendanceListed);
     } catch (error) {
       logger.error('Service Error:', error);
-      return ApiResponse.failure('Something went wrong');
+      throw new InternalServerError();
     }
   }
 
   // Delete Attendance
   async deleteAttendance(req: Request): Promise<serviceReturnType> {
-    const { id } = req.params;
-
-    const deleted = await this._attendanceRepo.deleteAttendance(id!);
-
-    if (!deleted) {
-      return ApiResponse.failure(AttendanceMessage.AttendanceNotFound);
+    try{
+      const { id } = req.params; //studentId
+  
+      const deleted = await this._attendanceRepo.deleteAttendance(id!);
+  
+      if (!deleted) {
+        throw new FailureError(AttendanceMessage.AttendanceNotFound);
+      }
+  
+      return ApiResponse.success(null, AttendanceMessage.AttendanceDeleted);
+    } catch(error){
+      logger.error('Error deleting attendance:', error);
+      throw new InternalServerError();
     }
-
-    return ApiResponse.success(null, AttendanceMessage.AttendanceDeleted);
   }
 
   // View Attendance (same as get)
   async viewAttendance(req: Request): Promise<serviceReturnType> {
-    const { id } = req.params;
-
-    const doc = await this._attendanceRepo.findAttendanceById(id!);
-
-    if (!doc) {
-      return ApiResponse.failure(AttendanceMessage.AttendanceNotFound);
+    try{
+      const { id } = req.params;
+  
+      const doc = await this._attendanceRepo.findAttendanceById(id!);
+  
+      if (!doc) {
+        throw new FailureError(AttendanceMessage.AttendanceNotFound);
+      }
+  
+      return ApiResponse.success(doc, AttendanceMessage.AttendanceFetched);
+    } catch(error){
+      logger.error('Error viewing attendance:', error);
+      throw new InternalServerError();
     }
-
-    return ApiResponse.success(doc, AttendanceMessage.AttendanceFetched);
   }
 
   async getAttendanceOfAStudent(req: Request): Promise<serviceReturnType> {
-    const { studentId, year, month } = req.query;
-
-    const attendance = await this._attendanceRepo.getAttendanceOfAStudent(studentId, year, month);
-
-    if (!attendance) {
-      return ApiResponse.failure(AttendanceMessage.AttendanceNotFound);
+    try{
+      const { studentId, year, month } = req.query;
+  
+      const attendance = await this._attendanceRepo.getAttendanceOfAStudent(studentId, year, month);
+  
+      if (!attendance) {
+        throw new FailureError(AttendanceMessage.AttendanceNotFound);
+      }
+  
+      return ApiResponse.success(attendance, AttendanceMessage.AttendanceListed);
+    } catch(error){
+      logger.error('Error fetching student attendance:', error);
+      throw new InternalServerError();
     }
-
-    return ApiResponse.success(attendance, AttendanceMessage.AttendanceListed);
   }
 
   //-----Apply-leave-----
 
   async setApplyLeave(req: Request, res: Response): Promise<serviceReturnType> {
-    const dto: Partial<IStudentLeave> = AttendanceDto.applyLeave(req);
-
-    const { studentId, leaveHistory } = dto; //batchId
-
-    if (!leaveHistory || leaveHistory == undefined) {
-      return ApiResponse.badRequest(LeaveMessage.LeaveCredentialsNotFound);
-    }
-    const leave = leaveHistory[0];
-
-    if (!leave?.body || !leave?.reason) {
-      return ApiResponse.badRequest(LeaveMessage.LeaveCredentialsNotFound);
-    }
-
-    const validationData = {
-      reason: leave.reason,
-      body: leave.body,
-      attachment: leave.attachment,
-    };
-
-    //validation
-    handleValidationOF(leaveDocValidationSchema, validationData, res);
-
-    //const { from, to } = req.query;
-
-    // const leaves = data.leaveHistory.filter((l: any) => {
-    //     const d = new Date(l.date);
-    //     return d >= new Date(from as string) && d <= new Date(to as string);
-    // });
-
-    // Normalize date
-    const date = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-
-    date.setHours(0, 0, 0, 0);
-
-    const updated = await this._attendanceRepo.applyLeave(
-      { studentId }, //batchId
-      {
-        $push: {
-          leaveHistory: {
-            ...leave,
-            date,
+    try{
+      const dto: Partial<IStudentLeave> = AttendanceDto.applyLeave(req);
+  
+      const { studentId, leaveHistory } = dto; //batchId
+  
+      if (!leaveHistory || leaveHistory == undefined) {
+        return ApiResponse.badRequest(LeaveMessage.LeaveCredentialsNotFound);
+      }
+      const leave = leaveHistory[0];
+  
+      if (!leave?.body || !leave?.reason) {
+        return ApiResponse.badRequest(LeaveMessage.LeaveCredentialsNotFound);
+      }
+  
+      const validationData = {
+        reason: leave.reason,
+        body: leave.body,
+        attachment: leave.attachment,
+      };
+  
+      //validation
+      handleValidationOF(leaveDocValidationSchema, validationData, res);
+  
+      //const { from, to } = req.query;
+  
+      // const leaves = data.leaveHistory.filter((l: any) => {
+      //     const d = new Date(l.date);
+      //     return d >= new Date(from as string) && d <= new Date(to as string);
+      // });
+  
+      // Normalize date
+      const date = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  
+      date.setHours(0, 0, 0, 0);
+  
+      const updated = await this._attendanceRepo.applyLeave(
+        { studentId }, //batchId
+        {
+          $push: {
+            leaveHistory: {
+              ...leave,
+              date,
+            },
           },
         },
-      },
-    );
-
-    return ApiResponse.success(updated, LeaveMessage.LeaveApplied);
+      );
+  
+      return ApiResponse.success(updated, LeaveMessage.LeaveApplied);
+    } catch(error){
+      logger.error('Error applying leave:', error);
+      throw new InternalServerError();
+    }
   }
 
   async updateAppliedLeaveStatus(req: Request): Promise<serviceReturnType> {
@@ -226,7 +267,7 @@ export class StudentAttendanceService implements IStudentAttendanceService {
           module: 'studentAttendance',
         });
 
-        return ApiResponse.failure(CommonMessage.IdNotFound);
+        throw new NotFoundError(CommonMessage.IdNotFound);
       }
 
       const d = new Date(date);
@@ -254,7 +295,7 @@ export class StudentAttendanceService implements IStudentAttendanceService {
           { layer: 'service', module: 'studentAttendance' },
         );
 
-        return ApiResponse.failure(LeaveMessage.LeaveCredentialsNotFound);
+        throw new NotFoundError(LeaveMessage.LeaveCredentialsNotFound);
       }
 
       //Formate: filter and query
@@ -278,7 +319,7 @@ export class StudentAttendanceService implements IStudentAttendanceService {
       );
 
       if (!updated) {
-        return ApiResponse.failure(AttendanceMessage.AttendanceNotUpdated);
+        throw new FailureError(AttendanceMessage.AttendanceNotUpdated);
       }
 
       await this._attendanceRepo.updateStudentLeave(
@@ -290,41 +331,46 @@ export class StudentAttendanceService implements IStudentAttendanceService {
       return ApiResponse.success(null, LeaveMessage.LeaveUpdated);
     } catch (error) {
       logger.error(LeaveMessage.LeaveRejected, error);
-      return ApiResponse.internalServerError(ServerMessage.ServerError);
+      throw new InternalServerError();
     }
   }
 
   async getStudentLeaveHistory(req: Request): Promise<serviceReturnType> {
-    const { studentId } = req.params; //batchId->if Necessary
-    let { date } = req.query as { date: string };
-
-    if (!date) {
-      date = '2026-4-11'; //some random value
-    }
-
-    const start = new Date(`${date}T00:00:00.000+05:30`);
-    const end = new Date(`${date}T23:59:59.999+05:30`);
-
-    if (!studentId) {
-      return ApiResponse.failure(CommonMessage.IdNotFound);
-    }
-
-    const data = await this._attendanceRepo.getLeaves({
-      studentId,
-      leaveHistory: {
-        $elemMatch: {
-          date: {
-            $gte: start,
-            $lte: end,
+    try{
+      const { studentId } = req.params; //batchId->if Necessary
+      let { date } = req.query as { date: string };
+  
+      if (!date) {
+        date = '2026-4-11'; //some random value
+      }
+  
+      const start = new Date(`${date}T00:00:00.000+05:30`);
+      const end = new Date(`${date}T23:59:59.999+05:30`);
+  
+      if (!studentId) {
+        throw new NotFoundError(CommonMessage.IdNotFound);
+      }
+  
+      const data = await this._attendanceRepo.getLeaves({
+        studentId,
+        leaveHistory: {
+          $elemMatch: {
+            date: {
+              $gte: start,
+              $lte: end,
+            },
           },
         },
-      },
-    });
-
-    if (!data) {
-      return ApiResponse.success([], LeaveMessage.LeaveNotFound);
+      });
+  
+      if (!data) {
+        return ApiResponse.success([], LeaveMessage.LeaveNotFound);
+      }
+  
+      return ApiResponse.success(data.leaveHistory, LeaveMessage.LeaveListed);
+    } catch(error){
+      logger.error('Error fetching leave history:', error);
+      throw new InternalServerError();
     }
-
-    return ApiResponse.success(data.leaveHistory, LeaveMessage.LeaveListed);
   }
 }

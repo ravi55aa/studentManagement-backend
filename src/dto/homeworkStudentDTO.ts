@@ -7,6 +7,7 @@ import { SchoolAcademicYearDto } from './schoolDTO';
 export class HomeworkSubmissionDto {
   static submitHomework(req: Request, res: Response): Partial<IHomeworkSubmission> {
     const { note, links } = req.body;
+
     const { homeworkId } = req.params;
 
     const attachments = ((req.files as Express.Multer.File[]) || []).map((file) => ({
@@ -18,7 +19,7 @@ export class HomeworkSubmissionDto {
 
     return {
       note,
-      links,
+      links: [links],
       attachments,
       submittedAt: new Date(),
       status: 'submitted',
@@ -39,7 +40,7 @@ export class HomeworkSubmissionDto {
       ...data,
       ...(data.note && { note: data.note }),
       ...(data.attachments && { attachments: attachments }),
-      ...(data.links && { links: data.links }),
+      ...(data.links && { links: [...data.links] }),
       ...(data.status && { status: data.status }),
     };
   }

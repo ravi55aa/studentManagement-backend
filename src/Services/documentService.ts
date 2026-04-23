@@ -1,16 +1,17 @@
 import { Request, Response } from 'express';
 import { inject, injectable } from 'tsyringe';
 import { StatusCodes } from '@Constants/statusCodes';
+import { FailureError, InternalServerError } from '@Middlewares/narrowDownErrors';
+import { TYPES } from '@DI/types';
+import { serviceReturnType } from '@Constants/interfaces';
+import { IDocumentService } from '@Interfaces/services/IDocument.service';
+import { IDocument } from '@Models/documentModel';
+import { ApiResponse } from '@Constants/apiResponse';
+import { CommonMessage, DocumentMessage } from '@Constants/resposeMessages';
+import logger from '@Utils/logger';
+import { IDocumentRepository } from '@Interfaces/repository/IDocument.interface';
 
-import { TYPES } from '../DI/types';
-import { serviceReturnType } from '../Constants/interfaces';
-import { IDocumentService } from '../Interfaces/services/IDocument.service';
-import { IDocument } from '../Models/documentModel';
 import { DocumentsDto } from '../dto/schoolDTO';
-import { ApiResponse } from '../Constants/apiResponse';
-import { CommonMessage, DocumentMessage, ServerMessage } from '../Constants/resposeMessages';
-import logger from '../Utils/logger';
-import { IDocumentRepository } from '../Interfaces/repository/IDocument.interface';
 
 @injectable()
 export class DocumentService implements IDocumentService {
@@ -23,18 +24,18 @@ export class DocumentService implements IDocumentService {
   async getDocs(userId: string): Promise<serviceReturnType> {
     try {
       if (!userId) {
-        return ApiResponse.badRequest(CommonMessage.IdNotFound);
+        throw new FailureError(CommonMessage.IdNotFound);
       }
       const documents = await this._documentRepository.getDocumentsOf(userId);
 
       if (!documents) {
-        return ApiResponse.success(DocumentMessage.DocumentNotFound);
+        throw new FailureError(DocumentMessage.DocumentNotFound);
       }
 
       return ApiResponse.success(documents, DocumentMessage.DocumentFetched);
     } catch (error) {
       logger.error('Error uploading document:', error);
-      return ApiResponse.internalServerError(ServerMessage.ServerError);
+      throw new InternalServerError();
     }
   }
 
@@ -43,13 +44,13 @@ export class DocumentService implements IDocumentService {
       const uploaded = await this._documentRepository.uploadDocuments(data);
 
       if (!uploaded) {
-        return ApiResponse.failure(DocumentMessage.DocumentUploadFailed);
+        throw new FailureError(DocumentMessage.DocumentUploadFailed);
       }
 
       return ApiResponse.success(uploaded, DocumentMessage.DocumentUploaded);
     } catch (error) {
       logger.error('Error uploading document:', error);
-      return ApiResponse.internalServerError(ServerMessage.ServerError);
+      throw new InternalServerError();
     }
   }
 
@@ -61,13 +62,13 @@ export class DocumentService implements IDocumentService {
       const updated = await this._documentRepository.updateDocuments(dtoQuery, dtoData);
 
       if (!updated) {
-        return ApiResponse.notFound(DocumentMessage.DocumentNotFound);
+        throw new FailureError(DocumentMessage.DocumentNotFound);
       }
 
       return ApiResponse.success(updated, DocumentMessage.DocumentUpdated);
     } catch (error) {
       logger.error('Error updating document:', error);
-      return ApiResponse.internalServerError(ServerMessage.ServerError);
+      throw new InternalServerError();
     }
   }
 
@@ -92,13 +93,13 @@ export class DocumentService implements IDocumentService {
       const updated = await this._documentRepository.updateNEWUploadDocuments(dtoQuery, dtoData);
 
       if (!updated) {
-        return ApiResponse.failure(DocumentMessage.DocumentUpdateFailed);
+        throw new FailureError(DocumentMessage.DocumentUpdateFailed);
       }
 
       return ApiResponse.success(updated, DocumentMessage.DocumentUpdated);
     } catch (error) {
       logger.error('Error updating additional documents:', error);
-      return ApiResponse.internalServerError(ServerMessage.ServerError);
+      throw new InternalServerError();
     }
   }
 
@@ -110,13 +111,13 @@ export class DocumentService implements IDocumentService {
       const deleted = await this._documentRepository.deleteDocument(query);
 
       if (!deleted) {
-        return ApiResponse.notFound(DocumentMessage.DocumentNotFound);
+        throw new FailureError(DocumentMessage.DocumentNotFound);
       }
 
       return ApiResponse.success(null, DocumentMessage.DocumentDeleted);
     } catch (error) {
       logger.error('Error deleting document:', error);
-      return ApiResponse.internalServerError(ServerMessage.ServerError);
+      throw new InternalServerError();
     }
   }
 
@@ -128,13 +129,13 @@ export class DocumentService implements IDocumentService {
       const deleted = await this._documentRepository.deleteADocumentFile(filterQuery, pullQuery);
 
       if (!deleted) {
-        return ApiResponse.notFound(DocumentMessage.FileNotFound);
+        throw new FailureError(DocumentMessage.FileNotFound);
       }
 
       return ApiResponse.success(null, DocumentMessage.FileDeleted);
     } catch (error) {
       logger.error('Error deleting document file:', error);
-      return ApiResponse.internalServerError(ServerMessage.ServerError);
+      throw new InternalServerError();
     }
   }
 }
