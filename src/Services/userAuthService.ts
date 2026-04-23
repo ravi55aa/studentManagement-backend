@@ -23,6 +23,7 @@ import {
 
 import { AuthPayloadType, IRepositoryMap } from '../types/auth.types';
 
+
 @injectable()
 export class UserAuthService implements IUserAuthService {
   constructor(
@@ -117,7 +118,7 @@ export class UserAuthServiceV2 implements IAuthService {
       return ApiResponse.badRequest(AuthMessage.InvalidUser);
     }
 
-    let user: any = null;
+    let user:any = null;
 
     // Teacher login
     if (userType === 'Teacher') {

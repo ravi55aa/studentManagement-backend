@@ -1,4 +1,4 @@
-/// <reference  path='./types/express/index.d.ts'/>
+/// <reference path="./types/express/index.d.ts"/>
 
 import express, { Request, Response } from 'express';
 const app = express();

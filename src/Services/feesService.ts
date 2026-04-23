@@ -2,14 +2,15 @@ import { Request, Response } from 'express';
 import { injectable, inject } from 'tsyringe';
 import { IFeeRepository } from 'Interfaces/repository/IFessRepository';
 import { FeesMessage } from '@Constants/resposeMessages';
-
-import { TYPES } from '../DI/types';
-import { IFeeService } from '../Interfaces/services/IFeeService';
-import { FeeDto } from '../dto/feesDto';
-import { ApiResponse } from '../Constants/apiResponse';
-import { serviceReturnType } from '../Constants/interfaces';
-import { IFee } from '../Models/feesModel';
+import { TYPES } from '@DI/types';
+import { IFeeService } from '@Interfaces/services/IFeeService';
+import { FeeDto } from '@dto/feesDto';
+import { ApiResponse } from '@Constants/apiResponse';
+import { serviceReturnType } from '@Constants/interfaces';
+import { IFee } from '@Models/feesModel';
 //import { TPaginationQuery } from '../types/pagination';
+
+import { TPaginationQuery } from '../types/pagination';
 
 @injectable()
 export class FeeService implements IFeeService {
@@ -46,7 +47,7 @@ export class FeeService implements IFeeService {
   }
 
   public async getAllFees(req: Request): Promise<serviceReturnType> {
-    const { page, limit, ...filters } = req.query as unknown as any;
+    const { page, limit, ...filters } = req.query as unknown as TPaginationQuery & Record<string,string>;
 
     const fees = await this._feeRepo.getAllFee({ page, limit }, filters || {});
 

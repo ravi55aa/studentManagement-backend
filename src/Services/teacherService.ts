@@ -287,7 +287,7 @@ export class TeacherService implements ITeacherService {
       batchId?: string;
     } = {},
   ): Promise<ITeacher[]> {
-    const query: any = { tenantId };
+    const query: Record<string, unknown> = { tenantId };
 
     if (filters.academicYearId) query.academicYearId = filters.academicYearId;
 

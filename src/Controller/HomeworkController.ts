@@ -28,7 +28,8 @@ export default class HomeworkController {
 
   async getAllHomework(req: Request, res: Response, next: NextFunction) {
     try {
-      const { page, limit, ...filter } = req.query as unknown as any;
+      const { page, limit, ...filter } = req.query as unknown as TPaginationQuery & Record<string, string>;
+
       const { status, resBody }: serviceReturnType = await this._homeworkService.listAllHomework(
         { page, limit } as TPaginationQuery,
         filter,
