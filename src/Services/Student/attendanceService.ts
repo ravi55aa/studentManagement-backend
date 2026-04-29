@@ -236,7 +236,7 @@ export class StudentAttendanceService implements IStudentAttendanceService {
       const date = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
   
       date.setHours(0, 0, 0, 0);
-  
+
       const updated = await this._attendanceRepo.applyLeave(
         { studentId }, //batchId
         {
@@ -308,10 +308,11 @@ export class StudentAttendanceService implements IStudentAttendanceService {
         'students.studentId': studentId,
       };
 
+      
       const leaveStatus = status == 'approved' ? 'leave' : 'absent';
-
+      
       const update = { $set: { 'students.$.status': leaveStatus } };
-
+      
       //make a repository call;
       const updated = await this._attendanceRepo.updateAppliedLeaveStatusFromTeacher(
         filter,
@@ -364,7 +365,7 @@ export class StudentAttendanceService implements IStudentAttendanceService {
       });
   
       if (!data) {
-        return ApiResponse.success([], LeaveMessage.LeaveNotFound);
+        return ApiResponse.failure(LeaveMessage.LeaveNotFound);
       }
   
       return ApiResponse.success(data.leaveHistory, LeaveMessage.LeaveListed);

@@ -39,7 +39,7 @@ export interface IStudentAttendanceRepository {
   updateAppliedLeaveStatusFromTeacher(
     filter: FilterQuery<Partial<IStudentLeave>>,
     update: FilterQuery<Partial<IStudentLeave>>,
-  ): Promise<void | null>;
+  ): Promise<IAttendance|null>;
 
   getLeaves(filter: FilterQuery<Partial<IStudentLeave>>): Promise<IStudentLeave | null>;
 

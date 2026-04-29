@@ -198,16 +198,16 @@ export class ChatAccessService implements IChatAccessService {
 
     async addParticipant(chatRoomId: string, userId: string): Promise<serviceReturnType> {
         try {
-        if (!chatRoomId || !userId) {
-            return ApiResponse.badRequest(CommonMessage.IdNotFound);
-        }
+            if (!chatRoomId || !userId) {
+                return ApiResponse.badRequest(CommonMessage.IdNotFound);
+            }
 
-        await this._chatRoomRepository.addParticipant(chatRoomId, userId);
+            await this._chatRoomRepository.addParticipant(chatRoomId, userId);
 
-        return ApiResponse.success(null, ChatMessage.JoinedRoom);
+            return ApiResponse.success(null, ChatMessage.JoinedRoom);
         } catch (error) {
-        logger.error('Error adding participant:', error);
-        return ApiResponse.internalServerError(ServerMessage.ServerError);
+            logger.error('Error adding participant:', error);
+            return ApiResponse.internalServerError(ServerMessage.ServerError);
         }
     }
     }

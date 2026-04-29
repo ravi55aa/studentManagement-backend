@@ -173,20 +173,28 @@ export class StudentAttendanceRepository
   async updateAppliedLeaveStatusFromTeacher(
     filter: FilterQuery<Partial<IStudentLeave>>,
     update: FilterQuery<Partial<IStudentLeave>>,
-  ): Promise<void | null> {
+  ): Promise<IAttendance|null> {
     try {
-      return await this.model.findOneAndUpdate(filter, update, {
+      const updated= await this.model.findOneAndUpdate(filter, update, {
         new: true,
       });
+
+      return updated;
+
     } catch (error) {
       logger.error(AttendanceMessage.AttendanceNotUpdated, error);
-      return;
+      return null;
     }
   }
 
   async getLeaves(filter: FilterQuery<Partial<IStudentLeave>>): Promise<IStudentLeave | null> {
     try {
-      return await studentLeaveModel.findOne(filter).lean<IStudentLeave>();
+      return await studentLeaveModel.findOne(filter,
+        {
+          "leaveHistory.$": 1,
+        }
+      ).lean<IStudentLeave>();
+
     } catch (error) {
       logger.error(LeaveMessage.LeaveNotFound, error);
       return null;
