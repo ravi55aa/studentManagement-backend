@@ -9,4 +9,9 @@ export class SocketService implements IRealtimeService {
     const io = getIO();
     io.to(roomId).emit(event, data);
   }
+
+  sendParallelMsg(roomId: string, event: string, message: string|IMessage): void {
+    const io = getIO();
+    io.to(roomId).emit(event, message);
+  }
 }

@@ -57,15 +57,10 @@ export default class ChatController {
   //  Send Message
   async sendMessage(req: Request, res: Response, next: NextFunction) {
     try {
-      const { chatRoomId, message } = req.body;
 
       const user = SchoolAcademicYearDto.getTenantId(req, res);
 
-      const { status, resBody } = await this._chatMessageService.sendMessage({
-        chatRoomId,
-        sender: { id: user.adminId, role: user.role },
-        message,
-      });
+      const { status, resBody } = await this._chatMessageService.sendMessage({id: user.adminId, role: user.role}, req);
 
       res.status(status).json(resBody);
     } catch (err) {

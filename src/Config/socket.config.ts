@@ -45,6 +45,11 @@ export const initSocket = (server: HttpServer) => {
       logger.info('join chat room', roomId);
     });
 
+    socket.on('sendMessage', (data) => {
+      const { chatRoomId, message } = data;
+      socket.to(chatRoomId).emit('receiveMessage', { message, senderId: userId });
+    });  
+
     logger.warn(`\n User joined room: ${role}-${userId} \n`);
 
     socket.on('disconnect', () => {

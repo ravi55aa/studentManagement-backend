@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import { IChatRoom } from '@Models/ChatModel';
 import { serviceReturnType } from '@Constants/interfaces';
 
@@ -42,11 +43,8 @@ export interface ISendMessageDto {
 }
 
 export interface IMessageService {
-  sendMessage(data: {
-    chatRoomId: string;
-    sender: iSender;
-    message: string;
-  }): Promise<serviceReturnType>;
+
+  sendMessage(sender: iSender,req:Request): Promise<serviceReturnType>;
 
   getMessages(chatRoomId: string, user: iSender): Promise<serviceReturnType>;
 }

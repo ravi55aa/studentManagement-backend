@@ -1,3 +1,4 @@
+import {Request} from 'express';
 import { ApiResponse } from '@Constants/apiResponse';
 import { serviceReturnType } from '@Constants/interfaces';
 import {
@@ -229,25 +230,35 @@ export class ChatMessageService implements IMessageService {
     ) {}
 
     //  Send Message
-    async sendMessage(data: {
-        chatRoomId: string;
-        sender: iSender;
-        message: string;
-    }): Promise<serviceReturnType> {
+    async sendMessage(
+        sender: iSender,
+        req: Request
+    ): Promise<serviceReturnType> {
         try {
-        const { chatRoomId, sender, message } = data;
+
+        const { chatRoomId, message } = req.body;
+
 
         if (!chatRoomId || !sender?.id) {
             return ApiResponse.badRequest(CommonMessage.IdNotFound);
         }
-
-        if (message && !message?.trim()) {
-            return ApiResponse.badRequest(ChatMessage.EmptyMessage);
+        
+        if(message.trim().length>0){
+            this._realTimeService.sendParallelMsg(chatRoomId, 'receiveMessage', message?.trim());
         }
 
+        //Attachment handling
+        const files = req?.files as Express.Multer.File[];
+
+        const docs = files?.map((f) => ({
+        url: f.path,
+        fileName: f.filename,
+        }));
+        
         // const chat = await this._chatRoomService.getChatById(chatRoomId);
 
-        const chat = await chatRoomModel.findById(chatRoomId).lean<IChatRoom>(); //!DB call ,due to incorrect above logic;
+        const chat = await chatRoomModel.findById(chatRoomId).lean<IChatRoom>(); 
+        //!DB call ,due to incorrect above logic;
 
         if (!chat) {
             return ApiResponse.notFound(ChatMessage.ChatRoomNotFound);
@@ -273,6 +284,7 @@ export class ChatMessageService implements IMessageService {
             role: sender.role == 'Student' ? 'Student' : 'Teacher',
             senderId: new Types.ObjectId(sender.id),
             message,
+            attachments: docs,
             readBy: [new Types.ObjectId(sender.id)],
         });
 
@@ -296,7 +308,8 @@ export class ChatMessageService implements IMessageService {
         }
 
         // const chat = await this._chatRoomService.getChatById(chatRoomId);
-        const chat = await chatRoomModel.findById(chatRoomId).lean<IChatRoom>(); //!DB call ,due to incorrect above logic;
+        const chat = await chatRoomModel.findById(chatRoomId).lean<IChatRoom>(); 
+        //!DB call ,due to incorrect above logic;
 
         if (!chat) {
             return ApiResponse.notFound(ChatMessage.ChatRoomNotFound);
