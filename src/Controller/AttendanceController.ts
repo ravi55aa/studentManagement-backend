@@ -53,6 +53,18 @@ export default class StudentAttendanceController {
     }
   }
 
+  async getAttendanceAcademicYearWise(req: Request, res: Response, next: NextFunction) {
+    try {
+
+      const { status, resBody }: serviceReturnType =
+        await this._attendanceService.getAttendanceByYear(req);
+
+      res.status(status).json(resBody);
+    } catch (err) {
+      next(err);
+    }
+  }
+
   // Update Attendance
   async updateAttendance(req: Request, res: Response, next: NextFunction) {
     try {

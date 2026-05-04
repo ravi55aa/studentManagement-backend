@@ -227,4 +227,70 @@ export class StudentAttendanceRepository
     }
   }
 
+  public async fetchMonthlyAttendance(filterQuery:FilterQuery<Partial<IAttendance>>)
+  :Promise<Partial<IAttendance[]|null>> {
+    
+    try {
+
+      console.log('@attendanceRepository filterQuery',filterQuery);
+
+        const data = await this.model.aggregate([
+          {
+            $match: {
+              ...filterQuery,
+              isDelete: false,
+            },
+          },
+
+          //  break students array
+          { $unwind: "$students" },
+
+          //  classify present
+          {
+            $addFields: {
+              isPresent: {
+                $cond: [
+                  { $in: ["$students.status", ["present", "late"]] },
+                  1,
+                  0,
+                ],
+              },
+            },
+          },
+
+          //  group result
+          {
+            $group: {
+              _id: null,
+              totalPresent: { $sum: "$isPresent" },
+              totalCount: { $sum: 1 },
+            },
+          },
+
+          {
+            $project: {
+              _id: 0,
+              totalPresent: 1,
+              totalCount: 1,
+              attendancePercentage: {
+                $multiply: [
+                  { $divide: ["$totalPresent", "$totalCount"] },
+                  100,
+                ],
+              },
+            },
+          },
+        ]);
+
+        console.log("@attendance_repository data",data);
+        return data;
+
+      } catch(error) {
+
+        logger.error(AttendanceMessage.AttendanceNotFound,error);
+
+        return null;
+      }
+  }
+
 }

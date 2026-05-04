@@ -84,6 +84,10 @@ router.get('/attendance/batch', authMiddleware, (req, res, next) =>
   studentAttendanceController.getAAttendanceOfABatch(req, res, next),
 );
 
+router.get('/attendance/batch/:batchId', authMiddleware, (req, res, next) =>
+  studentAttendanceController.getAttendanceAcademicYearWise(req, res, next),
+);
+
 /*******
  *
  * Attendance Apply-Leave

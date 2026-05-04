@@ -13,6 +13,7 @@ import {
   AttendanceMessage,
   CommonMessage,
   LeaveMessage,
+  ServerMessage,
 } from '@Constants/resposeMessages';
 import logger from '@Utils/logger';
 import { leaveDocValidationSchema } from '@Validators/student.validation';
@@ -374,4 +375,58 @@ export class StudentAttendanceService implements IStudentAttendanceService {
       throw new InternalServerError();
     }
   }
+
+  async getAttendanceByYear(req: Request): Promise<serviceReturnType> {
+    try {
+      const { batchId } = req.params;
+      const { academicYear } = req.query as { academicYear: string };
+
+      if (!batchId || !academicYear) {
+        throw new NotFoundError(CommonMessage.IdNotFound);
+      }
+
+      const year = Number(academicYear);
+
+      if (isNaN(year)) {
+        throw new Error("Invalid academicYear");
+      }
+
+      //  Correct IST → UTC handling (no ISO conversion)
+      const startUTC = new Date(`${year}-04-01T00:00:00.000+05:30`);
+      
+
+      const endUTC = new Date(`${year}-04-30T23:59:59.999+05:30`);
+
+      const query = {
+        batchId,
+        date: {
+          $gte: startUTC,
+          $lte: endUTC,
+        },
+      };
+
+      await this._attendanceRepo.fetchMonthlyAttendance(query);
+
+      return ApiResponse.success('', AttendanceMessage.AttendanceFetched);
+      
+    } catch (error) {
+      logger.error(ServerMessage.ServerError, error);
+      throw new Error('@ AttendanceService', { cause: error });
+    }
+  }
 }
+
+    // const months = [
+      //         { month: 'January', value: 31 },
+      //         { month: 'February', value: 28 }, 
+      //         { month: 'March', value: 31 },
+      //         { month: 'April', value: 30 },
+      //         { month: 'May', value: 31 },
+      //         { month: 'June', value: 30 },
+      //         { month: 'July', value: 31 },
+      //         { month: 'August', value: 31 },
+      //         { month: 'September', value: 30 },
+      //         { month: 'October', value: 31 },
+      //         { month: 'November', value: 30 },
+      //         { month: 'December', value: 31 },
+      //     ];

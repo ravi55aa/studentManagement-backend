@@ -28,10 +28,13 @@ export interface IStudentAttendanceService {
   //view Batch Attendance by Date
   getAttendanceOfBatch(req: Request): Promise<serviceReturnType>;
 
+  getAttendanceByYear(req:Request): Promise<serviceReturnType>
+
   //----Apply leave----
   setApplyLeave(req: Request, res: Response): Promise<serviceReturnType>;
 
   updateAppliedLeaveStatus(req: Request): Promise<serviceReturnType>;
 
   getStudentLeaveHistory(req: Request): Promise<serviceReturnType>;
+
 }

@@ -48,4 +48,6 @@ export interface IStudentAttendanceRepository {
     date: Date | string,
     status: leaveApproveStatus,
   ): Promise<IStudentLeave | null>;
+
+  fetchMonthlyAttendance(filterQuery:FilterQuery<Partial<IAttendance>>):Promise<Partial<IAttendance[]|null>>
 }
