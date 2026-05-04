@@ -38,6 +38,7 @@
     "nodemon": "^1.0.2",
     "otp-generator": "^4.0.1",
     "react-toastify": "^5.5.0",
+    "redis": "^5.12.1",
     "reflect-metadata": "^0.2.2",
     "socket.io": "^4.8.3",
     "stripe": "^20.3.1",

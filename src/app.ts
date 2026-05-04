@@ -7,6 +7,7 @@ import cors from 'cors';
 import { stripeController } from '@DI/resolve';
 import { handleSubdomainResolver } from '@Middlewares/roleBaseAuth.middleware';
 import handleErrorsMiddleware from '@Middlewares/error.middleware';
+import { connectRedisClient } from 'Config/redis.config';
 
 import { sessionConfig, connectDB } from './Config/index';
 import {
@@ -57,6 +58,9 @@ app.post(
 );
 app.use(express.json());
 app.use(handleSubdomainResolver);
+
+//redis
+(async()=>await connectRedisClient())();
 
 connectDB();
 
