@@ -4,6 +4,7 @@ import { TYPES } from '@DI/types';
 import { ITeacherService } from '@Interfaces/services/ITeacherService';
 import { ApiResponse } from '@Constants/apiResponse';
 import { TeacherMessage } from '@Constants/resposeMessages';
+import { SchoolAcademicYearDto } from '@dto/schoolDTO';
 
 import { TPaginationQuery } from '../types/pagination';
 
@@ -77,7 +78,9 @@ export default class TeacherController {
     try {
       const query = req.query as unknown as TPaginationQuery;
 
-      const { status, resBody } = await this._teacherService.getAllTeachers(query);
+      const decoded=SchoolAcademicYearDto.getTenantId(req,res);
+
+      const { status, resBody } = await this._teacherService.getAllTeachers(query,{tenantId:decoded.tenantId});
 
       res.status(status).json(resBody);
     } catch (error) {

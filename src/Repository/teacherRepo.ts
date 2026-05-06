@@ -209,6 +209,7 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
   /* ==============GET ALL TEACHERS (COMBINED)================= */
   async getAllTeachers(
     paginationQuery: TPaginationQuery,
+    filter:FilterQuery<Partial<ITeacherBio>>={}
   ): Promise<TPaginationResult<IGetAllTeachers> | null> {
     const page = Number(paginationQuery.page) || 1;
     const limit = Number(paginationQuery.limit) || 10;
@@ -216,13 +217,19 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
     const skip = (page - 1) * limit;
 
     try {
-      const [bio, professional, total] = await Promise.all([
-        this.model.find({}, { tenantId: 0 }).skip(skip).limit(limit).lean<ITeacherBio[]>(), //bio
+      const [bio, total] = await Promise.all([
+        this.model.find(filter, { tenantId: 0 }).skip(skip).limit(limit).lean<ITeacherBio[]>(), //bio
 
-        teacherModel.find({}, { _id: 0 }).skip(skip).limit(limit).lean<ITeacher[]>(), //professional
-
-        this.model.find({}, { tenantId: 0 }).countDocuments(), //total
+        this.model.find(filter, { tenantId: 0 }).countDocuments(), //total
       ]);
+
+
+      //can do $lookup with aggregation;
+      
+      const teacherIds = bio.map((teacher)=>teacher._id);
+
+      const professional = await teacherModel.find({teacherId:{$in:teacherIds}}, 
+        { _id: 0 }).skip(skip).limit(limit).lean<ITeacher[]>() //professional
 
       const data: IGetAllTeachers[] = [{ teacherBio: bio, teachersSchoolData: professional }];
 

@@ -232,8 +232,6 @@ export class StudentAttendanceRepository
     
     try {
 
-      console.log('@attendanceRepository filterQuery',filterQuery);
-
         const data = await this.model.aggregate([
           {
             $match: {
@@ -242,7 +240,7 @@ export class StudentAttendanceRepository
             },
           },
 
-          //  break students array
+          //break students array
           { $unwind: "$students" },
 
           //  classify present
@@ -282,7 +280,6 @@ export class StudentAttendanceRepository
           },
         ]);
 
-        console.log("@attendance_repository data",data);
         return data;
 
       } catch(error) {

@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { injectable, inject } from 'tsyringe';
 
 import { TYPES } from '../DI/types';
-import { ITeacher } from '../Models/teacherModel';
+import { ITeacher, ITeacherBio } from '../Models/teacherModel';
 import { teacherModel } from '../Models';
 import { TeacherDTO, TeacherValidation } from '../dto/teacherDto';
 import { serviceReturnType } from '../Constants/interfaces';
@@ -13,6 +13,7 @@ import logger from '../Utils/logger';
 import { ServerMessage, TeacherMessage } from '../Constants/resposeMessages';
 import { ITeacherRepo } from '../Interfaces/repository/ITeacherRepo';
 import { TPaginationQuery } from '../types/pagination';
+
 // import { getIO } from '../Config/socket.config';
 // import { otp } from 'Utils/generateOtp';
 
@@ -98,16 +99,19 @@ export class TeacherService implements ITeacherService {
   }
 
   /* ===================GET/LIST All Teachers====================== */
-  public async getAllTeachers(query: TPaginationQuery): Promise<serviceReturnType> {
+  public async getAllTeachers(query: TPaginationQuery,filter:FilterQuery<Partial<ITeacherBio>>): Promise<serviceReturnType> {
     try {
-      const result = await this._teacherRepo.getAllTeachers(query);
+
+      const result = await this._teacherRepo.getAllTeachers(query,filter);
 
       if (!result) {
         return ApiResponse.notFound(TeacherMessage.NoTeachersFound);
       }
 
       return ApiResponse.success(result, TeacherMessage.TeachersListed);
+
     } catch (error) {
+
       logger.error(TeacherMessage.NoTeachersFound, {
         layer: 'service',
         module: 'teacher',

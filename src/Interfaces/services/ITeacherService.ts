@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { FilterQuery } from 'mongoose';
-import { ITeacher } from 'Models/teacherModel';
+import { ITeacher, ITeacherBio } from 'Models/teacherModel';
 import { serviceReturnType } from '@Constants/interfaces';
 
 import { TPaginationQuery } from '../../types/pagination';
@@ -14,7 +14,7 @@ export interface ITeacherService {
 
   updateTeacher(req: Request, res: Response): Promise<serviceReturnType>;
 
-  getAllTeachers(query: TPaginationQuery): Promise<serviceReturnType>;
+  getAllTeachers(query: TPaginationQuery,filter:FilterQuery<Partial<ITeacherBio>>): Promise<serviceReturnType>;
 
   getTeacherById(teacherId: string): Promise<serviceReturnType>;
 

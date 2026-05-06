@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { inject, injectable } from 'tsyringe';
-import { FilterQuery } from 'mongoose';
+import mongoose, { FilterQuery } from 'mongoose';
 import { IAttendance } from '@Models/Student/attendanceModel';
 import { ApiResponse } from '@Constants/apiResponse';
 import { serviceReturnType } from '@Constants/interfaces';
@@ -19,6 +19,8 @@ import logger from '@Utils/logger';
 import { leaveDocValidationSchema } from '@Validators/student.validation';
 import { handleValidationOF } from '@Middlewares/validateUser.middleware';
 import { FailureError, InternalServerError, NotFoundError } from '@Middlewares/narrowDownErrors';
+
+import { convertToIsoString, convertToUTC } from '../../helper/getUtc';
 
 @injectable()
 export class StudentAttendanceService implements IStudentAttendanceService {
@@ -271,17 +273,8 @@ export class StudentAttendanceService implements IStudentAttendanceService {
         throw new NotFoundError(CommonMessage.IdNotFound);
       }
 
-      const d = new Date(date);
-      d.setHours(0, 0, 0, 0);
-
-      const dd = d.toISOString().replace('Z', '+00:00');
-
-      const updatedDate = new Date(dd);
-      updatedDate.setUTCHours(0, 0, 0, 0);
-
-      //dateQuery
-      const start = updatedDate;
-      start.setUTCDate(start.getUTCDate() + 1);
+      const start = convertToUTC(date);
+      const dd = convertToIsoString(date);
 
       const nextDay = new Date(start);
       nextDay.setUTCDate(nextDay.getUTCDate() + 1);
@@ -289,7 +282,7 @@ export class StudentAttendanceService implements IStudentAttendanceService {
       if (!date || !status) {
         logger.error(
           'Credential missing date:%s status:%j',
-          updatedDate,
+          start,
           status,
           batchId,
           studentId,
@@ -392,22 +385,23 @@ export class StudentAttendanceService implements IStudentAttendanceService {
       }
 
       //  Correct IST → UTC handling (no ISO conversion)
-      const startUTC = new Date(`${year}-04-01T00:00:00.000+05:30`);
+      
+      const startUtc = new Date(`${year}-04-01T00:00:00.000Z`);
+      
+      const endUtc = new Date(`${year}-04-31T23:59:59.999Z`);
       
 
-      const endUTC = new Date(`${year}-04-30T23:59:59.999+05:30`);
-
       const query = {
-        batchId,
+        batchId:new mongoose.Types.ObjectId(batchId),
         date: {
-          $gte: startUTC,
-          $lte: endUTC,
+          $gte: startUtc,
+          $lte: endUtc,
         },
       };
 
-      await this._attendanceRepo.fetchMonthlyAttendance(query);
+      const data=await this._attendanceRepo.fetchMonthlyAttendance(query);
 
-      return ApiResponse.success('', AttendanceMessage.AttendanceFetched);
+      return ApiResponse.success(data, AttendanceMessage.AttendanceFetched);
       
     } catch (error) {
       logger.error(ServerMessage.ServerError, error);

@@ -12,6 +12,7 @@ import { IBatchRepository } from '@Interfaces/repository/IBatchRepository';
 import { BadRequestError, 
   InternalServerError, 
   NotFoundError } from '@Middlewares/narrowDownErrors';
+  import { SchoolAcademicYearDto } from '@dto/schoolDTO';
 
 import { TPaginationQuery } from '../types/pagination';
 
@@ -76,7 +77,12 @@ export class BatchService implements IBatchService {
 
       const { limit, page } = req.query as unknown as TPaginationQuery;
 
-      const docs = await this._batchRepo.getAllBatches({ limit, page }, query);
+      const decoded=SchoolAcademicYearDto.getTenantId(req,res);
+
+      const docs = await this._batchRepo.getAllBatches(
+        { limit, page }, 
+        {...query,tenantId:decoded.tenantId,status:'active'}
+      );
 
       return ApiResponse.success(docs, BatchMessage.BatchListed);
     } catch (error) {

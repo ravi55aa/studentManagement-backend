@@ -14,3 +14,27 @@ export function getISTRange(date:string) {
         return null;
     }
 }
+
+
+export const convertToIsoString=(date:string)=>{
+    const iso = new Date(date);
+    iso.setHours(0, 0, 0, 0);
+
+    const utcInIso = iso.toISOString().replace('Z', '+00:00');
+    return utcInIso;
+}
+
+export const convertToUTC=(date:string)=>{
+    const iso = new Date(date);
+    
+    iso.setHours(0, 0, 0, 0);
+
+    const utcInIso = iso.toISOString().replace('Z', '+00:00');
+
+    const utc = new Date(utcInIso);
+    utc.setUTCHours(0, 0, 0, 0);
+
+    //dateQuery
+    const result = utc;
+    return result.setUTCDate(result.getUTCDate() + 1);
+}
