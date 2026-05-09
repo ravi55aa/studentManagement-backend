@@ -409,18 +409,3 @@ export class StudentAttendanceService implements IStudentAttendanceService {
     }
   }
 }
-
-    // const months = [
-      //         { month: 'January', value: 31 },
-      //         { month: 'February', value: 28 }, 
-      //         { month: 'March', value: 31 },
-      //         { month: 'April', value: 30 },
-      //         { month: 'May', value: 31 },
-      //         { month: 'June', value: 30 },
-      //         { month: 'July', value: 31 },
-      //         { month: 'August', value: 31 },
-      //         { month: 'September', value: 30 },
-      //         { month: 'October', value: 31 },
-      //         { month: 'November', value: 30 },
-      //         { month: 'December', value: 31 },
-      //     ];

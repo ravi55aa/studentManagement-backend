@@ -236,67 +236,107 @@ export class ChatMessageService implements IMessageService {
     ): Promise<serviceReturnType> {
         try {
 
-        const { chatRoomId, message } = req.body;
+            const { chatRoomId } = req.body;
+            const message = req.body?.message?.trim() || "";
 
+            // Files
+            const files = (req.files as Express.Multer.File[]) || [];
 
-        if (!chatRoomId || !sender?.id) {
-            return ApiResponse.badRequest(CommonMessage.IdNotFound);
-        }
-        
-        if(message.trim().length>0){
-            this._realTimeService.sendParallelMsg(chatRoomId, 'receiveMessage', message?.trim());
-        }
-
-        //Attachment handling
-        const files = req?.files as Express.Multer.File[];
-
-        const docs = files?.map((f) => ({
-        url: f.path,
-        fileName: f.filename,
-        }));
-        
-        // const chat = await this._chatRoomService.getChatById(chatRoomId);
-
-        const chat = await chatRoomModel.findById(chatRoomId).lean<IChatRoom>(); 
-        //!DB call ,due to incorrect above logic;
-
-        if (!chat) {
-            return ApiResponse.notFound(ChatMessage.ChatRoomNotFound);
-        }
-
-        //  Permission check
-
-        const canSend = this._accessService.canSend(sender, chat);
-
-        // If user is not participant, add them to participants (for batch chats)
-
-        if (!canSend) {
-            const addParticipant = await this._chatRoomService.addParticipant(chatRoomId, sender.id);
-
-            if ((!addParticipant.status as unknown as number) === StatusCodes.BAD_REQUEST) {
-            return ApiResponse.internalServerError(ServerMessage.ServerError);
+            // Validation
+            if (!chatRoomId || !sender?.id) {
+                return ApiResponse.badRequest(CommonMessage.IdNotFound);
             }
-        }
 
-        //  Save message
-        const newMessage = await this._messageRepository.createMessage({
-            chatRoomId: new Types.ObjectId(chatRoomId),
-            role: sender.role == 'Student' ? 'Student' : 'Teacher',
-            senderId: new Types.ObjectId(sender.id),
-            message,
-            attachments: docs,
-            readBy: [new Types.ObjectId(sender.id)],
-        });
+            // Prevent empty message submission
+            if (!message && files.length === 0) { 
+                return ApiResponse.badRequest(ChatMessage.EmptyMessage);
+            }
 
-        this._realTimeService.emitToRoom(chatRoomId, 'receiveMessage', newMessage);
+            // Attachment formatting
+            const attachments = files.map((file) => ({
+                url: file.path,
+                fileName: file.originalname,
+                type: file.mimetype,
+                size: file.size,
+            }));
 
-        //  Update last message
-        await this._chatRoomService.updateLastMessage(chatRoomId, message);
+            // Fetch chat
+            const chat = await chatRoomModel
+                .findById(chatRoomId)
+                .lean<IChatRoom>();
 
-        return ApiResponse.success(newMessage, ChatMessage.MessageSent);
+            if (!chat) {
+                return ApiResponse.notFound(ChatMessage.ChatRoomNotFound);
+            }
+
+            // Permission check
+            const canSend = this._accessService.canSend(sender, chat);
+
+            // Auto add participant if needed
+            if (!canSend) {
+
+                const addParticipant =
+                    await this._chatRoomService.addParticipant(
+                        chatRoomId,
+                        sender.id
+                    );
+
+                if (
+                    (addParticipant.status as unknown as number) ===
+                    StatusCodes.BAD_REQUEST
+                ) {
+                    return ApiResponse.internalServerError(
+                        ServerMessage.ServerError
+                    );
+                }
+            }
+
+            // Create message
+            const newMessage =
+                await this._messageRepository.createMessage({
+                    chatRoomId: new Types.ObjectId(chatRoomId),
+                    role:
+                        sender.role === "Student"
+                            ? "Student"
+                            : "Teacher",
+
+                    senderId: new Types.ObjectId(sender.id),
+
+                    message:message||'Attachment',
+                    attachments,
+
+                    readBy: [new Types.ObjectId(sender.id)],
+                });
+
+            // Populate sender if needed
+            // optional but recommended
+            // await newMessage.populate("senderId");
+
+            // Emit realtime AFTER DB save
+            this._realTimeService.emitToRoom(
+                chatRoomId,
+                "receiveMessage",
+                newMessage
+            );
+
+            // Update last message
+            await this._chatRoomService.updateLastMessage(
+                chatRoomId,
+                message || "Attachment"
+            );
+
+            return ApiResponse.success(
+                newMessage,
+                ChatMessage.MessageSent
+            );
+
         } catch (error) {
-        logger.error('Error sending message:', error);
-        return ApiResponse.internalServerError(ServerMessage.ServerError);
+
+            logger.error("Error sending message:", error);
+
+            return ApiResponse.internalServerError(
+                ServerMessage.ServerError
+            );
         }
     }
 
