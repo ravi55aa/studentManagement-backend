@@ -38,7 +38,7 @@ export class HomeworkRepository extends BaseRepository<IHomework> implements IHo
     query: FilterQuery<Partial<IHomework>>,
   ): Promise<TPaginationResult<IHomework> | null> {
     try {
-      const page = Number(paginationQuery.page) || 1;
+      const page = Number(paginationQuery?.page) || 1;
       const limit = Number(paginationQuery.limit) || 10;
 
       const skip = (page - 1) * limit;
