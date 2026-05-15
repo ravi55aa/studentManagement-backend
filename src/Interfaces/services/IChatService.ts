@@ -43,8 +43,7 @@ export interface ISendMessageDto {
 }
 
 export interface IMessageService {
-
-  sendMessage(sender: iSender,req:Request): Promise<serviceReturnType>;
+  sendMessage(sender: iSender, req: Request): Promise<serviceReturnType>;
 
   getMessages(chatRoomId: string, user: iSender): Promise<serviceReturnType>;
 }

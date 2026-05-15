@@ -209,7 +209,7 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
   /* ==============GET ALL TEACHERS (COMBINED)================= */
   async getAllTeachers(
     paginationQuery: TPaginationQuery,
-    filter:FilterQuery<Partial<ITeacherBio>>={}
+    filter: FilterQuery<Partial<ITeacherBio>> = {},
   ): Promise<TPaginationResult<IGetAllTeachers> | null> {
     const page = Number(paginationQuery.page) || 1;
     const limit = Number(paginationQuery.limit) || 10;
@@ -223,13 +223,15 @@ export class TeacherRepository extends BaseRepository<ITeacherBio> implements IT
         this.model.find(filter, { tenantId: 0 }).countDocuments(), //total
       ]);
 
-
       //can do $lookup with aggregation;
-      
-      const teacherIds = bio.map((teacher)=>teacher._id);
 
-      const professional = await teacherModel.find({teacherId:{$in:teacherIds}}, 
-        { _id: 0 }).skip(skip).limit(limit).lean<ITeacher[]>() //professional
+      const teacherIds = bio.map((teacher) => teacher._id);
+
+      const professional = await teacherModel
+        .find({ teacherId: { $in: teacherIds } }, { _id: 0 })
+        .skip(skip)
+        .limit(limit)
+        .lean<ITeacher[]>(); //professional
 
       const data: IGetAllTeachers[] = [{ teacherBio: bio, teachersSchoolData: professional }];
 

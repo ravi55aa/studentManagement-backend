@@ -18,11 +18,11 @@ router.get('/:userId', (req: Request, res: Response, next: NextFunction) =>
   chatController.getUserChats(req, res, next),
 );
 
-router.post('/message', 
+router.post(
+  '/message',
   authMiddleware,
   uploadCloud.array('docs', 5),
-  (req: Request, res: Response, next: NextFunction) =>
-  chatController.sendMessage(req, res, next),
+  (req: Request, res: Response, next: NextFunction) => chatController.sendMessage(req, res, next),
 );
 
 router.get('/messages/:chatRoomId', (req: Request, res: Response, next: NextFunction) =>

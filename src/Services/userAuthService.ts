@@ -11,18 +11,11 @@ import { AddressFormatter, UserValidator } from '@Constants/userValidator';
 import { ApiResponse } from '@Constants/apiResponse';
 import { AuthMessage, UserMessage } from '@Constants/resposeMessages';
 import { IStudentRepository } from '@Interfaces/repository/IStudentRepository';
-import { 
-  handleJwtTokensGenerator, 
-  IJwtPayload } from '@Utils/jwt';
-import { 
-  ISuperAdminRepository, 
-  IUserRepository } from '@Interfaces/repository/IAdminRepository';
-import { 
-  IAuthService, 
-  IUserAuthService } from '@Interfaces/services/IAdminAuthService';
+import { handleJwtTokensGenerator, IJwtPayload } from '@Utils/jwt';
+import { ISuperAdminRepository, IUserRepository } from '@Interfaces/repository/IAdminRepository';
+import { IAuthService, IUserAuthService } from '@Interfaces/services/IAdminAuthService';
 
 import { AuthPayloadType, IRepositoryMap } from '../types/auth.types';
-
 
 @injectable()
 export class UserAuthService implements IUserAuthService {
@@ -118,7 +111,7 @@ export class UserAuthServiceV2 implements IAuthService {
       return ApiResponse.badRequest(AuthMessage.InvalidUser);
     }
 
-    let user:any = null;
+    let user: any = null;
 
     // Teacher login
     if (userType === 'Teacher') {

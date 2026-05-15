@@ -8,7 +8,7 @@ import { FeeDto } from '@dto/feesDto';
 import { ApiResponse } from '@Constants/apiResponse';
 import { serviceReturnType } from '@Constants/interfaces';
 import { IFee } from '@Models/feesModel';
-import { InternalServerError } from '@Middlewares/narrowDownErrors';
+import { BadRequestError, InternalServerError, NotFoundError } from '@Middlewares/narrowDownErrors';
 import logger from '@Utils/logger';
 //import { TPaginationQuery } from '../types/pagination';
 
@@ -22,89 +22,95 @@ export class FeeService implements IFeeService {
   ) {}
 
   public async createFee(req: Request, res: Response): Promise<serviceReturnType> {
+    const dto: Partial<IFee> = FeeDto.createFeeDto(req, res);
 
-    try{
-      const dto: Partial<IFee> = FeeDto.createFeeDto(req, res);
-  
-      // Check duplicate code
-      const existing = await this._feeRepo.findOne({ code: dto.code });
-  
-      if (existing) {
-        return ApiResponse.badRequest(FeesMessage.FeesCodeExist);
-      }
-  
-      const newFee = await this._feeRepo.create(dto);
-  
-      return ApiResponse.created(newFee);
-      
-    } catch(error){
-      logger.error('Error creating fee:', error);
+    const existing = await this._feeRepo.findOne({
+      code: dto.code,
+    });
+
+    if (existing) {
+      logger.warn('[FeeService:createFee] Fee code already exists', {
+        feeCode: dto.code,
+        feeName: dto.name,
+      });
+
+      throw new BadRequestError(FeesMessage.FeesCodeExist);
+    }
+
+    const newFee = await this._feeRepo.create(dto);
+
+    if (!newFee) {
+      logger.error('[FeeService:createFee] Failed to create fee', {
+        payload: dto,
+      });
+
       throw new InternalServerError();
     }
+
+    return ApiResponse.created(newFee);
   }
 
   public async updateFee(id: string, req: Request): Promise<serviceReturnType> {
-    try{
-      const dto: Partial<IFee> = FeeDto.updateFeeDto(req);
-  
-      const updated = await this._feeRepo.updateById(id, dto);
-  
-      if (!updated) {
-        return ApiResponse.failure(FeesMessage.FeesNotFound);
-      }
-  
-      return ApiResponse.success(updated, FeesMessage.FeesUpdated);
-    } catch(error){
-      logger.error('Error updating fee:', error);
-      throw new InternalServerError();
+    const dto: Partial<IFee> = FeeDto.updateFeeDto(req);
+
+    const updated = await this._feeRepo.updateById(id, dto);
+
+    if (!updated) {
+      logger.warn('[FeeService:updateFee] Fee not found during update', {
+        feeId: id,
+        payload: dto,
+      });
+
+      throw new NotFoundError(FeesMessage.FeesNotFound);
     }
+
+    return ApiResponse.success(updated, FeesMessage.FeesUpdated);
   }
 
   public async getAllFees(req: Request): Promise<serviceReturnType> {
-    try{
-      const { page, limit, ...filters } = req.query as unknown as TPaginationQuery & Record<string,string>;
-  
-      const fees = await this._feeRepo.getAllFee({ page, limit }, filters || {});
-  
-      if (!fees || fees.data.length <= 0) {
-        return ApiResponse.notFound(FeesMessage.FeesNotFound);
-      }
-  
-      return ApiResponse.success(fees, FeesMessage.FeesListed);
+    const { page, limit, ...filters } = req.query as unknown as TPaginationQuery &
+      Record<string, string>;
 
-    } catch(error){
-      logger.error('Error fetching fees:', error);
-      throw new InternalServerError();
+    const fees = await this._feeRepo.getAllFee({ page, limit }, filters || {});
+
+    if (!fees || fees.data.length <= 0) {
+      logger.warn('[FeeService:getAllFees] No fees found', {
+        filters,
+        page,
+        limit,
+      });
+
+      throw new NotFoundError(FeesMessage.FeesNotFound);
     }
+
+    return ApiResponse.success(fees, FeesMessage.FeesListed);
   }
 
   public async getFeeById(id: string): Promise<serviceReturnType> {
-    try{
-      const fee = await this._feeRepo.findById(id);
+    const fee = await this._feeRepo.findById(id);
 
     if (!fee) {
-      return ApiResponse.notFound(FeesMessage.FeesNotFound);
+      logger.warn('[FeeService:getFeeById] Fee not found', {
+        feeId: id,
+      });
+
+      throw new NotFoundError(FeesMessage.FeesNotFound);
     }
 
-      return ApiResponse.success(fee, FeesMessage.FeesListed);
-    } catch(error){
-      logger.error('Error fetching fee:', error);
-      throw new InternalServerError();
-    }
+    return ApiResponse.success(fee, FeesMessage.FeesListed);
   }
 
   public async deleteFee(id: string): Promise<serviceReturnType> {
-    try{
-        const deleted = await this._feeRepo.deleteById(id);
+    const deleted = await this._feeRepo.deleteById(id);
 
-        if (!deleted) {
-          return ApiResponse.notFound(FeesMessage.FeesNotFound);
-        }
+    if (!deleted) {
+      logger.warn('[FeeService:deleteFee] Fee not found during delete', {
+        feeId: id,
+      });
 
-      return ApiResponse.success(null, FeesMessage.FeesDeleted);
-    } catch(error){
-      logger.error('Error deleting fee:', error);
-      throw new InternalServerError();  
+      throw new NotFoundError(FeesMessage.FeesNotFound);
     }
+
+    return ApiResponse.success(null, FeesMessage.FeesDeleted);
   }
 }

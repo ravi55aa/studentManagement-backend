@@ -8,19 +8,19 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: async (req, file) => {
     let folder = 'school_docs';
-    let resource_type= 'auto';
+    let resource_type = 'auto';
     const limitFileSize = 10 * 1024 * 1024; // 5MB
 
     if (file.mimetype.includes('image')) folder = 'school_images';
-    
-    if (file.mimetype.includes('pdf')){
+
+    if (file.mimetype.includes('pdf')) {
       folder = 'school_pdfs';
       resource_type = 'raw';
     }
-    
-    if(file.size>limitFileSize){
+
+    if (file.size > limitFileSize) {
       throw new BadRequestError('File size limit is 5MB');
-    };
+    }
 
     return {
       folder,

@@ -9,7 +9,7 @@ import { TYPES } from '@DI/types';
 import { IHomeworkRepository } from '@Interfaces/repository/IHomeworkRepository';
 import { HomeWorkDto } from '@dto/homeworkDto';
 import { FilterQuery } from 'mongoose';
-import { BadRequestError, InternalServerError, NotFoundError } from '@Middlewares/narrowDownErrors';
+import { BadRequestError, FailureError, NotFoundError } from '@Middlewares/narrowDownErrors';
 import logger from '@Utils/logger';
 
 import { TPaginationQuery } from '../../types/pagination';
@@ -22,105 +22,111 @@ export class HomeworkService implements IHomeworkService {
   ) {}
 
   async createHomework(req: Request, res: Response): Promise<serviceReturnType> {
-    try{
-      const dto: Partial<IHomework> = HomeWorkDto.createHomework(req, res);
-  
-      //const validation=handleValidationOF(HomeworkSchema,dto,res);
-  
-      const doc = await this._homeworkRepo.createHomework(dto);
-  
-      return ApiResponse.success(doc, HomeworkMessage.HomeworkCreated);
-    } catch(error){
-      logger.error(HomeworkMessage.HomeworkNotCreated, error);
-      throw new InternalServerError();
+    const dto: Partial<IHomework> = HomeWorkDto.createHomework(req, res);
+
+    const doc = await this._homeworkRepo.createHomework(dto);
+
+    if (!doc) {
+      logger.error('[HomeworkService:createHomework] Failed to create homework', {
+        payload: dto,
+      });
+
+      throw new FailureError(HomeworkMessage.HomeworkNotCreated);
     }
+
+    return ApiResponse.success(doc, HomeworkMessage.HomeworkCreated);
   }
 
   async getHomework(id: string): Promise<serviceReturnType> {
-    try{
-      const doc = await this._homeworkRepo.findById(id!);
-  
-      if (!doc) {
-        throw new BadRequestError(HomeworkMessage.HomeworkNotFound);
-      }
-  
-      return ApiResponse.success(doc, HomeworkMessage.HomeworkFetched);
-    } catch(error){
-      logger.error(HomeworkMessage.HomeworkNotFound, error);
-      throw new InternalServerError();
+    const doc = await this._homeworkRepo.findById(id);
+
+    if (!doc) {
+      logger.warn('[HomeworkService:getHomework] Homework not found', {
+        homeworkId: id,
+      });
+
+      throw new NotFoundError(HomeworkMessage.HomeworkNotFound);
     }
+
+    return ApiResponse.success(doc, HomeworkMessage.HomeworkFetched);
   }
 
   async listAllHomework(
     paginationQuery: TPaginationQuery,
     query: FilterQuery<Partial<IHomework>>,
   ): Promise<serviceReturnType> {
-    try{
-      const docs = await this._homeworkRepo.getAllHomework(paginationQuery, query);
-  
-      if (!docs || docs.data.length === 0) {
-        return ApiResponse.failure(HomeworkMessage.HomeworkNotFound);
-      }
-  
-      return ApiResponse.success(docs, HomeworkMessage.HomeworkListed);
-    } catch(error){
-      logger.error(HomeworkMessage.HomeworkNotFound, error);
-      throw new InternalServerError();
+    const docs = await this._homeworkRepo.getAllHomework(paginationQuery, query);
+
+    if (!docs || docs.data.length === 0) {
+      logger.warn('[HomeworkService:listAllHomework] No homework found', {
+        query,
+        paginationQuery,
+      });
+
+      throw new NotFoundError(HomeworkMessage.HomeworkNotFound);
     }
+
+    return ApiResponse.success(docs, HomeworkMessage.HomeworkListed);
   }
 
   async updateHomework(req: Request, res: Response): Promise<serviceReturnType> {
-    try{
-      const { homeworkId } = req.params;
-  
-      if (!homeworkId) {
-        throw new NotFoundError(CommonMessage.IdNotFound);
-      }
-  
-      const dto: Partial<IHomework> = HomeWorkDto.createHomework(req, res);
-  
-      const updatedDoc = await this._homeworkRepo.updateHomework(homeworkId!, dto);
-  
-      if (!updatedDoc) {
-        throw new BadRequestError(HomeworkMessage.HomeworkNotUpdated);
-      }
-  
-      return ApiResponse.success(updatedDoc, HomeworkMessage.HomeworkUpdated);
-    } catch(error){
-      logger.error(HomeworkMessage.HomeworkNotUpdated, error);
-      throw new InternalServerError();
+    const { homeworkId } = req.params;
+
+    if (!homeworkId) {
+      logger.warn('[HomeworkService:updateHomework] Homework ID missing');
+
+      throw new NotFoundError(CommonMessage.IdNotFound);
     }
+
+    const dto: Partial<IHomework> = HomeWorkDto.createHomework(req, res);
+
+    const updatedDoc = await this._homeworkRepo.updateHomework(homeworkId, dto);
+
+    if (!updatedDoc) {
+      logger.warn('[HomeworkService:updateHomework] Failed to update homework', {
+        homeworkId,
+        payload: dto,
+      });
+
+      throw new BadRequestError(HomeworkMessage.HomeworkNotUpdated);
+    }
+
+    return ApiResponse.success(updatedDoc, HomeworkMessage.HomeworkUpdated);
   }
 
   async deleteHomework(id: string): Promise<serviceReturnType> {
-    try{
-      const deleted = await this._homeworkRepo.deleteHomework(id!);
-  
-      if (!deleted) {
-        throw new BadRequestError(HomeworkMessage.HomeworkNotFound);
-      }
-  
-      return ApiResponse.success(null, HomeworkMessage.HomeworkDeleted);
-    } catch(error){
-      logger.error(HomeworkMessage.HomeworkNotFound, error);
-      throw new InternalServerError();
+    const deleted = await this._homeworkRepo.deleteHomework(id);
+
+    if (!deleted) {
+      logger.warn('[HomeworkService:deleteHomework] Homework not found during delete', {
+        homeworkId: id,
+      });
+
+      throw new NotFoundError(HomeworkMessage.HomeworkNotFound);
     }
+
+    return ApiResponse.success(null, HomeworkMessage.HomeworkDeleted);
   }
 
   async viewHomework(req: Request): Promise<serviceReturnType> {
-      try{
-        const { id } = req.params; //homeworkId
-    
-        const doc = await this._homeworkRepo.findById(id!);
-    
-        if (!doc) {
-          throw new BadRequestError(HomeworkMessage.HomeworkNotFound);
-        }
-    
-        return ApiResponse.success(doc, HomeworkMessage.HomeworkFetched);
-      } catch(error){
-        logger.error(HomeworkMessage.HomeworkNotFound, error);
-        throw new InternalServerError();  
+    const { id } = req.params;
+
+    if (!id) {
+      logger.warn('[HomeworkService:viewHomework] Homework ID missing');
+
+      throw new NotFoundError(CommonMessage.IdNotFound);
     }
+
+    const doc = await this._homeworkRepo.findById(id);
+
+    if (!doc) {
+      logger.warn('[HomeworkService:viewHomework] Homework not found', {
+        homeworkId: id,
+      });
+
+      throw new NotFoundError(HomeworkMessage.HomeworkNotFound);
+    }
+
+    return ApiResponse.success(doc, HomeworkMessage.HomeworkFetched);
   }
 }

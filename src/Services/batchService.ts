@@ -9,10 +9,8 @@ import { ApiResponse } from '@Constants/apiResponse';
 import { BatchMessage } from '@Constants/resposeMessages';
 import logger from '@Utils/logger';
 import { IBatchRepository } from '@Interfaces/repository/IBatchRepository';
-import { BadRequestError, 
-  InternalServerError, 
-  NotFoundError } from '@Middlewares/narrowDownErrors';
-  import { SchoolAcademicYearDto } from '@dto/schoolDTO';
+import { BadRequestError, NotFoundError } from '@Middlewares/narrowDownErrors';
+import { SchoolAcademicYearDto } from '@dto/schoolDTO';
 
 import { TPaginationQuery } from '../types/pagination';
 
@@ -24,142 +22,134 @@ export class BatchService implements IBatchService {
   ) {}
 
   async createBatch(req: Request, res: Response): Promise<serviceReturnType> {
-    try {
-      const dto: Partial<IBatches> = BatchDto.handleNewBatchDto(req, res);
+    const dto: Partial<IBatches> = BatchDto.handleNewBatchDto(req, res);
 
-      const existing = await this._batchRepo.findOne({
+    const existing = await this._batchRepo.findOne({
+      tenantId: dto.tenantId,
+      name: dto.name,
+      code: dto.code,
+    });
+
+    if (existing) {
+      throw new BadRequestError(BatchMessage.BatchExists);
+    }
+
+    const newBatchDoc = await this._batchRepo.addBatch(dto);
+
+    if (!newBatchDoc) {
+      logger.error('[BatchService:createBatch] Batch creation returned null', {
         tenantId: dto.tenantId,
-        name: dto.name,
-        code: dto.code,
+        batchName: dto.name,
+        batchCode: dto.code,
       });
 
-      if (existing) {
-        throw new BadRequestError(BatchMessage.BatchExists);
-      }
-
-      const newBatchDoc = await this._batchRepo.addBatch(dto);
-
-      if (!newBatchDoc) {
-        throw new BadRequestError(BatchMessage.BatchCreateFailed);
-      }
-
-      return ApiResponse.success(newBatchDoc, BatchMessage.BatchAdded);
-
-    } catch (error) {
-
-      logger.error('Error creating batch:', error);
-
-      throw new InternalServerError();
+      throw new BadRequestError(BatchMessage.BatchCreateFailed);
     }
+
+    return ApiResponse.success(newBatchDoc, BatchMessage.BatchAdded);
   }
 
   async getBatchById(req: Request): Promise<serviceReturnType> {
-    try {
-      const { id } = req.params;
+    const { id } = req.params;
 
-      const doc = await this._batchRepo.findById(id!);
+    const doc = await this._batchRepo.findById(id!);
 
-      if (!doc) {
-        throw new NotFoundError(BatchMessage.BatchNotFound);
-      }
+    if (!doc) {
+      logger.warn('[BatchService:getBatchById] Batch not found', { batchId: id });
 
-      return ApiResponse.success(doc, BatchMessage.BatchFetched);
-      
-    } catch (error) {
-      logger.error('Error fetching batch:', error);
-      throw new InternalServerError();
+      throw new NotFoundError(BatchMessage.BatchNotFound);
     }
+
+    return ApiResponse.success(doc, BatchMessage.BatchFetched);
   }
 
   async getAllBatches(req: Request, res: Response): Promise<serviceReturnType> {
-    try {
-      const query = BatchDto.handleGetAllBatchesDto(req, res);
+    const query = BatchDto.handleGetAllBatchesDto(req, res);
 
-      const { limit, page } = req.query as unknown as TPaginationQuery;
+    const { limit, page } = req.query as unknown as TPaginationQuery;
 
-      const decoded=SchoolAcademicYearDto.getTenantId(req,res);
+    const decoded = SchoolAcademicYearDto.getTenantId(req, res);
 
-      const docs = await this._batchRepo.getAllBatches(
-        { limit, page }, 
-        {...query,tenantId:decoded.tenantId,status:'active'}
-      );
+    const docs = await this._batchRepo.getAllBatches(
+      { limit, page },
+      {
+        ...query,
+        tenantId: decoded.tenantId,
+        status: 'active',
+      },
+    );
 
-      return ApiResponse.success(docs, BatchMessage.BatchListed);
-    } catch (error) {
-      logger.error('Error fetching batches:', error);
-      throw new InternalServerError();
-    }
+    return ApiResponse.success(docs, BatchMessage.BatchListed);
   }
 
   async updateABatch(req: Request, res: Response): Promise<serviceReturnType> {
-    try {
-      const { id } = req.params;
-      const dto = BatchDto.handleNewBatchDto(req, res);
+    const { id } = req.params;
 
-      const updated = await this._batchRepo.updateBatch(id!, dto);
+    const dto = BatchDto.handleNewBatchDto(req, res);
 
-      if (!updated) {
-        throw new NotFoundError(BatchMessage.BatchNotFound);
-      }
+    const updated = await this._batchRepo.updateBatch(id!, dto);
 
-      return ApiResponse.success(updated, BatchMessage.BatchUpdated);
-    } catch (error) {
-      logger.error('Error updating batch:', error);
-      throw new InternalServerError();
+    if (!updated) {
+      logger.warn('[BatchService:updateABatch] Batch not found during update', {
+        batchId: id,
+        payload: dto,
+      });
+
+      throw new NotFoundError(BatchMessage.BatchNotFound);
     }
+
+    return ApiResponse.success(updated, BatchMessage.BatchUpdated);
   }
 
   async deleteBatch(req: Request): Promise<serviceReturnType> {
-    try {
-      const { id } = req.params;
+    const { id } = req.params;
 
-      const deleted = await this._batchRepo.deleteBatch(id!);
+    const deleted = await this._batchRepo.deleteBatch(id!);
 
-      if (!deleted) {
-        throw new NotFoundError(BatchMessage.BatchNotFound);
-      }
+    if (!deleted) {
+      logger.warn('[BatchService:deleteBatch] Batch not found during delete', {
+        batchId: id,
+      });
 
-      return ApiResponse.success(null, BatchMessage.BatchDeleted);
-    } catch (error) {
-      logger.error('Error deleting batch:', error);
-      throw new InternalServerError();
+      throw new NotFoundError(BatchMessage.BatchNotFound);
     }
+
+    return ApiResponse.success(null, BatchMessage.BatchDeleted);
   }
 
   async assignClassTeacher(batchId: string, teacherId: string): Promise<serviceReturnType> {
-    try {
-      if (!batchId || !teacherId) {
-        throw new BadRequestError('Invalid ID');
-      }
+    if (!batchId || !teacherId) {
+      logger.warn('[BatchService:assignClassTeacher] Invalid IDs provided', {
+        batchId,
+        teacherId,
+      });
 
-      const batch = await this._batchRepo.findById(batchId);
-
-      if (!batch) {
-        throw new NotFoundError(BatchMessage.BatchNotFound);
-      }
-
-      //? VERIFY: WHY THIS CHECK ?
-      // if (batch.batchCounselor) {
-      //   return ApiResponse.badRequest(BatchMessage.BatchAlreadyHasTeacher);
-      // }
-
-      //const teacherAlreadyAssigned = await this._batchRepo.findByTeacherId(teacherId);
-
-      // if (teacherAlreadyAssigned) {
-      //   return ApiResponse.badRequest(BatchMessage.TeacherAlreadyAssigned);
-      // }
-
-      const updated = await this._batchRepo.assignTeacher(batchId, teacherId);
-
-      if (!updated) {
-        throw new BadRequestError(BatchMessage.BatchUpdateFailed);
-      }
-
-      return ApiResponse.success(updated, BatchMessage.TeacherAssigned);
-    } catch (error) {
-      logger.error('Error assigning teacher:', error);
-      throw new InternalServerError();
+      throw new BadRequestError('Invalid ID');
     }
+
+    const batch = await this._batchRepo.findById(batchId);
+
+    if (!batch) {
+      logger.warn('[BatchService:assignClassTeacher] Batch not found', {
+        batchId,
+        teacherId,
+      });
+
+      throw new NotFoundError(BatchMessage.BatchNotFound);
+    }
+
+    const updated = await this._batchRepo.assignTeacher(batchId, teacherId);
+
+    if (!updated) {
+      logger.error('[BatchService:assignClassTeacher] Failed to assign teacher', {
+        batchId,
+        teacherId,
+      });
+
+      throw new BadRequestError(BatchMessage.BatchUpdateFailed);
+    }
+
+    return ApiResponse.success(updated, BatchMessage.TeacherAssigned);
   }
 }
 
@@ -172,7 +162,7 @@ export class BatchService implements IBatchService {
 
 // removeSchoolFromCenter() {}
 
-// //** 📌 Status & Lifecycle
+// //**  Status & Lifecycle
 
 // activateCenter() {}
 

@@ -13,13 +13,9 @@ import { handleValidationOF } from '@Middlewares/validateUser.middleware';
 import { createStudentSchema } from '@Validators/student.validation';
 import { batchModel } from '@Models/batchModel';
 import { IStudentRepository } from '@Interfaces/repository/IStudentRepository';
-import {
-  StudentMessage,
-  BatchMessage,
-  CommonMessage,
-} from '@Constants/resposeMessages';
+import { StudentMessage, BatchMessage, CommonMessage } from '@Constants/resposeMessages';
 import { generateAdmissionNo, generateRollNo } from '@Utils/student.utils';
-import { InternalServerError, NotFoundError } from '@Middlewares/narrowDownErrors';
+import { FailureError, NotFoundError } from '@Middlewares/narrowDownErrors';
 
 @injectable()
 export class StudentService implements IStudentService {
@@ -30,120 +26,148 @@ export class StudentService implements IStudentService {
 
   // Get Student by ID
   async getStudentById(id: string): Promise<serviceReturnType> {
-    try {
-      if (!id) {
-        throw new NotFoundError(StudentMessage.StudentIdNotFound);
-      }
+    if (!id) {
+      logger.warn('[StudentService:getStudentById] Student ID missing');
 
-      const student: IStudent | null = await this._studentRepository.findById(id);
-
-      if (!student) {
-        throw new NotFoundError(StudentMessage.StudentNotFound);
-      }
-
-      return ApiResponse.success(student, StudentMessage.StudentFetched);
-    } catch (error) {
-      logger.error(StudentMessage.StudentNotFound, error);
-      throw new InternalServerError();
+      throw new NotFoundError(StudentMessage.StudentIdNotFound);
     }
+
+    const student: IStudent | null = await this._studentRepository.findById(id);
+
+    if (!student) {
+      logger.warn('[StudentService:getStudentById] Student not found', {
+        studentId: id,
+      });
+
+      throw new NotFoundError(StudentMessage.StudentNotFound);
+    }
+
+    return ApiResponse.success(student, StudentMessage.StudentFetched);
   }
 
   // Get Students by Query
   async getStudentsByQuery(query: FilterQuery<Partial<IStudent>>): Promise<serviceReturnType> {
-    try {
-      const students = await this._studentRepository.findMany(query);
+    const students = await this._studentRepository.findMany(query);
 
-      return ApiResponse.success(students, StudentMessage.StudentsListed);
-    } catch (error) {
-      logger.error(StudentMessage.StudentNotFound, error);
-      throw new InternalServerError();
+    if (!students || students.length === 0) {
+      logger.warn('[StudentService:getStudentsByQuery] No students found', {
+        query,
+      });
+
+      throw new NotFoundError(StudentMessage.StudentNotFound);
     }
+
+    return ApiResponse.success(students, StudentMessage.StudentsListed);
   }
 
   // Get All Students
   async getAllStudents(query: FilterQuery<Partial<IStudent>>): Promise<serviceReturnType> {
-    try {
-      const students = await this._studentRepository.findMany(query);
+    const students = await this._studentRepository.findMany(query);
 
-      return ApiResponse.success(students, StudentMessage.StudentsListed);
-    } catch (error) {
-      logger.error(StudentMessage.StudentNotFound, error);
-      throw new InternalServerError();
+    if (!students || students.length === 0) {
+      logger.warn('[StudentService:getAllStudents] No students found', {
+        query,
+      });
+
+      throw new NotFoundError(StudentMessage.StudentNotFound);
     }
+
+    return ApiResponse.success(students, StudentMessage.StudentsListed);
   }
 
   // Create Student
   async createStudent(req: Request, res: Response): Promise<serviceReturnType> {
-    try {
-      handleValidationOF(createStudentSchema, req.body, res);
+    handleValidationOF(createStudentSchema, req.body, res);
 
-      const studentData = StudentDTO.createStudent(req);
-      const { batchId } = req.params;
-      if (!batchId) {
-        return ApiResponse.badRequest(CommonMessage.IdNotFound);
-      }
+    const studentData = StudentDTO.createStudent(req);
 
-      const batch = await batchModel.findById(batchId);
+    const { batchId } = req.params;
 
-      if (!batch) {
-        return ApiResponse.notFound(BatchMessage.BatchNotFound);
-      }
+    if (!batchId) {
+      logger.warn('[StudentService:createStudent] Batch ID missing');
 
-      studentData.center = batch?.center;
-      studentData.tenantId = batch.tenantId!;
-      studentData.batch = batch?._id;
-      studentData.password = await bcrypt.hash(studentData.password!, 10);
-      studentData.admissionNumber = await generateAdmissionNo(batchId);
-      studentData.rollNumber = await generateRollNo(batchId);
-
-      const created = await this._studentRepository.create(studentData);
-
-      if (!created) {
-        return ApiResponse.internalServerError(StudentMessage.StudentCreateFailed);
-      }
-
-      return ApiResponse.success(created, StudentMessage.StudentCreated);
-    } catch (error) {
-      logger.error(StudentMessage.StudentCreateFailed, error);
-      throw new InternalServerError();
+      throw new NotFoundError(CommonMessage.IdNotFound);
     }
+
+    const batch = await batchModel.findById(batchId);
+
+    if (!batch) {
+      logger.warn('[StudentService:createStudent] Batch not found', {
+        batchId,
+      });
+
+      throw new NotFoundError(BatchMessage.BatchNotFound);
+    }
+
+    studentData.center = batch.center;
+    studentData.tenantId = batch.tenantId!;
+    studentData.batch = batch._id;
+
+    studentData.password = await bcrypt.hash(studentData.password!, 10);
+
+    studentData.admissionNumber = await generateAdmissionNo(batchId);
+
+    studentData.rollNumber = await generateRollNo(batchId);
+
+    const created = await this._studentRepository.create(studentData);
+
+    if (!created) {
+      logger.error('[StudentService:createStudent] Failed to create student', {
+        batchId,
+        studentEmail: studentData.email,
+        studentName: studentData.name,
+      });
+
+      throw new FailureError(StudentMessage.StudentCreateFailed);
+    }
+
+    return ApiResponse.success(created, StudentMessage.StudentCreated);
   }
 
+  // Update Student
   async updateStudent(req: Request): Promise<serviceReturnType> {
-    try {
-      const dto = StudentDTO.updateStudent(req);
-      const { studentId } = req.params;
+    const dto = StudentDTO.updateStudent(req);
 
-      const updated = await this._studentRepository.updateStudent(studentId!, dto);
+    const { studentId } = req.params;
 
-      if (!updated) {
-        return ApiResponse.notFound(StudentMessage.StudentNotUpdated);
-      }
+    if (!studentId) {
+      logger.warn('[StudentService:updateStudent] Student ID missing');
 
-      return ApiResponse.success(updated, StudentMessage.StudentUpdated);
-    } catch (error) {
-      logger.error(StudentMessage.StudentUpdateFailed, error);
-      throw new InternalServerError();
+      throw new NotFoundError(CommonMessage.IdNotFound);
     }
+
+    const updated = await this._studentRepository.updateStudent(studentId, dto);
+
+    if (!updated) {
+      logger.warn('[StudentService:updateStudent] Failed to update student', {
+        studentId,
+        payload: dto,
+      });
+
+      throw new NotFoundError(StudentMessage.StudentNotUpdated);
+    }
+
+    return ApiResponse.success(updated, StudentMessage.StudentUpdated);
   }
 
-  // Delete Student (Soft Delete)
+  // Delete Student
   async deleteStudent(id: string): Promise<serviceReturnType> {
-    try {
-      if (!id) {
-        return ApiResponse.notFound(StudentMessage.StudentIdNotFound);
-      }
+    if (!id) {
+      logger.warn('[StudentService:deleteStudent] Student ID missing');
 
-      const deleted = await this._studentRepository.updateStudent(id, { isDeleted: true });
-
-      if (!deleted) {
-        return ApiResponse.notFound(StudentMessage.StudentNotFound);
-      }
-
-      return ApiResponse.success(null, StudentMessage.StudentDeleted);
-    } catch (error) {
-      logger.error(StudentMessage.StudentDeleteFailed, error);
-      throw new InternalServerError();
+      throw new NotFoundError(StudentMessage.StudentIdNotFound);
     }
+
+    const deleted = await this._studentRepository.updateStudent(id, { isDeleted: true });
+
+    if (!deleted) {
+      logger.warn('[StudentService:deleteStudent] Student not found during delete', {
+        studentId: id,
+      });
+
+      throw new NotFoundError(StudentMessage.StudentNotFound);
+    }
+
+    return ApiResponse.success(null, StudentMessage.StudentDeleted);
   }
 }

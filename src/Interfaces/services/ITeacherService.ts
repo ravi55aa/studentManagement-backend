@@ -14,7 +14,10 @@ export interface ITeacherService {
 
   updateTeacher(req: Request, res: Response): Promise<serviceReturnType>;
 
-  getAllTeachers(query: TPaginationQuery,filter:FilterQuery<Partial<ITeacherBio>>): Promise<serviceReturnType>;
+  getAllTeachers(
+    query: TPaginationQuery,
+    filter: FilterQuery<Partial<ITeacherBio>>,
+  ): Promise<serviceReturnType>;
 
   getTeacherById(teacherId: string): Promise<serviceReturnType>;
 

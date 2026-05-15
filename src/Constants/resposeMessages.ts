@@ -4,7 +4,7 @@
 export enum GeneralMessage {
   // Success messages
   DataReturned = 'Data returned',
-  MessageCannotBeEmpty='Message cannot be empty'
+  MessageCannotBeEmpty = 'Message cannot be empty',
 }
 
 /**

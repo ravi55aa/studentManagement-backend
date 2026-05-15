@@ -47,11 +47,11 @@ router.get('/homework/getall', authMiddleware, (req, res, next) =>
 );
 
 //studentHomeworkId
-router.put('/homework/update/:homeworkId', 
-  authMiddleware, 
+router.put(
+  '/homework/update/:homeworkId',
+  authMiddleware,
   uploadCloud.array('docs', 10),
-  (req, res, next) =>
-  studentHomeworkController.updateSubmissionsByTeacher(req, res, next),
+  (req, res, next) => studentHomeworkController.updateSubmissionsByTeacher(req, res, next),
 );
 
 //studentHomeworkId

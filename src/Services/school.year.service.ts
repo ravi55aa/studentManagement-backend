@@ -602,7 +602,7 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
 
 /*
 
- async updateAcademicCourse(req: Request, res: Response): Promise<serviceReturnType> {
+async updateAcademicCourse(req: Request, res: Response): Promise<serviceReturnType> {
     const { id } = req.params;
     const { tenantId, adminId } = SchoolAcademicYearDto.getTenantId(req, res);
     const query = { _id: id, tenantId: tenantId, adminId: adminId };

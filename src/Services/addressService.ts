@@ -9,8 +9,7 @@ import { AddressDTO } from '@dto/addressDTO';
 import { ApiResponse } from '@Constants/apiResponse';
 import { AddressMessage } from '@Constants/resposeMessages';
 import { IAddressRepository } from '@Interfaces/repository/IAddressRepository';
-import logger from '@Utils/logger';
-import { FailureError, InternalServerError, NotFoundError } from '@Middlewares/narrowDownErrors';
+import { FailureError, NotFoundError } from '@Middlewares/narrowDownErrors';
 
 @injectable()
 export class AddressService implements IAddressService {
@@ -20,97 +19,71 @@ export class AddressService implements IAddressService {
   ) {}
 
   async getSchoolAddress(id: string): Promise<serviceReturnType> {
-    try {
-      const address = await this._addressRepository.findById(id);
+    const address = await this._addressRepository.findById(id);
 
-      if (!address) {
-        throw new NotFoundError(AddressMessage.AddressNotFound);
-      }
-
-      return ApiResponse.success(address, AddressMessage.AddressFetched);
-
-    } catch (error) {
-      logger.error(AddressMessage.AddressNotFound, error);
-      throw new InternalServerError();
+    if (!address) {
+      throw new NotFoundError(AddressMessage.AddressNotFound);
     }
+
+    return ApiResponse.success(address, AddressMessage.AddressFetched);
   }
 
   async getUserAddress(query: FilterQuery<Partial<IAddress>>): Promise<serviceReturnType> {
-    try {
-      const addresses = await this._addressRepository.findMany(query);
+    const addresses = await this._addressRepository.findMany(query);
 
-      return ApiResponse.success(addresses, AddressMessage.AddressListed);
-    } catch (error) {
-      logger.error(AddressMessage.AddressNotFound, error);
-      throw new InternalServerError();
+    if (!addresses || addresses.length <= 0) {
+      throw new NotFoundError(AddressMessage.AddressNotFound);
     }
+
+    return ApiResponse.success(addresses, AddressMessage.AddressListed);
   }
 
   async getAllAddressByQuery(query: FilterQuery<Partial<IAddress>>): Promise<serviceReturnType> {
-    try {
-      const addresses = await this._addressRepository.findMany(query);
+    const addresses = await this._addressRepository.findMany(query);
 
-      return ApiResponse.success(addresses, AddressMessage.AddressListed);
-    } catch (error) {
-      logger.error(AddressMessage.AddressNotFound, error);
-      throw new InternalServerError();
+    if (!addresses || addresses.length <= 0) {
+      throw new FailureError(AddressMessage.AddressNotFound);
     }
+
+    return ApiResponse.success(addresses, AddressMessage.AddressListed);
   }
 
   async getAddressById(userId: string): Promise<serviceReturnType> {
-    try {
-
-      if (!userId) {
-        throw new NotFoundError(AddressMessage.AddressIdNotFound);
-      }
-
-      const address = await this._addressRepository.findOne({ userId: userId });
-
-      return ApiResponse.success(address, AddressMessage.AddressFetched);
-    } catch (error) {
-      logger.error(AddressMessage.AddressNotFound, error);
-      throw new InternalServerError();
+    if (!userId) {
+      throw new NotFoundError(AddressMessage.AddressIdNotFound);
     }
+
+    const address = await this._addressRepository.findOne({ userId: userId });
+
+    if (!address) {
+      throw new FailureError(AddressMessage.AddressNotFound);
+    }
+
+    return ApiResponse.success(address, AddressMessage.AddressFetched);
   }
 
   async createAddress(address: Partial<IAddress>): Promise<serviceReturnType> {
-    try {
-      const created = await this._addressRepository.create(address);
+    const created = await this._addressRepository.create(address);
 
-      if (!created) {
-        throw new FailureError(AddressMessage.AddressCreateFailed);
-      }
-
-      return ApiResponse.success(created, AddressMessage.AddressCreated);
-
-    } catch (error) {
-
-      logger.error(AddressMessage.AddressNotFound, error);
-
-      throw new InternalServerError();
+    if (!created) {
+      throw new FailureError(AddressMessage.AddressCreateFailed);
     }
+
+    return ApiResponse.success(created, AddressMessage.AddressCreated);
   }
 
   //  Update Address (Admin | Teacher | Center | School)
   async updateAddress(req: Request, res: Response): Promise<serviceReturnType> {
-    try {
-      const dto = AddressDTO.updateAddress(req, res);
+    const dto = AddressDTO.updateAddress(req, res);
 
-      const query = { userId: dto.userId };
+    const query = { userId: dto.userId };
 
-      const updated = await this._addressRepository.updateAddress(query, dto);
+    const updated = await this._addressRepository.updateAddress(query, dto);
 
-      if (!updated) {
-        throw new FailureError(AddressMessage.AddressNotUpdated); 
-      }
-
-      return ApiResponse.success(updated, AddressMessage.AddressUpdated);
-
-    } catch (error) {
-
-      logger.error(AddressMessage.AddressNotFound, error);
-      
-      throw new InternalServerError();
+    if (!updated) {
+      throw new FailureError(AddressMessage.AddressNotUpdated);
     }
+
+    return ApiResponse.success(updated, AddressMessage.AddressUpdated);
   }
 }

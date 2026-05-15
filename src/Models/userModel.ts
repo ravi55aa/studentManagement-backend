@@ -36,10 +36,10 @@ const adminSchema = new Schema<IUser>(
       required: true,
     },
 
-    googleId: { 
-      type: String, 
-      trim: true, 
-      default:null 
+    googleId: {
+      type: String,
+      trim: true,
+      default: null,
     },
 
     tenantId: {

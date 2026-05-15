@@ -7,7 +7,7 @@ export class AuthUserDTO {
     //hashPassword
     //validation
 
-    const userSchema = { name, email, password, phone, profile,googleId:email }; 
+    const userSchema = { name, email, password, phone, profile, googleId: email };
 
     const addressSchema = { street, city, state, zip, country }; //give the type check
 

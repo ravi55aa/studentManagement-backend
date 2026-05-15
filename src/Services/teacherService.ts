@@ -99,19 +99,19 @@ export class TeacherService implements ITeacherService {
   }
 
   /* ===================GET/LIST All Teachers====================== */
-  public async getAllTeachers(query: TPaginationQuery,filter:FilterQuery<Partial<ITeacherBio>>): Promise<serviceReturnType> {
+  public async getAllTeachers(
+    query: TPaginationQuery,
+    filter: FilterQuery<Partial<ITeacherBio>>,
+  ): Promise<serviceReturnType> {
     try {
-
-      const result = await this._teacherRepo.getAllTeachers(query,filter);
+      const result = await this._teacherRepo.getAllTeachers(query, filter);
 
       if (!result) {
         return ApiResponse.notFound(TeacherMessage.NoTeachersFound);
       }
 
       return ApiResponse.success(result, TeacherMessage.TeachersListed);
-
     } catch (error) {
-
       logger.error(TeacherMessage.NoTeachersFound, {
         layer: 'service',
         module: 'teacher',

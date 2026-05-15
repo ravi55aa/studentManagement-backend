@@ -23,7 +23,6 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
     /* ========Try Verify Access Token========= */
     try {
-      
       const decoded = verifyToken(accessToken, env.JWT_ACCESS_TOKEN_SECRET!);
 
       if (decoded && req.user) {
@@ -33,7 +32,6 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
       }
 
       return next();
-
     } catch (accessError: unknown) {
       /* Token expired ; try refresh */
       if (accessError instanceof Error && accessError.name !== 'TokenExpiredError') {

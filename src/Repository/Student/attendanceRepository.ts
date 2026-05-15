@@ -173,14 +173,13 @@ export class StudentAttendanceRepository
   async updateAppliedLeaveStatusFromTeacher(
     filter: FilterQuery<Partial<IStudentLeave>>,
     update: FilterQuery<Partial<IStudentLeave>>,
-  ): Promise<IAttendance|null> {
+  ): Promise<IAttendance | null> {
     try {
-      const updated= await this.model.findOneAndUpdate(filter, update, {
+      const updated = await this.model.findOneAndUpdate(filter, update, {
         new: true,
       });
 
       return updated;
-
     } catch (error) {
       logger.error(AttendanceMessage.AttendanceNotUpdated, error);
       return null;
@@ -189,12 +188,11 @@ export class StudentAttendanceRepository
 
   async getLeaves(filter: FilterQuery<Partial<IStudentLeave>>): Promise<IStudentLeave | null> {
     try {
-      return await studentLeaveModel.findOne(filter,
-        {
-          "leaveHistory.$": 1,
-        }
-      ).lean<IStudentLeave>();
-
+      return await studentLeaveModel
+        .findOne(filter, {
+          'leaveHistory.$': 1,
+        })
+        .lean<IStudentLeave>();
     } catch (error) {
       logger.error(LeaveMessage.LeaveNotFound, error);
       return null;
@@ -227,67 +225,56 @@ export class StudentAttendanceRepository
     }
   }
 
-  public async fetchMonthlyAttendance(filterQuery:FilterQuery<Partial<IAttendance>>)
-  :Promise<Partial<IAttendance[]|null>> {
-    
+  public async fetchMonthlyAttendance(
+    filterQuery: FilterQuery<Partial<IAttendance>>,
+  ): Promise<Partial<IAttendance[] | null>> {
     try {
+      const data = await this.model.aggregate([
+        {
+          $match: {
+            ...filterQuery,
+            isDelete: false,
+          },
+        },
 
-        const data = await this.model.aggregate([
-          {
-            $match: {
-              ...filterQuery,
-              isDelete: false,
+        //break students array
+        { $unwind: '$students' },
+
+        //  classify present
+        {
+          $addFields: {
+            isPresent: {
+              $cond: [{ $in: ['$students.status', ['present', 'late']] }, 1, 0],
             },
           },
+        },
 
-          //break students array
-          { $unwind: "$students" },
+        //  group result
+        {
+          $group: {
+            _id: null,
+            totalPresent: { $sum: '$isPresent' },
+            totalCount: { $sum: 1 },
+          },
+        },
 
-          //  classify present
-          {
-            $addFields: {
-              isPresent: {
-                $cond: [
-                  { $in: ["$students.status", ["present", "late"]] },
-                  1,
-                  0,
-                ],
-              },
+        {
+          $project: {
+            _id: 0,
+            totalPresent: 1,
+            totalCount: 1,
+            attendancePercentage: {
+              $multiply: [{ $divide: ['$totalPresent', '$totalCount'] }, 100],
             },
           },
+        },
+      ]);
 
-          //  group result
-          {
-            $group: {
-              _id: null,
-              totalPresent: { $sum: "$isPresent" },
-              totalCount: { $sum: 1 },
-            },
-          },
+      return data;
+    } catch (error) {
+      logger.error(AttendanceMessage.AttendanceNotFound, error);
 
-          {
-            $project: {
-              _id: 0,
-              totalPresent: 1,
-              totalCount: 1,
-              attendancePercentage: {
-                $multiply: [
-                  { $divide: ["$totalPresent", "$totalCount"] },
-                  100,
-                ],
-              },
-            },
-          },
-        ]);
-
-        return data;
-
-      } catch(error) {
-
-        logger.error(AttendanceMessage.AttendanceNotFound,error);
-
-        return null;
-      }
+      return null;
+    }
   }
-
 }

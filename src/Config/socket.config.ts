@@ -46,14 +46,14 @@ export const initSocket = (server: HttpServer) => {
     });
 
     // socket.on('sendMessage', (data) => {
-      
+
     //   const { chatRoomId, message } = data;
-      
+
     //   socket.to(chatRoomId)
-    //         .emit('receiveMessage', { 
-    //           message, senderId: userId 
+    //         .emit('receiveMessage', {
+    //           message, senderId: userId
     //         });
-    // });  
+    // });
 
     logger.warn(`\n User joined room: ${role}-${userId} \n`);
 

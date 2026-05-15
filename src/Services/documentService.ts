@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { inject, injectable } from 'tsyringe';
 import { StatusCodes } from '@Constants/statusCodes';
-import { FailureError, InternalServerError } from '@Middlewares/narrowDownErrors';
+import { FailureError } from '@Middlewares/narrowDownErrors';
 import { TYPES } from '@DI/types';
 import { serviceReturnType } from '@Constants/interfaces';
 import { IDocumentService } from '@Interfaces/services/IDocument.service';
@@ -20,122 +20,133 @@ export class DocumentService implements IDocumentService {
     private _documentRepository: IDocumentRepository,
   ) {}
 
-  //  Upload Documents
+  // Get Documents
   async getDocs(userId: string): Promise<serviceReturnType> {
-    try {
-      if (!userId) {
-        throw new FailureError(CommonMessage.IdNotFound);
-      }
-      const documents = await this._documentRepository.getDocumentsOf(userId);
+    if (!userId) {
+      logger.warn('[DocumentService:getDocs] User ID missing');
 
-      if (!documents) {
-        throw new FailureError(DocumentMessage.DocumentNotFound);
-      }
-
-      return ApiResponse.success(documents, DocumentMessage.DocumentFetched);
-    } catch (error) {
-      logger.error('Error uploading document:', error);
-      throw new InternalServerError();
+      throw new FailureError(CommonMessage.IdNotFound);
     }
+
+    const documents = await this._documentRepository.getDocumentsOf(userId);
+
+    if (!documents) {
+      logger.warn('[DocumentService:getDocs] Documents not found', {
+        userId,
+      });
+
+      throw new FailureError(DocumentMessage.DocumentNotFound);
+    }
+
+    return ApiResponse.success(documents, DocumentMessage.DocumentFetched);
   }
 
+  // Upload Documents
   async uploadDocs(data: Partial<IDocument>): Promise<serviceReturnType> {
-    try {
-      const uploaded = await this._documentRepository.uploadDocuments(data);
+    const uploaded = await this._documentRepository.uploadDocuments(data);
 
-      if (!uploaded) {
-        throw new FailureError(DocumentMessage.DocumentUploadFailed);
-      }
+    if (!uploaded) {
+      logger.error('[DocumentService:uploadDocs] Failed to upload documents', {
+        payload: data,
+      });
 
-      return ApiResponse.success(uploaded, DocumentMessage.DocumentUploaded);
-    } catch (error) {
-      logger.error('Error uploading document:', error);
-      throw new InternalServerError();
+      throw new FailureError(DocumentMessage.DocumentUploadFailed);
     }
+
+    return ApiResponse.success(uploaded, DocumentMessage.DocumentUploaded);
   }
 
-  // Update Document
+  // Update Documents
   async updateDocs(req: Request, res: Response): Promise<serviceReturnType> {
-    try {
-      const { dtoData, dtoQuery } = DocumentsDto.updateDoc(req, res);
+    const { dtoData, dtoQuery } = DocumentsDto.updateDoc(req, res);
 
-      const updated = await this._documentRepository.updateDocuments(dtoQuery, dtoData);
+    const updated = await this._documentRepository.updateDocuments(dtoQuery, dtoData);
 
-      if (!updated) {
-        throw new FailureError(DocumentMessage.DocumentNotFound);
-      }
+    if (!updated) {
+      logger.warn('[DocumentService:updateDocs] Document not found during update', {
+        dtoQuery,
+        dtoData,
+      });
 
-      return ApiResponse.success(updated, DocumentMessage.DocumentUpdated);
-    } catch (error) {
-      logger.error('Error updating document:', error);
-      throw new InternalServerError();
+      throw new FailureError(DocumentMessage.DocumentNotFound);
     }
+
+    return ApiResponse.success(updated, DocumentMessage.DocumentUpdated);
   }
 
-  //  Update New Addition Documents
+  // Update Additional Documents
   async update_NewAddition_Documents(req: Request, res: Response): Promise<serviceReturnType> {
-    try {
-      const { dtoData, dtoQuery } = DocumentsDto.updateDocV2(req, res);
+    const { dtoData, dtoQuery } = DocumentsDto.updateDocV2(req, res);
 
-      //find the document first,
-      const isDocument = await this._documentRepository.findOne(dtoQuery);
+    const isDocument = await this._documentRepository.findOne(dtoQuery);
 
-      if (!isDocument || isDocument === null) {
-        const data = DocumentsDto.handleDtoOfDoc(req, res);
+    // Create new document if not exists
+    if (!isDocument) {
+      logger.warn(
+        '[DocumentService:update_NewAddition_Documents] Document not found, creating new upload',
+        {
+          dtoQuery,
+        },
+      );
 
-        const newUpload = await this.uploadDocs(data);
+      const data = DocumentsDto.handleDtoOfDoc(req, res);
 
-        return newUpload.status == StatusCodes.OK
-          ? newUpload
-          : ApiResponse.failure(DocumentMessage.DocumentUpdateFailed);
-      }
+      const newUpload = await this.uploadDocs(data);
 
-      const updated = await this._documentRepository.updateNEWUploadDocuments(dtoQuery, dtoData);
-
-      if (!updated) {
-        throw new FailureError(DocumentMessage.DocumentUpdateFailed);
-      }
-
-      return ApiResponse.success(updated, DocumentMessage.DocumentUpdated);
-    } catch (error) {
-      logger.error('Error updating additional documents:', error);
-      throw new InternalServerError();
+      return newUpload.status === StatusCodes.OK
+        ? newUpload
+        : ApiResponse.failure(DocumentMessage.DocumentUpdateFailed);
     }
+
+    const updated = await this._documentRepository.updateNEWUploadDocuments(dtoQuery, dtoData);
+
+    if (!updated) {
+      logger.error(
+        '[DocumentService:update_NewAddition_Documents] Failed to update additional documents',
+        {
+          dtoQuery,
+          dtoData,
+        },
+      );
+
+      throw new FailureError(DocumentMessage.DocumentUpdateFailed);
+    }
+
+    return ApiResponse.success(updated, DocumentMessage.DocumentUpdated);
   }
 
-  //  Delete Entire Document
+  // Delete Entire Document
   async deleteDocument(req: Request, res: Response): Promise<serviceReturnType> {
-    try {
-      const query = DocumentsDto.deleteDoc(req, res);
+    const query = DocumentsDto.deleteDoc(req, res);
 
-      const deleted = await this._documentRepository.deleteDocument(query);
+    const deleted = await this._documentRepository.deleteDocument(query);
 
-      if (!deleted) {
-        throw new FailureError(DocumentMessage.DocumentNotFound);
-      }
+    if (!deleted) {
+      logger.warn('[DocumentService:deleteDocument] Document not found during delete', {
+        query,
+      });
 
-      return ApiResponse.success(null, DocumentMessage.DocumentDeleted);
-    } catch (error) {
-      logger.error('Error deleting document:', error);
-      throw new InternalServerError();
+      throw new FailureError(DocumentMessage.DocumentNotFound);
     }
+
+    return ApiResponse.success(null, DocumentMessage.DocumentDeleted);
   }
 
-  //  Delete Single File From Document
+  // Delete Single File
   async deleteAFile(req: Request): Promise<serviceReturnType> {
-    try {
-      const { filterQuery, pullQuery } = DocumentsDto.removeOneDocument(req);
+    const { filterQuery, pullQuery } = DocumentsDto.removeOneDocument(req);
 
-      const deleted = await this._documentRepository.deleteADocumentFile(filterQuery, pullQuery);
+    const deleted = await this._documentRepository.deleteADocumentFile(filterQuery, pullQuery);
 
-      if (!deleted) {
-        throw new FailureError(DocumentMessage.FileNotFound);
-      }
+    if (!deleted) {
+      logger.warn('[DocumentService:deleteAFile] File not found during delete', {
+        filterQuery,
+        pullQuery,
+      });
 
-      return ApiResponse.success(null, DocumentMessage.FileDeleted);
-    } catch (error) {
-      logger.error('Error deleting document file:', error);
-      throw new InternalServerError();
+      throw new FailureError(DocumentMessage.FileNotFound);
     }
+
+    return ApiResponse.success(null, DocumentMessage.FileDeleted);
   }
 }

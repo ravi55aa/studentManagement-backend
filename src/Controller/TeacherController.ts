@@ -78,9 +78,11 @@ export default class TeacherController {
     try {
       const query = req.query as unknown as TPaginationQuery;
 
-      const decoded=SchoolAcademicYearDto.getTenantId(req,res);
+      const decoded = SchoolAcademicYearDto.getTenantId(req, res);
 
-      const { status, resBody } = await this._teacherService.getAllTeachers(query,{tenantId:decoded.tenantId});
+      const { status, resBody } = await this._teacherService.getAllTeachers(query, {
+        tenantId: decoded.tenantId,
+      });
 
       res.status(status).json(resBody);
     } catch (error) {

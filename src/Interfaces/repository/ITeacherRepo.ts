@@ -10,7 +10,7 @@ export interface ITeacherRepo extends BaseRepository<ITeacherBio> {
 
   getAllTeachers(
     paginationQuery: TPaginationQuery,
-    filter:FilterQuery<Partial<ITeacherBio>>
+    filter: FilterQuery<Partial<ITeacherBio>>,
   ): Promise<TPaginationResult<IGetAllTeachers> | null>;
 
   // getTeacherById(teacherId: string): Promise<ITeacher | null>;
