@@ -22,7 +22,6 @@ import { authMiddleware } from '../Middlewares/authorise.middleware';
 //*create
 router.post(
   '/register',
-  authMiddleware,
   upload.single('profile'),
   validateData(schoolMetaDataValidateSchema),
   (req, res, next) => schoolController.createSchool(req, res, next),

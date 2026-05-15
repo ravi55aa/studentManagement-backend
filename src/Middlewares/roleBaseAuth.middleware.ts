@@ -1,14 +1,19 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from '@Constants/statusCodes';
 import schoolModel from '@Models/schoolModel';
-import { SchoolMessage } from '@Constants/resposeMessages';
+import { AuthMessage, SchoolMessage } from '@Constants/resposeMessages';
 
 export const handleSubdomainResolver = async (req: Request, res: Response, next: NextFunction) => {
   const host = req.hostname;
 
   const subdomain = host.split('.')[0];
 
-  if (subdomain === 'localhost' || subdomain === 'admin') {
+  if (
+    subdomain === 'localhost' ||
+    subdomain === 'admin' ||
+    req.url.includes('register') ||
+    req.url.includes('admin')
+  ) {
     return next();
   }
 
@@ -28,7 +33,7 @@ export const authorizeRoles = (...roles: string[]) => {
     if (!user) {
       return res.status(StatusCodes.UNAUTHORIZED).json({
         success: false,
-        message: 'Unauthorized. No user found.',
+        message: AuthMessage.UnAuthorized,
         data: null,
         error: 'NoUser',
       });
@@ -37,7 +42,7 @@ export const authorizeRoles = (...roles: string[]) => {
     if (!roles.includes(user.role!)) {
       return res.status(StatusCodes.FORBIDDEN).json({
         success: false,
-        message: 'Access denied. Insufficient permissions.',
+        message: AuthMessage.AccessDenied,
         data: null,
         error: 'Forbidden',
       });

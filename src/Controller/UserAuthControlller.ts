@@ -36,7 +36,12 @@ export default class UserAuthController {
       //jwt *********
       const { token, refreshToken } = jwtTokensGenerator(newUser);
 
-      res.cookie('token', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000, path: '/' }); //24h
+      res.cookie('token', token, {
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000,
+        path: '/',
+        sameSite: 'lax',
+      }); //24h
 
       req.session.refreshToken = refreshToken;
 

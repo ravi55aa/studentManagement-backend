@@ -24,6 +24,8 @@ export enum AuthMessage {
   InvalidCurrentPassword = 'Current password is invalid',
   passwordNotUpdated = 'Password not updated',
   InvalidUser = 'Invalid user type',
+  UnAuthorized = ' Unauthorized. No user found',
+  AccessDenied = 'Access denied. Insufficient permissions.',
 
   // Success messages
   OTPResent = 'OTP resent',

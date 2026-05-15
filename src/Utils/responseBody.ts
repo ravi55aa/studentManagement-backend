@@ -21,7 +21,12 @@ export const handleResponseBody = (signInUser: IUser | null, res: Response, req:
 
   const { token, refreshToken } = jwtTokensGenerator(signInUser);
 
-  res.cookie('token', token, { httpOnly: true, maxAge: 2 * 60 * 1000, path: '/' });
+  res.cookie('token', token, {
+    httpOnly: true,
+    maxAge: 2 * 60 * 1000,
+    path: '/',
+    sameSite: 'lax',
+  });
 
   req.session.refreshToken = refreshToken;
 
