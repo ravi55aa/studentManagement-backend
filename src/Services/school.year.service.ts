@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { injectable, inject } from 'tsyringe';
+import { FilterQuery } from 'mongoose';
 
 import { TYPES } from '../DI/types';
 import {
@@ -13,7 +14,7 @@ import {
   ISchoolSubjectsRepo,
 } from '../Interfaces/repository/ISchoolAcademiYear';
 import { SchoolAcademicYearDto, SchoolCoursesDto, SchoolSubjectsDto } from '../dto/schoolDTO';
-import { academicYearModel } from '../Models/academicYear';
+import { academicYearModel, IAcademicYear } from '../Models/academicYear';
 import { serviceReturnType } from '../Constants/interfaces';
 import { handleValidationOF } from '../Middlewares/validateUser.middleware';
 import { IBatchRepository } from '../Interfaces/repository/IBatchRepository';
@@ -30,6 +31,7 @@ import {
 import logger from '../Utils/logger';
 import { ApiResponse } from '../Constants/apiResponse';
 import { TPaginationQuery } from '../types/pagination';
+
 
 // Page level dependencies
 export interface IFullCourses {
@@ -75,9 +77,9 @@ export class SchoolYear implements ISchoolAcademicYear {
   }
 
   /* =================LIST ALL YEARS==================== */
-  async listAllAcademicYears(query: TPaginationQuery): Promise<serviceReturnType> {
+  async listAllAcademicYears(query: TPaginationQuery,filterQuery:FilterQuery<Partial<IAcademicYear>>): Promise<serviceReturnType> {
     try {
-      const years = await this._yearRepo.getAll(query);
+      const years = await this._yearRepo.getAll(query,filterQuery);
 
       if (!years || years.data.length === 0) {
         return ApiResponse.notFound(AcademicYearMessage.NoYearsFound);
@@ -424,12 +426,14 @@ export class SchoolAcademicCoursesService implements ISchoolAcademicCourseSer {
     try {
       const { tenantId } = SchoolAcademicYearDto.getTenantId(req, res);
 
-      const query = { tenantId };
+      const query = { tenantId:tenantId };
 
       /* ==========================================
         Fetch Courses
     ========================================== */
       const courses = await this._courseRepo.getAllCourses(query);
+      console.log('@school.Year years',courses);
+
 
       if (!courses || courses.length === 0) {
         return ApiResponse.notFound(AcademicCourseMessage.NoCoursesFound);

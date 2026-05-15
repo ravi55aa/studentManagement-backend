@@ -10,6 +10,7 @@ import { serviceReturnType } from '@Constants/interfaces';
 import { IFee } from '@Models/feesModel';
 import { BadRequestError, InternalServerError, NotFoundError } from '@Middlewares/narrowDownErrors';
 import logger from '@Utils/logger';
+import { SchoolAcademicYearDto } from '@dto/schoolDTO';
 //import { TPaginationQuery } from '../types/pagination';
 
 import { TPaginationQuery } from '../types/pagination';
@@ -67,11 +68,14 @@ export class FeeService implements IFeeService {
     return ApiResponse.success(updated, FeesMessage.FeesUpdated);
   }
 
-  public async getAllFees(req: Request): Promise<serviceReturnType> {
+  public async getAllFees(req: Request,res:Response): Promise<serviceReturnType> {
     const { page, limit, ...filters } = req.query as unknown as TPaginationQuery &
       Record<string, string>;
 
-    const fees = await this._feeRepo.getAllFee({ page, limit }, filters || {});
+    const {tenantId}=SchoolAcademicYearDto.getTenantId(req,res);
+
+    const fees = await this._feeRepo.getAllFee({ page, limit }, 
+      {...filters,tenantId:tenantId} );
 
     if (!fees || fees.data.length <= 0) {
       logger.warn('[FeeService:getAllFees] No fees found', {

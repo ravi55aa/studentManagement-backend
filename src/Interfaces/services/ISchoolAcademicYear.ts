@@ -1,4 +1,6 @@
+import { FilterQuery } from 'mongoose';
 import { Request, Response } from 'express';
+import { IAcademicYear } from '@Models/academicYear';
 
 import { serviceReturnType } from '../../Constants/interfaces';
 import { TPaginationQuery } from '../../types/pagination';
@@ -10,7 +12,7 @@ export interface ISchoolAcademicYear {
 
   updateAcademicYear(req: Request, res: Response): Promise<serviceReturnType>;
 
-  listAllAcademicYears(query: TPaginationQuery): Promise<serviceReturnType>;
+  listAllAcademicYears(query: TPaginationQuery,filterQuery:FilterQuery<Partial<IAcademicYear>>): Promise<serviceReturnType>;
 
   deleteAcademicYear(req: Request): Promise<serviceReturnType>;
 }

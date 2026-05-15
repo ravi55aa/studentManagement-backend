@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'tsyringe';
+import { SchoolAcademicYearDto } from '@dto/schoolDTO';
 
 import { serviceReturnType } from '../Constants/interfaces';
-import coursesModel, { coursesMetaModel } from '../Models/courses.model';
+import coursesModel, { coursesMetaModel, IAcademicCourseMeta } from '../Models/courses.model';
 import {
   ISchoolAcademicCourseSer,
   ISchoolAcademicSubjectSer,
@@ -48,7 +49,10 @@ export class SchoolAcademicController {
   async listAllAcademicYear(req: Request, res: Response, next: NextFunction) {
     try {
       const query = req.query as unknown as TPaginationQuery;
-      const { status, resBody } = await this._academicService.listAllAcademicYears(query);
+
+      const {tenantId,adminId}=SchoolAcademicYearDto.getTenantId(req,res);
+
+      const { status, resBody } = await this._academicService.listAllAcademicYears(query,{tenantId,adminId});
 
       res.status(status).json(resBody);
     } catch (err) {
@@ -167,8 +171,16 @@ export class SchoolAcademicCourseController {
 
   async listAllSchoolAcademicCourses(req: Request, res: Response, next: NextFunction) {
     try {
-      const courses = await coursesModel.find().lean();
-      const courses_meta = await coursesMetaModel.find().lean();
+      const {tenantId}=SchoolAcademicYearDto.getTenantId(req,res);
+
+      const courses = await coursesModel.find({tenantId}).lean();
+      let courses_meta:IAcademicCourseMeta[]=[];
+
+      const courseIds=courses?.map((course)=>course._id);
+
+      if(courseIds.length>0){
+        courses_meta = await coursesMetaModel.find({courseId:{$in:courseIds}}).lean<IAcademicCourseMeta[]>();
+      }
 
       const { status, resBody } = ApiResponse.success(
         { courses, courses_meta },
