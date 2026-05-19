@@ -9,7 +9,7 @@ import { handleSubdomainResolver } from '@Middlewares/roleBaseAuth.middleware';
 import handleErrorsMiddleware from '@Middlewares/error.middleware';
 //import { connectRedisClient } from 'Config/redis.config';
 
-import { sessionConfig, connectDB } from './Config/index';
+import { sessionConfig, connectDB, env } from './Config/index';
 import {
   oauthRouter,
   authRouter,
@@ -32,7 +32,7 @@ app.use(
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
 
-      const isLocalhost = origin === 'http://localhost:5173';
+      const isLocalhost = origin === env.FRONTEND_URL;
 
       const isSubdomain = /^http:\/\/([a-z0-9-]+)\.localhost:5173$/.test(origin);
 
