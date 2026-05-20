@@ -27,14 +27,14 @@ import {
 } from './Routes/index';
 import logger from './Utils/logger';
 
-app.use(
+app.use (
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
 
-      const isLocalhost = origin === env.FRONTEND_URL;
+      const isLocalhost = origin === env.FRONTEND_URL; //http://host.docker.internal:3000
 
-      const isSubdomain = /^http:\/\/([a-z0-9-]+)\.localhost:5173$/.test(origin);
+      const isSubdomain = /^http:\/\/([a-z0-9-]+)\.localhost:3000$/.test(origin);
 
       if (isLocalhost || isSubdomain) {
         return callback(null, true);

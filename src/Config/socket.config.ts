@@ -11,9 +11,9 @@ export const initSocket = (server: HttpServer) => {
       origin: (origin, callback) => {
         if (!origin) return callback(null, true);
 
-        const isLocalhost = origin === 'http://localhost:5173';
+        const isLocalhost = origin === 'http://localhost:3000';
 
-        const isSubdomain = /^http:\/\/([a-z0-9-]+)\.localhost:5173$/.test(origin);
+        const isSubdomain = /^http:\/\/([a-z0-9-]+)\.localhost:3000$/.test(origin);
 
         if (isLocalhost || isSubdomain) {
           return callback(null, true);
