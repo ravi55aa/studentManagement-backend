@@ -1,7 +1,9 @@
 import { Server as HttpServer } from 'http';
 
-import { Server } from 'socket.io';
 import logger from '@Utils/logger';
+import { Server } from 'socket.io';
+
+import env from './env.config';
 
 let io: Server;
 
@@ -11,7 +13,7 @@ export const initSocket = (server: HttpServer) => {
       origin: (origin, callback) => {
         if (!origin) return callback(null, true);
 
-        const isLocalhost = origin === 'http://localhost:3000';
+        const isLocalhost = origin === env.FRONTEND_URL;;
 
         const isSubdomain = /^http:\/\/([a-z0-9-]+)\.localhost:3000$/.test(origin);
 

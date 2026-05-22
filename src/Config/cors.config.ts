@@ -4,9 +4,9 @@ cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
 
-    const allowedPattern = /^http:\/\/([a-zA-Z0-9-]+)\.localhost:5173$/;
+    const allowedPattern = /^http:\/\/([a-zA-Z0-9-]+)\.localhost:3000$/;
 
-    if (origin === 'http://localhost:5173' || allowedPattern.test(origin)) {
+    if (origin === 'http://localhost:3000' || allowedPattern.test(origin)) {
       return callback(null, true);
     }
 

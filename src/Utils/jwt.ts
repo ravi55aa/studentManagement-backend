@@ -20,12 +20,8 @@ export const generateAccessToken = (user: IJwtPayload): string => {
     throw new Error('Missing JWT refresh secret');
   }
 
-  if (!env.JWT_TOKEN_EXPIRES_IN) {
-    throw new Error('Missing JWT refresh expires value');
-  }
-
   return sign(user, env.JWT_ACCESS_TOKEN_SECRET!, {
-    expiresIn: env.JWT_TOKEN_EXPIRES_IN!,
+    expiresIn: env.JWT_TOKEN_EXPIRES_IN! || '24h',
   } as SignOptions);
 };
 
@@ -34,12 +30,8 @@ export const generateRefreshToken = (user: IJwtPayload): string => {
     throw new Error('Missing JWT refresh secret');
   }
 
-  if (!env.JWT_REFRESH_TOKEN_EXPIRES_IN) {
-    throw new Error('Missing JWT refresh expires value');
-  }
-
   return sign(user, env.JWT_REFRESH_TOKEN_SECRET, {
-    expiresIn: env.JWT_REFRESH_TOKEN_EXPIRES_IN,
+    expiresIn: env.JWT_REFRESH_TOKEN_EXPIRES_IN || '7d',
   } as SignOptions);
 };
 
@@ -101,6 +93,7 @@ export const handleJwtTokensGenerator = (
     maxAge: 24 * 60 * 60 * 1000,
     path: '/',
     sameSite: 'lax',
+    secure: false,
   });
 
   req.session.refreshToken = refreshToken;
@@ -125,6 +118,7 @@ export const handleTokenVerification = (req: Request, res: Response) => {
       maxAge: 24 * 60 * 60 * 1000,
       path: '/',
       sameSite: 'lax',
+      secure: false,
     });
 
     decoded = verifyToken(token, env.JWT_ACCESS_TOKEN_SECRET!);

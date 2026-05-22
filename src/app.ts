@@ -27,25 +27,32 @@ import {
 } from './Routes/index';
 import logger from './Utils/logger';
 
-app.use (
+app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
 
-      const isLocalhost = origin === env.FRONTEND_URL; //http://host.docker.internal:3000
+      const allowedOrigins = [
+        'http://localhost',
+      ];
 
-      const isSubdomain = /^http:\/\/([a-z0-9-]+)\.localhost:3000$/.test(origin);
+      const isSubdomain =
+        /^http:\/\/([a-z0-9-]+)\.localhost$/.test(origin);
 
-      if (isLocalhost || isSubdomain) {
+      if (
+        allowedOrigins.includes(origin) ||
+        isSubdomain
+      ) {
         return callback(null, true);
       }
 
-      return callback(new Error(`CORS blocked: ${origin}`));
+      return callback(
+        new Error(`CORS blocked: ${origin}`)
+      );
     },
 
-    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
     credentials: true,
-  }),
+  })
 );
 
 app.use(cookieParser());
@@ -86,3 +93,30 @@ app.use((req, res) => {
 app.use(handleErrorsMiddleware);
 
 export default app;
+
+
+
+//Handle the cors at the end
+// app.use(
+//   cors({
+//     origin: (origin, callback) => {
+//       if (!origin) return callback(null, true);
+
+//       const allowedOrigins = [
+//         'http://localhost:3000',
+//         'http://canara.localhost:3000',
+//       ];
+
+//       const isSubdomain =
+//         /^http:\/\/([a-z0-9-]+)\.localhost:3000$/.test(origin);
+
+//       if (allowedOrigins.includes(origin) || isSubdomain) {
+//         return callback(null, true);
+//       }
+
+//       return callback(new Error(`CORS blocked: ${origin}`));
+//     },
+
+//     credentials: true,
+//   }),
+// );

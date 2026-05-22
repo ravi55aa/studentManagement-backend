@@ -9,7 +9,7 @@ import { AuthMessage } from '../Constants/resposeMessages';
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const accessToken = req.cookies.token; //expired token back-listing
-
+    
     if (!accessToken) {
       logger.warn('Access token missing', {
         path: req.originalUrl,
