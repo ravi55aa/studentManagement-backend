@@ -8,6 +8,8 @@ const env = {
   FRONTEND_URL: process.env.FRONTEND_URL,
   FRONTEND_URL_PARTIAL: 'localhost:3000',
 
+  BACKEND_URL: process.env.BACKEND_URL,
+
   SESSION_SECRET: process.env.SESSION_SECRET,
 
   //*JWT

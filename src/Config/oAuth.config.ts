@@ -8,7 +8,7 @@ import { GoogleTokenResponse, GoogleUserInfoResponse } from '../Interfaces/Other
 
 import env from './env.config';
 
-const REDIRECT_URI = 'http://localhost:4000/google/auth/callback';
+const REDIRECT_URI = `${env.BACKEND_URL}/google/auth/callback`;
 
 export const handleOAuth = (req: Request, res: Response) => {
   const state = 'someRandomId';
@@ -85,7 +85,7 @@ export const handleAuthCallback = async (req: Request, res: Response) => {
     const payload: IJwtPayload = { userId: userInDB._id, tenantId: userInDB._id, role: 'Admin' };
     handleJwtTokensGenerator(payload, req, res);
 
-    res.redirect('http://localhost:5173/school/register');
+    res.redirect(`${env.FRONTEND_URL}/school/register`);
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       logger.error(
