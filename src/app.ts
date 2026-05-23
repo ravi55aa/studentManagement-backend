@@ -64,7 +64,7 @@ app.post(
   express.raw({ type: 'application/json' }),
   (req: Request, res: Response) => stripeController.callWebHook(req, res),
 );
-app.use(express.json());
+app.use(express.json({limit: '10mb'}));
 app.use(helmet());
 app.use(handleSubdomainResolver);
 
