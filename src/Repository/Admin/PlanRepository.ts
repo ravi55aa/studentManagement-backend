@@ -11,20 +11,6 @@ export class PlanRepository extends BaseRepository<IPlan> implements IPlanReposi
     super(planModel);
   }
 
-  // CREATE PLAN
-  async create(data: Partial<IPlan>): Promise<IPlan | null> {
-    try {
-      return await super.create(data);
-    } catch (error) {
-      logger.error('CreatePlan failed', {
-        layer: 'repository',
-        module: 'plan',
-        error,
-      });
-      return null;
-    }
-  }
-
   // FIND BY NAME
   async findByName(name: string): Promise<IPlan | null> {
     try {
@@ -37,7 +23,7 @@ export class PlanRepository extends BaseRepository<IPlan> implements IPlanReposi
       });
       return null;
     }
-  }
+  }  
 
   // GET ALL (WITH QUERY)
   async findAll(query: FilterQuery<Partial<IPlan>> = {}): Promise<IPlan[]> {
