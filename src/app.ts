@@ -8,8 +8,9 @@ import { stripeController } from '@DI/resolve';
 import { handleSubdomainResolver } from '@Middlewares/roleBaseAuth.middleware';
 import handleErrorsMiddleware from '@Middlewares/error.middleware';
 //import { connectRedisClient } from 'Config/redis.config';
+import helmet from 'helmet';
 
-import { sessionConfig, connectDB, env } from './Config/index';
+import { sessionConfig, connectDB } from './Config/index';
 import {
   oauthRouter,
   authRouter,
@@ -64,6 +65,7 @@ app.post(
   (req: Request, res: Response) => stripeController.callWebHook(req, res),
 );
 app.use(express.json());
+app.use(helmet());
 app.use(handleSubdomainResolver);
 
 //redis
