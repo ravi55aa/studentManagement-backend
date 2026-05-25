@@ -44,7 +44,7 @@ app.use(
       /^http:\/\/([a-z0-9-]+)\.localhost$/.test(origin);
 
     const isProdSubdomain =
-      /^http:\/\/([a-z0-9-]+)\.thecosrx\.shop$/.test(origin);
+  /^https?:\/\/([a-z0-9-]+)\.school\.thecosrx\.shop$/.test(origin);
 
 
       if (
