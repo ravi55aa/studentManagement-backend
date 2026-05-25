@@ -87,6 +87,11 @@ app.use('/fee', feesRouter);
 app.use('/chat', chatRouter);
 app.use('/admin', adminRouter);
 
+app.use('/health', (req, res) => {
+  logger.info('Health check requested');
+  res.status(200).json({ message: 'Server is running' });
+});
+
 app.use((req, res) => {
   logger.error(' Route not found:', req.method, req.originalUrl);
   res.status(404).json({ message: 'Route not found' });
