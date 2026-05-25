@@ -34,15 +34,23 @@ app.use(
       if (!origin) return callback(null, true);
 
       const allowedOrigins = [
-        'http://localhost',
-      ];
+      'http://localhost',
+      'http://13.48.42.123',
+      'http://thecosrx.shop',
+      'http://www.thecosrx.shop',
+    ];
 
-      const isSubdomain =
-        /^http:\/\/([a-z0-9-]+)\.localhost$/.test(origin);
+    const isLocalSubdomain =
+      /^http:\/\/([a-z0-9-]+)\.localhost$/.test(origin);
+
+    const isProdSubdomain =
+      /^http:\/\/([a-z0-9-]+)\.thecosrx\.shop$/.test(origin);
+
 
       if (
         allowedOrigins.includes(origin) ||
-        isSubdomain
+        isProdSubdomain ||
+        isLocalSubdomain
       ) {
         return callback(null, true);
       }
