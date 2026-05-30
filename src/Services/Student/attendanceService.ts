@@ -264,6 +264,7 @@ export class StudentAttendanceService implements IStudentAttendanceService {
       const { date, status } = req.query as { date: string; status: unknown };
 
       console.log("Hi");
+      console.log("Hi2");
 
       if (!batchId || !studentId) {
         logger.error(CommonMessage.IdNotFound, batchId, studentId, {
