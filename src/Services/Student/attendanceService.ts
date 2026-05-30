@@ -302,14 +302,14 @@ export class StudentAttendanceService implements IStudentAttendanceService {
       const update = { $set: { 'students.$.status': leaveStatus } };
 
       //make a repository call;
-      const updated = await this._attendanceRepo.updateAppliedLeaveStatusFromTeacher(
+      await this._attendanceRepo.updateAppliedLeaveStatusFromTeacher(
         filter,
         update,
       );
 
-      if (!updated) {
-        throw new FailureError(AttendanceMessage.AttendanceNotUpdated);
-      }
+      // if (!updated) {
+      //   throw new FailureError(AttendanceMessage.AttendanceNotUpdated);
+      // }
 
       await this._attendanceRepo.updateStudentLeave(
         { studentId: studentId },
